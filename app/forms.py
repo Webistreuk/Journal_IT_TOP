@@ -1,9 +1,17 @@
 from .models import Autoriz
+from django import forms
 
-class Autoriz(forms.ModelForm):
-    name = forms.CharField(required = True, blank = False, null = False, error_messages = {'blank': 'Введите имя.', 'required': 'Введите имя.'})
-    password = forms.CharField(required = True, blank = False, null = False, error_messages = {'required': 'Введите пароль.'}, widget = forms.PassworInput())
+class AutorizForm(forms.ModelForm):
+    name = forms.CharField()
+    password = forms.CharField(widget=forms.PasswordInput())
 
     class Meta:
         model = Autoriz
         fields = ['name', 'password']
+
+class AutorizForm_remove_password(forms.ModelForm):
+    email = forms.EmailInput()
+
+    class Meta:
+        model = Autoriz
+        fields = ['email']

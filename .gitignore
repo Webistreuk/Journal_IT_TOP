@@ -1,0 +1,29 @@
+# Создаем файл .gitignore
+echo "# Виртуальная среда" > .gitignore
+echo ".rob/" >> .gitignore
+echo "venv/" >> .gitignore
+echo "env/" >> .gitignore
+echo "__pycache__/" >> .gitignore
+echo "*.pyc" >> .gitignore
+echo "*.pyo" >> .gitignore
+echo "" >> .gitignore
+echo "# База данных" >> .gitignore
+echo "db.sqlite3" >> .gitignore
+echo "*.sqlite3" >> .gitignore
+echo "" >> .gitignore
+echo "# Миграции (если не хотите их коммитить)" >> .gitignore
+echo "app/migrations/__pycache__/" >> .gitignore
+echo "app/migrations/0*.py" >> .gitignore
+echo "!app/migrations/__init__.py" >> .gitignore
+echo "" >> .gitignore
+echo "# Django статика" >> .gitignore
+echo "staticfiles/" >> .gitignore
+echo "media/" >> .gitignore
+echo "" >> .gitignore
+echo "# IDE" >> .gitignore
+echo ".vscode/" >> .gitignore
+echo ".idea/" >> .gitignore
+echo "" >> .gitignore
+echo "# OS" >> .gitignore
+echo ".DS_Store" >> .gitignore
+echo "Thumbs.db" >> .gitignore
