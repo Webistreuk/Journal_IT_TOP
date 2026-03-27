@@ -8,38 +8,41 @@
     <title>Journal</title>
 </head>
 <body>
-    <div class="main">
-        <div class="Journal">
-            <p>Journal</p>
-            <form action="{% url "Вход" %}" method="post">
-                {% csrf_token %}
-                <div class="fields_of_Journal">
-                    <input type="text" name="username" placeholder="Логин">
-                    <input type="password" name="userpassword" placeholder="Пароль">
-                </div>
-                <input type="submit" value="Вход">
-                <button type="button" class="Forgot_your_password">Забыли пароль?</button>
-                <div class="Choice_of_Language">
-                    
-                </div>
-            </form>
-        </div>
+    <div class="page">
+        <div class="main">
+            <div class="Journal">
+                <p>Journal</p>
+                <form action="{% url "Вход" %}" method="post">
+                    {% csrf_token %}
+                    <div class="fields_of_Journal">
+                        <input type="text" name="username" placeholder="Логин">
+                        <input type="password" name="userpassword" placeholder="Пароль">
+                    </div>
+                    <input type="submit" value="Вход">
+                    <button type="button" class="Forgot_your_password">Забыли пароль?</button>
+                    <div class="Choice_of_Language">
+                        
+                    </div>
+                </form>
+            </div>
 
-        <div class="Journal_remove_password">
-            <form action="{% url "Вход" %}" method="post">
-                {% csrf_token %}
-                <div class="fields_of_Journal">
-                    <input type="email" name="useremail" placeholder="E-mail">
-                </div>
-                <input type="submit" value="Отправить">
-                <button type="button" class="Return_to_the_login_page">Вернуться на страницу входа</button>
-                <div class="Choice_of_Language">
+            <div class="Journal_remove_password">
+                <form action="{% url "Вход" %}" method="post">
+                    {% csrf_token %}
+                    <div class="fields_of_Journal">
+                        <input type="email" name="useremail" placeholder="E-mail">
+                    </div>
+                    <input type="submit" value="Отправить">
+                    <button type="button" class="Return_to_the_login_page">Вернуться на страницу входа</button>
+                    <div class="Choice_of_Language">
+                        
+                    </div>
                     
-                </div>
-                
-            </form>
+                </form>
+            </div>
         </div>
     </div>
+    
 
     <script src="{% static 'js/Authorize.js' %}"></script>
 

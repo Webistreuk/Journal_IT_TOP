@@ -1,3 +1,23 @@
 .Journal_remove_password {
     display: none;
 }
+
+.page {
+    display: flex;
+    position: relative;
+    margin-left: 780px;
+    margin-top: 370px;
+    width: 330px;
+    height: 400px;
+}
+
+.main {
+    display: flex;
+    width: 300px;
+    height: 350px;
+}
+
+.Journal {
+    font-size: 30;
+    font-weight: 700px;
+}
