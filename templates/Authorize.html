@@ -12,14 +12,16 @@
         <div class="main">
             <div class="Journal">
                 <p>Journal</p>
+                <div class="red_line_x"></div>
+                <div class="red_line_y"></div>
                 <form action="{% url "Вход" %}" method="post">
                     {% csrf_token %}
                     <div class="fields_of_Journal">
-                        <input type="text" name="username" placeholder="Логин">
-                        <input type="password" name="userpassword" placeholder="Пароль">
+                        <input class="username_field" type="text" name="username" placeholder="Логин">
+                        <input class="userpassword_field" type="password" name="userpassword" placeholder="Пароль">
                     </div>
-                    <input type="submit" value="Вход">
-                    <button type="button" class="Forgot_your_password">Забыли пароль?</button>
+                    <input class="Login" type="submit" value="Вход">
+                    <button class="Forgot_your_password" type="button">Забыли пароль?</button>
                     <div class="Choice_of_Language">
                         
                     </div>
@@ -27,13 +29,16 @@
             </div>
 
             <div class="Journal_remove_password">
+                <p>Journal</p>
+                <div class="red_line_x_JRP"></div>
+                <div class="red_line_y_JRP"></div>
                 <form action="{% url "Вход" %}" method="post">
                     {% csrf_token %}
-                    <div class="fields_of_Journal">
-                        <input type="email" name="useremail" placeholder="E-mail">
+                    <div class="fields_of_JournalRP">
+                        <input class="useremail_field" type="email" name="useremail" placeholder="E-mail">
                     </div>
-                    <input type="submit" value="Отправить">
-                    <button type="button" class="Return_to_the_login_page">Вернуться на страницу входа</button>
+                    <input class="form_Send" type="submit" value="Отправить">
+                    <button class="Return_to_the_login_page" type="button">Вернуться на страницу входа</button>
                     <div class="Choice_of_Language">
                         
                     </div>

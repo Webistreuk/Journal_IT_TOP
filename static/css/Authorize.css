@@ -1,23 +1,272 @@
-.Journal_remove_password {
-    display: none;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
 }
 
 .page {
-    display: flex;
+    display: block;
     position: relative;
-    margin-left: 780px;
-    margin-top: 370px;
-    width: 330px;
-    height: 400px;
+    max-width: 630px;
+    margin-top: 160px;
+    height: 460px;
+    overflow: hidden;
+    left: 90px;
 }
 
 .main {
-    display: flex;
-    width: 300px;
-    height: 350px;
+    width: 600px;
+    height: 460px;
 }
 
 .Journal {
-    font-size: 30;
-    font-weight: 700px;
+    display: block;
+    width: 40px;
+    height: 18px;
+    margin-left: 14px;
+    align-items: center;
+    justify-content: center;
+}
+
+.Journal p {
+    /* font-family: 'Arial', 'Helvetica', sans-serif; */
+    color: #2c3e50;
+    font-weight: bold;
+    font-size: 55px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    line-height: 100%;
+    letter-spacing: 0.3px;
+    margin-left: 117px;
+    margin-bottom: 85px;
+}
+
+.red_line_x {
+    position: absolute;
+    width: 440px;
+    height: 16px;
+    background-color: #d60039;
+    top: 100px;
+    left: -2px;
+}
+
+.red_line_y {
+    position: absolute;
+    width: 16.5px;
+    height: 170px;
+    background-color: #d60039;
+    top: 100px;
+    left: -2px;
+}
+
+.fields_of_Journal {
+    width: 380px;
+    height: 48px;
+    margin-top: 20px;
+    margin-left: 15px;
+    align-items: center;
+    justify-content: center;
+}
+
+.username_field {
+    width: 380px;
+    height: 20px;
+    margin-bottom: 9px;
+    border: 0.9px solid rgba(0,0,0,0.2);
+    border-radius: 2px;
+    outline: none;
+    transition: 0.5s;
+}
+
+.username_field:focus {
+    border: 0.9px solid rgba(0, 127, 231, 0.742);
+    box-shadow: 0px 0px 10px rgba(0, 119, 217, 0.631);
+    transition: 0.5s;
+}
+
+.userpassword_field {
+    width: 380px;
+    height: 20px;
+    border: 0.9px solid rgba(0,0,0,0.2);
+    border-radius: 2px;
+    outline: none;
+}
+
+.userpassword_field:focus {
+    border: 0.9px solid rgba(0, 127, 231, 0.742);
+    box-shadow: 0px 0px 10px rgba(0, 119, 217, 0.631);
+    transition: 0.5s;
+}
+
+.Login {
+    font-size: 10px;
+    height: 22px;
+    width: 40px;
+    padding: 4px 8px;
+    color: rgb(235, 235, 235);
+    background-color: #d60039;
+    border: 1px solid #ff1e00;
+    border-width: 1.4px;
+    border-radius: 3px;
+    margin-left: 185px;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: 0.1s;
+}
+
+.Login:hover {
+    color: rgb(255, 255, 255);
+    background-color: #005fdb;
+    border: 1px solid #046e83;
+    transform: translateY(-0.75px);
+    transition: 0.1s;
+}
+
+.Forgot_your_password {
+    width: 150px;
+    font-size: 9px;
+    background: none;
+    border: none;
+    color: rgb(40, 40, 40);
+    cursor: pointer;
+    margin-top: 28px;
+    margin-left: 132px;
+    text-decoration: none;
+    transition: 0.35s;
+}
+
+.Forgot_your_password:hover {
+    color: #2c3e50;
+    font-weight: bold;
+    font-size: 11;
+    text-decoration: underline;
+    transition: 0.35s;
+}
+
+.fields_of_Journal input {
+    font-size: 10px;
+    padding: 2px 4px;
+}
+
+.Journal_remove_password {
+    display: none;
+    width: 40px;
+    height: 18px;
+    margin-left: 14px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 16px;
+}
+
+.Journal_remove_password p {
+    /* font-family: 'Arial', 'Helvetica', sans-serif; */
+    color: #2c3e50;
+    font-weight: bold;
+    font-size: 55px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    line-height: 100%;
+    letter-spacing: 0.3px;
+    margin-left: 117px;
+    margin-bottom: 90px;
+}
+
+.red_line_x_JRP {
+    position: absolute;
+    width: 440px;
+    height: 16px;
+    background-color: #d60039;
+    top: 116px;
+    left: -2px;
+}
+
+.red_line_y_JRP {
+    position: absolute;
+    width: 16.5px;
+    height: 150px;
+    background-color: #d60039;
+    top: 116px;
+    left: -2px;
+}
+
+.fields_of_JournalRP {
+    width: 380px;
+    height: 15px;
+    margin-left: 15px;
+    align-items: center;
+    justify-content: center;
+}
+
+.useremail_field {
+    width: 380px;
+    height: 20px;
+    border: 0.9px solid rgba(0,0,0,0.2);
+    border-radius: 2px;
+    outline: none;
+}
+
+.useremail_field:focus {
+    border: 0.9px solid rgba(0, 127, 231, 0.742);
+    box-shadow: 0px 0px 10px rgba(0, 119, 217, 0.631);
+    transition: 0.5s;
+}
+
+.buttons {
+    display: block;
+    margin-bottom: 50px;
+}
+
+.form_Send {
+    font-size: 9px;
+    height: 22px;
+    width: 60px;
+    padding: 4px 4px;
+    color: rgb(235, 235, 235);
+    background-color: #d60039;
+    border: 1px solid #ff1e00;
+    border-width: 1.4px;
+    border-radius: 3px;
+    margin-left: 174px;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: 0.1s;
+}
+
+.form_Send:hover {
+    color: rgb(255, 255, 255);
+    background-color: #005fdb;
+    border: 1px solid #046e83;
+    transform: translateY(-0.75px);
+    transition: 0.1s;
+}
+
+.Return_to_the_login_page {
+    width: 150px;
+    font-size: 9px;
+    background: none;
+    border: none;
+    color: rgb(40, 40, 40);
+    cursor: pointer;
+    text-decoration: none;
+    margin-top: 28px;
+    margin-left: 130px;
+}
+
+.Return_to_the_login_page:hover {
+    color: #2c3e50;
+    font-weight: bold;
+    font-size: 11;
+    text-decoration: underline;
+    transition: 0.35s;
+}
+
+.fields_of_JournalRP input {
+    font-size: 10px;
+    padding: 2px 4px;
 }
