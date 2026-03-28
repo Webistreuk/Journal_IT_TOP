@@ -18,6 +18,11 @@
                     {% csrf_token %}
                     <div class="fields_of_Journal">
                         <input class="username_field" type="text" name="username" placeholder="Логин">
+                        {% if error %}
+                            <div class="error-message">
+                                {{ error }}
+                            </div>
+                        {% endif %}
                         <input class="userpassword_field" type="password" name="userpassword" placeholder="Пароль">
                     </div>
                     <input class="Login" type="submit" value="Вход">

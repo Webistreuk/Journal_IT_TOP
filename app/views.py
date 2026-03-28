@@ -1,4 +1,4 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from .models import Autoriz
 from .forms import AutorizForm
@@ -8,13 +8,10 @@ def autoriz(request):
         username = request.POST.get('username')
         password = request.POST.get('userpassword')
         user = Autoriz.objects.filter(name=username).first()
-        if user:
-            if user.password == password:
-                return redirect('Главная')
-            else:
-                return HttpResponse()
-        
-        return render(request, 'main.html')
+        if user and user.password == password:
+            return redirect('Главная')
+        else:
+            return render(request, 'Authorize.html', {'error': 'Неправильно был введен логин или пароль!'})
     else:
         form = AutorizForm()
         return render(request, 'Authorize.html', {'form': form})

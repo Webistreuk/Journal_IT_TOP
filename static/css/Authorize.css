@@ -270,3 +270,16 @@ body {
     font-size: 10px;
     padding: 2px 4px;
 }
+
+.error-message {
+    position: absolute;
+    top: 157px;
+    right: 290px;
+    color: red;
+    font-size: 9px;
+    text-align: center;
+    padding: 2px;
+    background-color: rgba(255, 0, 0, 0.178);
+    border-radius: 5px;
+    transition: 1s;
+}
