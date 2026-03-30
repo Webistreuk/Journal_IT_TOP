@@ -7,7 +7,7 @@ def autoriz(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('userpassword')
-        user = Autoriz.objects.filter(name=username).first()
+        user = Autoriz.objects.filter(user=username).first()
         if user and user.password == password:
             return redirect('Главная')
         else:
