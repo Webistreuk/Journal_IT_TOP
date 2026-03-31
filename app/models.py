@@ -30,7 +30,7 @@ class Professor(models.Model):
     surname = models.CharField(max_length = 30, blank = False, null = False, verbose_name = 'Фамилия профессора')
     patronymic = models.CharField(max_length = 40, blank = False, null = False, verbose_name = 'Отчество профессора')
     leads_the_subject = models.ForeignKey(Subjects, on_delete = models.CASCADE, verbose_name = 'Ведет предмет:')
-    autoriz = models.ForeignKey(Autoriz, on_delete = models.CASCADE)
+    autoriz = models.ForeignKey(Autoriz, on_delete = models.CASCADE, verbose_name = 'Пользователь')
 
     class Meta:
         db_table = 'List_of_professors'
@@ -56,8 +56,8 @@ class Student(models.Model):
     name = models.CharField(max_length = 30, blank = False, null = False, verbose_name = 'Имя студента')
     surname = models.CharField(max_length = 30, blank = False, null = False, verbose_name = 'Фамилия студента')
     patronymic = models.CharField(max_length = 40, blank = False, null = False, verbose_name = 'Отчество студента')
-    autoriz = models.ForeignKey(Autoriz, on_delete = models.CASCADE)
-    courses_of_students = models.ForeignKey(Courses_of_Students, on_delete = models.CASCADE, null = True, blank = True)
+    autoriz = models.ForeignKey(Autoriz, on_delete = models.CASCADE, verbose_name = 'Пользователь')
+    courses_of_students = models.ForeignKey(Courses_of_Students, on_delete = models.CASCADE, null = True, blank = True, verbose_name = 'Обучается на курсе')
 
     class Meta:
         db_table = 'List_of_students'
@@ -122,13 +122,13 @@ class Add_HW_Professor(models.Model):
 
 class Information_about_HW_for_students(models.Model):
     issued = models.DateField(auto_now_add = True, verbose_name = 'Дата выдачи домашнего задания')
-    professor = models.ForeignKey(Professor, on_delete = models.CASCADE)
-    add_hw_professor = models.ForeignKey(Add_HW_Professor, on_delete = models.CASCADE)
+    professor = models.ForeignKey(Professor, on_delete = models.CASCADE, verbose_name = 'Преподаватель')
+    add_hw_professor = models.ForeignKey(Add_HW_Professor, on_delete = models.CASCADE, verbose_name = 'Добавить домашку')
 
 class balance_topcoins_and_topgems(models.Model):
-    topcoins = models.PositiveSmallIntegerField(blank = False, null = False, default = None)
-    topgems = models.PositiveSmallIntegerField(blank = False, null = False, default = None)
-    student = models.OneToOneField(Student, on_delete=models.CASCADE)
+    topcoins = models.PositiveSmallIntegerField(blank = False, null = False, default = None, verbose_name = 'Топкоины')
+    topgems = models.PositiveSmallIntegerField(blank = False, null = False, default = None, verbose_name = 'Топгемы')
+    student = models.OneToOneField(Student, on_delete=models.CASCADE, verbose_name = 'Студент')
 
     class Meta:
         db_table = 'List_of_balance_students'
@@ -177,11 +177,11 @@ class All_payment_of_education(models.Model):
     ]
 
     type = models.CharField(choices = CHOICE_YEAR_OR_MONTH, max_length = 5, default = month, verbose_name = 'Выберите тип оплаты обучения')
-    amount = models.PositiveIntegerField(blank = False, null = False, default = None)
+    amount = models.PositiveIntegerField(blank = False, null = False, default = None, verbose_name = 'Стоимость')
     courses_of_Students = models.ForeignKey(Courses_of_Students, on_delete = models.CASCADE, verbose_name = 'Курс')
     period_of_study = models.IntegerField(blank = False, null = False, default = 40, verbose_name = 'Период обучения(напишите в месяцах)')
-    month_of_payment = models.IntegerField(choices = CHOICE_MONTH, verbose_name = 'Месяц')
-    year_of_payment = models.IntegerField(choices = CHOICE_YEAR, verbose_name = 'Год')
+    month_of_payment = models.IntegerField(choices = CHOICE_MONTH, verbose_name = 'Месяц', help_text = 'Начало обучения')
+    year_of_payment = models.IntegerField(choices = CHOICE_YEAR, verbose_name = 'Год', help_text = 'Начало обучения')
 
 
     class Meta:
@@ -202,11 +202,11 @@ class Status_of_payment_of_education(models.Model):
         (not_paid_for, 'Не оплачено')
     ]
 
-    type = models.CharField(choices = CHOICE_STATE_OF_PAYMENT, max_length = 12, default = not_paid_for)
+    type = models.CharField(choices = CHOICE_STATE_OF_PAYMENT, max_length = 12, default = not_paid_for, verbose_name = 'Статус оплаты')
     
 # Модель для подкрепления созданного счета к аккаунту студента.
 class Students_payment_account(models.Model):
-    student = models.ForeignKey(Student, on_delete = models.CASCADE)
+    student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
     all_payment_of_education = models.ForeignKey(All_payment_of_education, on_delete = models.CASCADE, verbose_name = 'Обучается в:')
     
     CHOICE_MONTH = [
