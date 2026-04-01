@@ -118,12 +118,23 @@ class Attendance(models.Model):
 class Add_HW_Professor(models.Model):
     file = models.FileField(upload_to = 'static/image/homeworks_for_students/', null = False, blank = False, verbose_name = 'Файл домашнего задания студентам')
     comment = models.TextField(max_length = 500, verbose_name = 'Комментарий домашнему заданию')
-    date = models.DateField(help_text = 'Выберите дату конечной сдачи домашнего задания студентам.', verbose_name = 'Конечная дата выполнения')
+    date_start = models.DateField(auto_now_add = True, help_text = 'Дата создания домашнего задания.', verbose_name = 'Дата создания д/з')
+    date_final = models.DateField(help_text = 'Выберите дату конечной сдачи домашнего задания студентам.', verbose_name = 'Конечная дата выполнения')
+
+    class Meta:
+        db_table = 'List_of_add_hw_professor'
+        verbose_name = 'Домашнее задание для студентов курса'
+        verbose_name_plural = 'Домашнее задания для студента'
+
+    def __str__(self):
+        return f'Домашнее задание студентов курса {self.}'
 
 class Information_about_HW_for_students(models.Model):
     issued = models.DateField(auto_now_add = True, verbose_name = 'Дата выдачи домашнего задания')
     professor = models.ForeignKey(Professor, on_delete = models.CASCADE, verbose_name = 'Преподаватель')
     add_hw_professor = models.ForeignKey(Add_HW_Professor, on_delete = models.CASCADE, verbose_name = 'Добавить домашку')
+
+    
 
 class balance_topcoins_and_topgems(models.Model):
     topcoins = models.PositiveSmallIntegerField(blank = False, null = False, default = None, verbose_name = 'Топкоины')
@@ -180,8 +191,7 @@ class All_payment_of_education(models.Model):
     amount = models.PositiveIntegerField(blank = False, null = False, default = None, verbose_name = 'Стоимость')
     courses_of_Students = models.ForeignKey(Courses_of_Students, on_delete = models.CASCADE, verbose_name = 'Курс')
     period_of_study = models.IntegerField(blank = False, null = False, default = 40, verbose_name = 'Период обучения(напишите в месяцах)')
-    month_of_payment = models.IntegerField(choices = CHOICE_MONTH, verbose_name = 'Месяц', help_text = 'Начало обучения')
-    year_of_payment = models.IntegerField(choices = CHOICE_YEAR, verbose_name = 'Год', help_text = 'Начало обучения')
+    date = models.DateField(blank = False, null = False, verbose_name = 'Начало обучения')
 
 
     class Meta:
@@ -237,8 +247,7 @@ class Students_payment_account(models.Model):
         (10, '2035'),
     ]
 
-    month_of_payment = models.IntegerField(choices = CHOICE_MONTH, verbose_name = 'Месяц')
-    year_of_payment = models.IntegerField(choices = CHOICE_YEAR, verbose_name = 'Год')
+    date = models.DateField(blank = False, null = False, verbose_name = 'Начало обучения')
 
     class Meta:
         db_table = 'List_of_students_payment_account'
@@ -247,3 +256,27 @@ class Students_payment_account(models.Model):
 
     def __str__(self):
         return f'Настройка оплаты обучения у {self.student}'
+
+class image_student(models.Model):
+    photo = models.FileField(blank = False, null = False, verbose_name = 'Загрузить фотографию студента')
+    student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
+
+    class Meta:
+        db_table = 'List_of_image_students'
+        verbose_name = 'Фотография студента'
+        verbose_name_plural = 'Фотографии студентов'
+
+    def __str__(self):
+        return f'Фотография студента {self.student}'
+
+class image_professor(models.Model):
+    photo = models.FileField(blank = False, null = False, verbose_name = 'Загрузить фотографию преподавателя')
+    professor = models.ForeignKey(Professor, on_delete = models.CASCADE, verbose_name = 'Преподаватель')
+
+    class Meta:
+        db_table = 'List_of_image_professor'
+        verbose_name = 'Фотография преподавателя'
+        verbose_name_plural = 'Фотографии преподавателей'
+
+    def __str__(self):
+        return f'Фотография преподавателя {self.professor}'

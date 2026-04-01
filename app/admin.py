@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Autoriz, Professor, Student, Subjects, Courses_of_Students, balance_topcoins_and_topgems, All_payment_of_education, Students_payment_account
+from .models import Autoriz, Professor, Student, Subjects, Courses_of_Students, balance_topcoins_and_topgems, All_payment_of_education, Students_payment_account, image_student, image_professor, Add_HW_Professor, Information_about_HW_for_students
 
 @admin.register(Autoriz)
 class AutorizAdmin(admin.ModelAdmin):
@@ -43,24 +43,56 @@ class Courses_of_StudentsAdmin(admin.ModelAdmin):
 
 @admin.register(balance_topcoins_and_topgems)
 class balance_topcoins_and_topgemsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'topcoins', 'topgems')
-    list_display_links = ('id',)
-    search_fields = ('topcoins', 'topgems')
-    list_filter = ('topcoins', 'topgems')
+    list_display = ('id', 'topcoins', 'topgems', 'student')
+    list_display_links = ('id', 'student')
+    search_fields = ('topcoins', 'topgems', 'student')
+    list_filter = ('topcoins', 'topgems', 'student')
     ordering = ('id',)
 
 @admin.register(All_payment_of_education)
 class All_payment_of_educationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'type', 'amount', 'courses_of_Students', 'period_of_study', 'month_of_payment', 'year_of_payment')
-    list_display_links = ('id', 'type', 'amount', 'courses_of_Students', 'period_of_study', 'month_of_payment', 'year_of_payment')
-    search_fields = ('type', 'amount', 'courses_of_Students', 'period_of_study', 'month_of_payment', 'year_of_payment')
-    list_filter = ('type', 'amount', 'courses_of_Students', 'period_of_study', 'month_of_payment', 'year_of_payment')
+    list_display = ('id', 'type', 'amount', 'courses_of_Students', 'period_of_study', 'date')
+    list_display_links = ('id', 'type', 'amount', 'courses_of_Students', 'period_of_study', 'date')
+    search_fields = ('type', 'amount', 'courses_of_Students', 'period_of_study', 'date')
+    list_filter = ('type', 'amount', 'courses_of_Students', 'period_of_study', 'date')
     ordering = ('id',)
 
 @admin.register(Students_payment_account)
 class Students_payment_accountAdmin(admin.ModelAdmin):
-    list_display = ('id', 'student', 'all_payment_of_education', 'month_of_payment', 'year_of_payment')
+    list_display = ('id', 'student', 'all_payment_of_education', 'date')
     list_display_links = ('id', 'student')
-    search_fields = ('student', 'all_payment_of_education', 'month_of_payment', 'year_of_payment')
-    list_filter = ('student', 'all_payment_of_education', 'month_of_payment', 'year_of_payment')
+    search_fields = ('student', 'all_payment_of_education', 'date')
+    list_filter = ('student', 'all_payment_of_education', 'date')
+    ordering = ('id',)
+
+@admin.register(image_student)
+class image_studentAdmin(admin.ModelAdmin):
+    list_display = ('id', 'photo', 'student')
+    list_display_links = ('id', 'student')
+    search_fields = ('student',)
+    list_filter = ('student',)
+    ordering = ('id',)
+
+@admin.register(image_professor)
+class image_professorAdmin(admin.ModelAdmin):
+    list_display = ('id', 'photo', 'professor')
+    list_display_links = ('id', 'professor')
+    search_fields = ('professor',)
+    list_filter = ('professor',)
+    ordering = ('id',)
+
+@admin.register(Add_HW_Professor)
+class Add_HW_ProfessorAdmin(admin.ModelAdmin):
+    list_display = ('id', 'file', 'comment', 'date_start', 'date_final')
+    list_display_links = ('id', 'comment', 'date_start', 'date_final')
+    search_fields = ('comment', 'date_start', 'date_final')
+    list_filter = ('comment', 'date_start', 'date_final')
+    ordering = ('id',)
+
+@admin.register(Information_about_HW_for_students)
+class Information_about_HW_for_studentsAdmin(admin.ModelAdmin):
+    list_display = ('id', 'issued', 'professor', 'add_hw_professor')
+    list_display_links = ('id', 'professor', 'add_hw_professor')
+    search_fields = ('issued', 'professor', 'add_hw_professor')
+    list_filter = ('professor', 'add_hw_professor')
     ordering = ('id',)
