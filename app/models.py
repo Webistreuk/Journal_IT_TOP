@@ -29,7 +29,7 @@ class Professor(models.Model):
     name = models.CharField(max_length = 30, blank = False, null = False, verbose_name = 'Имя профессора')
     surname = models.CharField(max_length = 30, blank = False, null = False, verbose_name = 'Фамилия профессора')
     patronymic = models.CharField(max_length = 40, blank = False, null = False, verbose_name = 'Отчество профессора')
-    leads_the_subject = models.ForeignKey(Subjects, on_delete = models.CASCADE, verbose_name = 'Ведет предмет:')
+    leads_the_subject = models.ForeignKey(Subjects, on_delete = models.CASCADE, verbose_name = 'Ведет предмет')
     autoriz = models.ForeignKey(Autoriz, on_delete = models.CASCADE, verbose_name = 'Пользователь')
 
     class Meta:
@@ -281,3 +281,17 @@ class Appeals_to_the_educational_unit(models.Model):
 
     def __str__(self):
         return f'Вопрос от студента {self.student}'
+    
+class Shop_add_products(models.Model):
+    name_product = models.CharField(max_length = 50, blank = False, null = False, verbose_name = 'Название продукта')
+    product_quantity = models.PositiveIntegerField(blank = False, null = False, verbose_name = 'Количество')
+    price_product_topcoins = models.PositiveSmallIntegerField(blank = False, null = False, verbose_name = 'Цена в топкоинах')
+    price_product_topgems = models.PositiveSmallIntegerField(blank = False, null = False, verbose_name = 'Цена в топгемах')
+
+    class Meta:
+        db_table = 'List_of_shop'
+        verbose_name = 'Магазин'
+        verbose_name_plural = 'Магазин'
+
+    def __str__(self):
+        return f'Товар {self.name_product}'
