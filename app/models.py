@@ -176,7 +176,7 @@ class All_payment_of_education(models.Model):
         verbose_name_plural = 'Общие настройки оплаты обучения'
 
     def __str__(self):
-        return f'Курс: {self.courses_of_Students}, Тип обучения: {self.type}'
+        return f'Курс: {self.courses_of_Students}, Тип обучения: {self.type_payment}'
     
 # Модель состояния оплаты для платежей студента.
 class Status_of_payment_of_education(models.Model):
@@ -201,6 +201,11 @@ class Students_payment_account(models.Model):
         db_table = 'List_of_students_payment_account'
         verbose_name = 'Оплата обучения'
         verbose_name_plural = 'Оплаты обучений'
+
+    def save(self, *args, **kwargs):
+        if self.all_payment_of_education:
+            self.date = self.all_payment_of_education.date
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'Настройка оплаты обучения у {self.student}'
@@ -230,7 +235,7 @@ class image_professor(models.Model):
         return f'Фотография преподавателя {self.professor}'
 
 class Review_of_the_Academy(models.Model):
-    student = models.ForeignKey(Student, on_delete = models.CASCADE)
+    student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
     confirmation_review = models.FileField(blank = False, null = False, verbose_name = 'Загрузить картинку')
     google = 'google'
     yandex = 'yandex'
@@ -242,18 +247,18 @@ class Review_of_the_Academy(models.Model):
         (zoon, 'Зун'),
     ]
 
-    type_a_social_network = models.CharField(choice = CHOICE_A_SOCIAL_NETWORK, blank = False, bull = False)
+    type_a_social_network = models.CharField(choices = CHOICE_A_SOCIAL_NETWORK, max_length = 6, verbose_name = 'Выберите тип социальной сети')
 
     class Meta:
         db_table = 'List_of_review_of_the_academy'
-        verbose_name = 'Загрузить картинку'
-        verbose_name_plural = 'Загрузить картинку'
+        verbose_name = 'Загрузка скриншота для подтверждения отзыва'
+        verbose_name_plural = 'Загрузить скриншот для подтверждения отзыва'
 
     def __str__(self):
         return f'Отзыв об Академии студентом {self.student}'
 
 class Appeals_to_the_educational_unit(models.Model):
-    student = models.ForeignKey(Student, on_delete = models.CASCADE)
+    student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
     proposal = 'proposal'
     question_in_the_study_section = 'question_in_the_study_section'
     question_about_payment = 'question_about_payment'
@@ -266,7 +271,8 @@ class Appeals_to_the_educational_unit(models.Model):
         (question_about_homework, 'Вопрос по домашнему заданию')
     ]
     
-    Select_the_signal_type = models.CharField(choice = CHOICE_A_SOCIAL_NETWORK, blank = False, null = False)
+    Select_the_signal_type = models.CharField(choices = CHOICE_THE_SIGNAL_TYPE, max_length = 30, verbose_name = 'Выберите тип сигнала')
+    question = models.TextField(max_length = 500, blank = False, null = False, verbose_name = 'Вопрос студента')
 
     class Meta:
         db_table = 'List_of_appeals_to_the_educatinal_unit'

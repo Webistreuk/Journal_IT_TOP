@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Autoriz, Professor, Student, Subjects, Courses_of_Students, balance_topcoins_and_topgems, All_payment_of_education, Students_payment_account, image_student, image_professor, Add_HW_Professor_to_course, Review_of_the_Academy
+from .models import Autoriz, Professor, Student, Subjects, Courses_of_Students, balance_topcoins_and_topgems, All_payment_of_education, Students_payment_account, image_student, image_professor, Add_HW_Professor_to_course, Review_of_the_Academy, Appeals_to_the_educational_unit
 
 @admin.register(Autoriz)
 class AutorizAdmin(admin.ModelAdmin):
@@ -64,6 +64,7 @@ class Students_payment_accountAdmin(admin.ModelAdmin):
     search_fields = ('student', 'all_payment_of_education', 'date')
     list_filter = ('student', 'all_payment_of_education', 'date')
     ordering = ('id',)
+    readonly_fields = ('date',)
 
 @admin.register(image_student)
 class image_studentAdmin(admin.ModelAdmin):
@@ -89,18 +90,26 @@ class Add_HW_Professor_to_courseAdmin(admin.ModelAdmin):
     list_filter = ('comment', 'course', 'date_start', 'date_final')
     ordering = ('id',)
 
-# @admin.register(Information_about_HW_for_students)
+# @admin.register(Inform'ation_about_HW_for_students)
 # class Information_about_HW_for_studentsAdmin(admin.ModelAdmin):
 #     list_display = ('id', 'issued', 'professor', 'add_hw_professor')
 #     list_display_links = ('id', 'professor', 'add_hw_professor')
 #     search_fields = ('issued', 'professor', 'add_hw_professor')
 #     list_filter = ('professor', 'add_hw_professor')
-#     ordering = ('id',)
+#     ordering = ('id,)
 
 @admin.register(Review_of_the_Academy)
 class Review_of_the_AcademyAdmin(admin.ModelAdmin):
-    list_display = ('id', 'confirmation_review', 'type_a_social_network')
-    list_display_links = ('id', 'confirmation_review', 'type_a_social_network')
-    search_fields = ('confirmation_review', 'type_a_social_network')
-    list_filter = ('confirmation_review', 'type_a_social_network')
+    list_display = ('id', 'student','confirmation_review', 'type_a_social_network')
+    list_display_links = ('id', 'student', 'confirmation_review', 'type_a_social_network')
+    search_fields = ('student', 'confirmation_review', 'type_a_social_network')
+    list_filter = ('student', 'confirmation_review', 'type_a_social_network')
+    ordering = ('id',)
+
+@admin.register(Appeals_to_the_educational_unit)
+class Appeals_to_the_educational_unitAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'question', 'Select_the_signal_type')
+    list_display_links = ('id', 'student', 'question', 'Select_the_signal_type')
+    search_fields = ('student', 'question', 'Select_the_signal_type')
+    list_filter = ('student', 'question', 'Select_the_signal_type')
     ordering = ('id',)
