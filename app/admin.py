@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Autoriz, Professor, Student, Subjects, Courses_of_Students, balance_topcoins_and_topgems, All_payment_of_education, Students_payment_account, image_student, image_professor, Add_HW_Professor, Information_about_HW_for_students
+from .models import Autoriz, Professor, Student, Subjects, Courses_of_Students, balance_topcoins_and_topgems, All_payment_of_education, Students_payment_account, image_student, image_professor, Add_HW_Professor_to_course
 
 @admin.register(Autoriz)
 class AutorizAdmin(admin.ModelAdmin):
@@ -81,18 +81,18 @@ class image_professorAdmin(admin.ModelAdmin):
     list_filter = ('professor',)
     ordering = ('id',)
 
-@admin.register(Add_HW_Professor)
-class Add_HW_ProfessorAdmin(admin.ModelAdmin):
-    list_display = ('id', 'file', 'comment', 'date_start', 'date_final')
-    list_display_links = ('id', 'comment', 'date_start', 'date_final')
-    search_fields = ('comment', 'date_start', 'date_final')
-    list_filter = ('comment', 'date_start', 'date_final')
+@admin.register(Add_HW_Professor_to_course)
+class Add_HW_Professor_to_courseAdmin(admin.ModelAdmin):
+    list_display = ('id', 'professor', 'course', 'file', 'comment', 'date_start', 'date_final')
+    list_display_links = ('id', 'course', 'comment', 'date_start', 'date_final')
+    search_fields = ('comment', 'course', 'date_start', 'date_final')
+    list_filter = ('comment', 'course', 'date_start', 'date_final')
     ordering = ('id',)
 
-@admin.register(Information_about_HW_for_students)
-class Information_about_HW_for_studentsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'issued', 'professor', 'add_hw_professor')
-    list_display_links = ('id', 'professor', 'add_hw_professor')
-    search_fields = ('issued', 'professor', 'add_hw_professor')
-    list_filter = ('professor', 'add_hw_professor')
-    ordering = ('id',)
+# @admin.register(Information_about_HW_for_students)
+# class Information_about_HW_for_studentsAdmin(admin.ModelAdmin):
+#     list_display = ('id', 'issued', 'professor', 'add_hw_professor')
+#     list_display_links = ('id', 'professor', 'add_hw_professor')
+#     search_fields = ('issued', 'professor', 'add_hw_professor')
+#     list_filter = ('professor', 'add_hw_professor')
+#     ordering = ('id',)

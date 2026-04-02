@@ -115,26 +115,30 @@ class Attendance(models.Model):
     def __str__(self):
         return self.type
 
-class Add_HW_Professor(models.Model):
-    file = models.FileField(upload_to = 'static/image/homeworks_for_students/', null = False, blank = False, verbose_name = 'Файл домашнего задания студентам')
-    comment = models.TextField(max_length = 500, verbose_name = 'Комментарий домашнему заданию')
+class Add_HW_Professor_to_course(models.Model):
+    course = models.ForeignKey(Courses_of_Students, on_delete = models.CASCADE, verbose_name = 'Домашнее задание для курса')
+    file = models.FileField(unique = True, upload_to = 'static/image/homeworks_for_students/', null = False, blank = False, verbose_name = 'Файл домашнего задания студентам')
+    comment = models.TextField(max_length = 500, verbose_name = 'Комментарий студентам к домашнему заданию')
     date_start = models.DateField(auto_now_add = True, help_text = 'Дата создания домашнего задания.', verbose_name = 'Дата создания д/з')
     date_final = models.DateField(help_text = 'Выберите дату конечной сдачи домашнего задания студентам.', verbose_name = 'Конечная дата выполнения')
+    professor = models.ForeignKey(Professor, on_delete = models.CASCADE, verbose_name = 'Задал-(а) домашнее задание')
 
     class Meta:
-        db_table = 'List_of_add_hw_professor'
-        verbose_name = 'Домашнее задание для студентов курса'
-        verbose_name_plural = 'Домашнее задания для студента'
+        db_table = 'List_of_add_hw_professor_to_course'
+        verbose_name = 'Домашнее задание для курса'
+        verbose_name_plural = 'Домашнее задание для курса'
 
     def __str__(self):
-        return f'Домашнее задание студентов курса {self.}'
+        return f'Домашнее задание от {self.professor} студентам курса {self.course}'
 
-class Information_about_HW_for_students(models.Model):
-    issued = models.DateField(auto_now_add = True, verbose_name = 'Дата выдачи домашнего задания')
-    professor = models.ForeignKey(Professor, on_delete = models.CASCADE, verbose_name = 'Преподаватель')
-    add_hw_professor = models.ForeignKey(Add_HW_Professor, on_delete = models.CASCADE, verbose_name = 'Добавить домашку')
+# class Information_about_HW_for_students(models.Model):
+#     issued = models.DateField(auto_now_add = True, verbose_name = 'Дата выдачи домашнего задания')
+#     professor = models.ForeignKey(Professor, on_delete = models.CASCADE, verbose_name = 'Преподаватель')
+#     add_hw_professor_to_course = models.ForeignKey(Add_HW_Professor_to_course, on_delete = models.CASCADE, verbose_name = 'Добавить домашку')
 
-    
+#     class Meta:
+#         db_table = 'List_of_information_about_hw_for_students'
+#         verbose_name = 'Комментарий'
 
 class balance_topcoins_and_topgems(models.Model):
     topcoins = models.PositiveSmallIntegerField(blank = False, null = False, default = None, verbose_name = 'Топкоины')
@@ -157,34 +161,6 @@ class All_payment_of_education(models.Model):
     CHOICE_YEAR_OR_MONTH = [
         (year, 'Год'),
         (month, 'Месяц')
-    ]
-    
-    CHOICE_MONTH = [
-        (1, 'Январь'),
-        (2, 'Февраль'),
-        (3, 'Март'),
-        (4, 'Апрель'),
-        (5, 'Май'),
-        (6, 'Июнь'),
-        (7, 'Июль'),
-        (8, 'Август'),
-        (9, 'Сентябрь'),
-        (10, 'Октябрь'),
-        (11, 'Ноябрь'),
-        (12, 'Декабрь'),
-    ]
-
-    CHOICE_YEAR = [
-        (1, '2026'),
-        (2, '2027'),
-        (3, '2028'),
-        (4, '2029'),
-        (5, '2030'),
-        (6, '2031'),
-        (7, '2032'),
-        (8, '2033'),
-        (9, '2034'),
-        (10, '2035'),
     ]
 
     type = models.CharField(choices = CHOICE_YEAR_OR_MONTH, max_length = 5, default = month, verbose_name = 'Выберите тип оплаты обучения')
@@ -217,35 +193,7 @@ class Status_of_payment_of_education(models.Model):
 # Модель для подкрепления созданного счета к аккаунту студента.
 class Students_payment_account(models.Model):
     student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
-    all_payment_of_education = models.ForeignKey(All_payment_of_education, on_delete = models.CASCADE, verbose_name = 'Обучается в:')
-    
-    CHOICE_MONTH = [
-        (1, 'Январь'),
-        (2, 'Февраль'),
-        (3, 'Март'),
-        (4, 'Апрель'),
-        (5, 'Май'),
-        (6, 'Июнь'),
-        (7, 'Июль'),
-        (8, 'Август'),
-        (9, 'Сентябрь'),
-        (10, 'Октябрь'),
-        (11, 'Ноябрь'),
-        (12, 'Декабрь'),
-    ]
-
-    CHOICE_YEAR = [
-        (1, '2026'),
-        (2, '2027'),
-        (3, '2028'),
-        (4, '2029'),
-        (5, '2030'),
-        (6, '2031'),
-        (7, '2032'),
-        (8, '2033'),
-        (9, '2034'),
-        (10, '2035'),
-    ]
+    all_payment_of_education = models.ForeignKey(All_payment_of_education, on_delete = models.CASCADE, verbose_name = 'Обучается в')
 
     date = models.DateField(blank = False, null = False, verbose_name = 'Начало обучения')
 
