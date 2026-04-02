@@ -163,7 +163,7 @@ class All_payment_of_education(models.Model):
         (month, 'Месяц')
     ]
 
-    type = models.CharField(choices = CHOICE_YEAR_OR_MONTH, max_length = 5, default = month, verbose_name = 'Выберите тип оплаты обучения')
+    type_payment = models.CharField(choices = CHOICE_YEAR_OR_MONTH, max_length = 5, default = month, verbose_name = 'Выберите тип оплаты обучения')
     amount = models.PositiveIntegerField(blank = False, null = False, default = None, verbose_name = 'Стоимость')
     courses_of_Students = models.ForeignKey(Courses_of_Students, on_delete = models.CASCADE, verbose_name = 'Курс')
     period_of_study = models.IntegerField(blank = False, null = False, default = 40, verbose_name = 'Период обучения(напишите в месяцах)')
@@ -228,3 +228,50 @@ class image_professor(models.Model):
 
     def __str__(self):
         return f'Фотография преподавателя {self.professor}'
+
+class Review_of_the_Academy(models.Model):
+    student = models.ForeignKey(Student, on_delete = models.CASCADE)
+    confirmation_review = models.FileField(blank = False, null = False, verbose_name = 'Загрузить картинку')
+    google = 'google'
+    yandex = 'yandex'
+    zoon = 'zoon'
+
+    CHOICE_A_SOCIAL_NETWORK = [
+        (google, 'Гугл'),
+        (yandex, 'Яндекс'),
+        (zoon, 'Зун'),
+    ]
+
+    type_a_social_network = models.CharField(choice = CHOICE_A_SOCIAL_NETWORK, blank = False, bull = False)
+
+    class Meta:
+        db_table = 'List_of_review_of_the_academy'
+        verbose_name = 'Загрузить картинку'
+        verbose_name_plural = 'Загрузить картинку'
+
+    def __str__(self):
+        return f'Отзыв об Академии студентом {self.student}'
+
+class Appeals_to_the_educational_unit(models.Model):
+    student = models.ForeignKey(Student, on_delete = models.CASCADE)
+    proposal = 'proposal'
+    question_in_the_study_section = 'question_in_the_study_section'
+    question_about_payment = 'question_about_payment'
+    question_about_homework = 'question_about_homework'
+    
+    CHOICE_THE_SIGNAL_TYPE = [
+        (proposal, 'Предложение'),
+        (question_in_the_study_section, 'Вопрос к учебной части'),
+        (question_about_payment, 'Вопрос по оплате'),
+        (question_about_homework, 'Вопрос по домашнему заданию')
+    ]
+    
+    Select_the_signal_type = models.CharField(choice = CHOICE_A_SOCIAL_NETWORK, blank = False, null = False)
+
+    class Meta:
+        db_table = 'List_of_appeals_to_the_educatinal_unit'
+        verbose_name = 'Вопрос к учебной части'
+        verbose_name_plural = 'Вопросы к учебной части'
+
+    def __str__(self):
+        return f'Вопрос от студента {self.student}'
