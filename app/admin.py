@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Autoriz, Professor, Student, Subjects, Courses_of_Students, balance_topcoins_and_topgems, All_payment_of_education, Students_payment_account, image_student, image_professor, Add_HW_Professor_to_course, Review_of_the_Academy, Appeals_to_the_educational_unit, Shop_add_products
+from .models import Autoriz, Professor, Student, Subjects, Courses_of_Students, balance_topcoins_and_topgems, All_payment_of_education, Students_payment_account, image_student, image_professor, Add_HW_Professor_to_course, Review_of_the_Academy, Appeals_to_the_educational_unit, Shop_add_products, Topmoney_student
 
 @admin.register(Autoriz)
 class AutorizAdmin(admin.ModelAdmin):
@@ -121,3 +121,12 @@ class Shop_add_productsAdmin(admin.ModelAdmin):
     search_fields = ('name_product', 'product_quantity', 'price_product_topcoins', 'price_product_topgems')
     list_filter = ('name_product', 'product_quantity', 'price_product_topcoins', 'price_product_topgems')
     ordering = ('id',)
+
+@admin.register(Topmoney_student)
+class Topmoney_studentAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'topmoney', 'balance_student')
+    list_display_links = ('id', 'student')
+    search_fields = ('student', 'topmoney', 'balance_student')
+    list_filter = ('student', 'topmoney', 'balance_student')
+    ordering = ('id',)
+    readonly_fields = ('topmoney',)

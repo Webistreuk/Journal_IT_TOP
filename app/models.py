@@ -295,3 +295,21 @@ class Shop_add_products(models.Model):
 
     def __str__(self):
         return f'Товар {self.name_product}'
+
+class Topmoney_student(models.Model):
+    topmoney = models.PositiveSmallIntegerField(blank = False, null = False, verbose_name = 'Топмани')
+    student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
+    balance_student = models.ForeignKey(balance_topcoins_and_topgems, on_delete = models.CASCADE, verbose_name = 'Баланс')
+
+    class Meta:
+        db_table = 'List_of_topmoney_student'
+        verbose_name = 'Топмани студента'
+        verbose_name_plural = 'Топмани студента'
+
+    def save(self, *args, **kwargs):
+        if self.balance_student:
+            self.topmoney = self.balance_student.topcoins + self.balance_student.topgems
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f'Топмани студента {self.student}'
