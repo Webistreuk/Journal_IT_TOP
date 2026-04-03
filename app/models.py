@@ -284,6 +284,7 @@ class Appeals_to_the_educational_unit(models.Model):
     
 class Shop_add_products(models.Model):
     name_product = models.CharField(max_length = 50, blank = False, null = False, verbose_name = 'Название продукта')
+    photo_product = models.FileField(blank = False, null = False, verbose_name = 'Фотография продукта')
     product_quantity = models.PositiveIntegerField(blank = False, null = False, verbose_name = 'Количество')
     price_product_topcoins = models.PositiveSmallIntegerField(blank = False, null = False, verbose_name = 'Цена в топкоинах')
     price_product_topgems = models.PositiveSmallIntegerField(blank = False, null = False, verbose_name = 'Цена в топгемах')
@@ -313,3 +314,16 @@ class Topmoney_student(models.Model):
 
     def __str__(self):
         return f'Топмани студента {self.student}'
+
+class Complaint_to_the_CEO(models.Model):
+    student = models.ForeignKey(Student, on_delete = models.CASCADE)
+    claim = models.CharField(max_length = 500, blank = False, null = False)
+    date = models.DateField(auto_now_add = True)
+
+    class Meta:
+        db_table = 'List_of_complaint_to_the_CEO'
+        verbose_name = 'Жалоба генеральному директору'
+        verbose_name_plural = 'Жалоба генеральному директору'
+
+    def __str__(self):
+        return f'Жалоба студента {self.student} генеральному директору.'

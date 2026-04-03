@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Autoriz, Professor, Student, Subjects, Courses_of_Students, balance_topcoins_and_topgems, All_payment_of_education, Students_payment_account, image_student, image_professor, Add_HW_Professor_to_course, Review_of_the_Academy, Appeals_to_the_educational_unit, Shop_add_products, Topmoney_student
+from .models import Autoriz, Professor, Student, Subjects, Courses_of_Students, balance_topcoins_and_topgems, All_payment_of_education, Students_payment_account, image_student, image_professor, Add_HW_Professor_to_course, Review_of_the_Academy, Appeals_to_the_educational_unit, Shop_add_products, Topmoney_student, Complaint_to_the_CEO
 
 @admin.register(Autoriz)
 class AutorizAdmin(admin.ModelAdmin):
@@ -116,9 +116,9 @@ class Appeals_to_the_educational_unitAdmin(admin.ModelAdmin):
 
 @admin.register(Shop_add_products)
 class Shop_add_productsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name_product', 'product_quantity', 'price_product_topcoins', 'price_product_topgems')
+    list_display = ('id', 'name_product', 'product_quantity', 'price_product_topcoins', 'price_product_topgems', 'photo_product')
     list_display_links = ('id', 'name_product')
-    search_fields = ('name_product', 'product_quantity', 'price_product_topcoins', 'price_product_topgems')
+    search_fields = ('name_product', 'product_quantity', 'price_product_topcoins', 'price_product_topgems', 'photo_product')
     list_filter = ('name_product', 'product_quantity', 'price_product_topcoins', 'price_product_topgems')
     ordering = ('id',)
 
@@ -130,3 +130,12 @@ class Topmoney_studentAdmin(admin.ModelAdmin):
     list_filter = ('student', 'topmoney', 'balance_student')
     ordering = ('id',)
     readonly_fields = ('topmoney',)
+
+@admin.register(Complaint_to_the_CEO)
+class Complaint_to_the_CEOAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'claim', 'date')
+    list_display_links = ('id', 'student')
+    search_fields = ('student', 'claim', 'date')
+    list_filter = ('student', 'claim', 'date')
+    ordering = ('id',)
+    readonly_fields = ('date',)
