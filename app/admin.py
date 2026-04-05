@@ -1,16 +1,17 @@
 from django.contrib import admin
 from .models import (
-    Autoriz, Professor, Student, Subjects, Courses_of_Students, 
+    Autoriz, Professor, Student, Subjects, Group, Course, Direction, AcademicYear,
     balance_topcoins_and_topgems, All_payment_of_education, 
     Students_payment_account, image_student, image_professor, 
     Add_HW_Professor_to_course, Review_of_the_Academy, 
     Appeals_to_the_educational_unit, Shop_add_products, 
-    Topmoney_student, Complaint_to_the_CEO, Schedule,
-    First_pair, Second_pair, Third_pair, Fourth_pair, 
-    Fifth_pair, Sixth_pair, Seventh_pair,
-    Mondays_schedule, Tuesdays_schedule, Wednesdays_schedule,
-    Thursdays_schedule, Fridays_schedule, Saturdays_schedule, 
-    Sundays_schedule
+    Topmoney_student, Complaint_to_the_CEO, Schedule, Estimation,
+    Semester, Vacation, LessonType, Pair, DailySchedule,
+    ScheduleReplacement, Attendance, Exam, ExamSession, ScheduledExam, Announcement,
+    LeaderboardEntry, StudentStats, Reward, UserReward,
+    PaymentInfo, Ranking, EducationalMaterial, PersonalAccount,
+    Debtor, Scholarship, AcademicDebt, GraduationWork, Internship,
+    Event, Notification, Poll, PollOption, PollVote, Chat, Message
 )
 
 @admin.register(Autoriz)
@@ -31,10 +32,10 @@ class ProfessorAdmin(admin.ModelAdmin):
 
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'surname', 'patronymic', 'courses_of_students')
+    list_display = ('id', 'name', 'surname', 'patronymic', 'group')
     list_display_links = ('id', 'name', 'surname')
     search_fields = ('name', 'surname', 'patronymic')
-    list_filter = ('name', 'courses_of_students')
+    list_filter = ('name', 'group')
     ordering = ('id',)
 
 @admin.register(Subjects)
@@ -45,13 +46,35 @@ class SubjectsAdmin(admin.ModelAdmin):
     list_filter = ('name_subject',)
     ordering = ('id',)
 
-@admin.register(Courses_of_Students)
-class Courses_of_StudentsAdmin(admin.ModelAdmin):
-    list_display = ('id', 'course')
-    list_display_links = ('id', 'course')
-    search_fields = ('course',)
-    list_filter = ('course',)
-    ordering = ('id',)
+@admin.register(Direction)
+class DirectionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'code', 'name')
+    list_display_links = ('id', 'code')
+    search_fields = ('code', 'name')
+    ordering = ('code',)
+
+@admin.register(Course)
+class CourseAdmin(admin.ModelAdmin):
+    list_display = ('id', 'number')
+    list_display_links = ('id', 'number')
+    ordering = ('number',)
+
+@admin.register(Group)
+class GroupAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'course', 'direction', 'academic_year')
+    list_display_links = ('id', 'name')
+    search_fields = ('name',)
+    list_filter = ('course', 'direction', 'academic_year')
+    ordering = ('course', 'direction', 'name')
+
+@admin.register(AcademicYear)
+class AcademicYearAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'start_date', 'end_date', 'is_current')
+    list_display_links = ('id', 'name')
+    search_fields = ('name',)
+    list_filter = ('is_current',)
+    ordering = ('-start_date',)
+    list_editable = ('is_current',)
 
 @admin.register(balance_topcoins_and_topgems)
 class balance_topcoins_and_topgemsAdmin(admin.ModelAdmin):
@@ -63,17 +86,17 @@ class balance_topcoins_and_topgemsAdmin(admin.ModelAdmin):
 
 @admin.register(All_payment_of_education)
 class All_payment_of_educationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'type_payment', 'amount', 'courses_of_Students', 'period_of_study', 'date')
+    list_display = ('id', 'type_payment', 'amount', 'group', 'period_of_study', 'date')
     list_display_links = ('id', 'type_payment')
-    search_fields = ('type_payment', 'amount', 'courses_of_Students__course')
-    list_filter = ('type_payment', 'courses_of_Students')
+    search_fields = ('type_payment', 'amount', 'group__name')
+    list_filter = ('type_payment', 'group')
     ordering = ('id',)
 
 @admin.register(Students_payment_account)
 class Students_payment_accountAdmin(admin.ModelAdmin):
     list_display = ('id', 'student', 'all_payment_of_education', 'date')
     list_display_links = ('id', 'student')
-    search_fields = ('student__name', 'student__surname', 'all_payment_of_education__courses_of_Students__course')
+    search_fields = ('student__name', 'student__surname', 'all_payment_of_education__group__name')
     list_filter = ('all_payment_of_education',)
     ordering = ('id',)
     readonly_fields = ('date',)
@@ -96,10 +119,10 @@ class image_professorAdmin(admin.ModelAdmin):
 
 @admin.register(Add_HW_Professor_to_course)
 class Add_HW_Professor_to_courseAdmin(admin.ModelAdmin):
-    list_display = ('id', 'professor', 'course', 'comment', 'date_start', 'date_final')
-    list_display_links = ('id', 'course')
-    search_fields = ('comment', 'course__course', 'professor__name')
-    list_filter = ('course', 'date_start', 'date_final')
+    list_display = ('id', 'professor', 'group', 'subject', 'comment', 'date_start', 'date_final')
+    list_display_links = ('id', 'group')
+    search_fields = ('comment', 'group__name', 'professor__name', 'subject__name_subject')
+    list_filter = ('group', 'subject', 'date_start', 'date_final')
     ordering = ('-date_start',)
 
 @admin.register(Review_of_the_Academy)
@@ -144,173 +167,271 @@ class Complaint_to_the_CEOAdmin(admin.ModelAdmin):
     ordering = ('-date',)
     readonly_fields = ('date',)
 
+@admin.register(Estimation)
+class EstimationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'subject', 'type_estimation', 'date')
+    list_display_links = ('id', 'student')
+    search_fields = ('student__name', 'student__surname', 'subject__name_subject')
+    list_filter = ('type_estimation', 'date')
+    ordering = ('-date',)
+
+@admin.register(LessonType)
+class LessonTypeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'type')
+    list_display_links = ('id', 'name')
+    search_fields = ('name',)
+    list_filter = ('type',)
+    ordering = ('name',)
+
+@admin.register(Pair)
+class PairAdmin(admin.ModelAdmin):
+    list_display = ('id', 'get_pair_number_display', 'subject', 'professor', 'classroom', 'lesson_type')
+    list_display_links = ('id',)
+    search_fields = ('subject__name_subject', 'professor__surname')
+    list_filter = ('pair_number', 'lesson_type', 'classroom')
+    ordering = ('pair_number',)
+
+@admin.register(DailySchedule)
+class DailyScheduleAdmin(admin.ModelAdmin):
+    list_display = ('id', 'get_weekday_display', 'pair_order', 'group', 'pair')
+    list_display_links = ('id',)
+    search_fields = ('group__name',)
+    list_filter = ('weekday', 'group')
+    ordering = ('weekday', 'pair_order')
+
+@admin.register(Semester)
+class SemesterAdmin(admin.ModelAdmin):
+    list_display = ('id', 'get_semester_type_display', 'academic_year', 'start_date', 'end_date', 'is_active')
+    list_display_links = ('id',)
+    search_fields = ('academic_year__name',)
+    list_filter = ('semester_type', 'academic_year', 'is_active')
+    ordering = ('-start_date',)
+    list_editable = ('is_active',)
+
+@admin.register(Vacation)
+class VacationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'get_vacation_type_display', 'academic_year', 'start_date', 'end_date', 'semester', 'is_active')
+    list_display_links = ('id',)
+    search_fields = ('academic_year__name', 'description')
+    list_filter = ('vacation_type', 'academic_year', 'is_active', 'semester')
+    ordering = ('-start_date',)
+    list_editable = ('is_active',)
+
 @admin.register(Schedule)
 class ScheduleAdmin(admin.ModelAdmin):
-    list_display = ('id', 'course', 'week_start_date', 'week_end_date', 'is_active', 'is_current_week', 'get_pairs_count')
-    list_display_links = ('id', 'course')
-    search_fields = ('course__course', 'note')
-    list_filter = ('is_active', 'is_current_week', 'course')
+    list_display = ('id', 'group', 'semester', 'week_start_date', 'week_end_date', 'is_active', 'is_current_week')
+    list_display_links = ('id', 'group')
+    search_fields = ('group__name', 'note', 'semester__academic_year__name')
+    list_filter = ('is_active', 'is_current_week', 'group', 'semester')
     ordering = ('-week_start_date',)
     readonly_fields = ('created_at', 'updated_at')
+
+@admin.register(ScheduleReplacement)
+class ScheduleReplacementAdmin(admin.ModelAdmin):
+    list_display = ('id', 'schedule', 'original_date', 'new_date', 'reason', 'created_by')
+    list_display_links = ('id',)
+    search_fields = ('reason',)
+    list_filter = ('original_date', 'new_date')
+    ordering = ('-created_at',)
+
+@admin.register(Attendance)
+class AttendanceAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'type', 'data_created', 'schedule', 'pair')
+    list_display_links = ('id', 'student')
+    search_fields = ('student__name', 'student__surname')
+    list_filter = ('type', 'data_created')
+    ordering = ('-data_created',)
+
+@admin.register(Exam)
+class ExamAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'subject', 'grade', 'professor', 'exam_date', 'semester')
+    list_filter = ('grade', 'exam_date', 'subject', 'semester')
+    search_fields = ('student__surname', 'subject__name_subject', 'professor__surname')
+    ordering = ('-exam_date',)
+
+@admin.register(ExamSession)
+class ExamSessionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'semester', 'start_date', 'end_date', 'is_active')
+    list_filter = ('semester', 'is_active')
+    search_fields = ('name',)
+    ordering = ('-start_date',)
+    list_editable = ('is_active',)
+
+@admin.register(ScheduledExam)
+class ScheduledExamAdmin(admin.ModelAdmin):
+    list_display = ('id', 'exam_name', 'subject', 'preliminary_date', 'group', 'exam_session', 'created_by')
+    list_filter = ('preliminary_date', 'group', 'exam_session')
+    search_fields = ('exam_name', 'subject__name_subject')
+    ordering = ('-preliminary_date',)
+
+@admin.register(Announcement)
+class AnnouncementAdmin(admin.ModelAdmin):
+    list_display = ('id', 'title', 'date_added', 'is_active', 'is_for_all')
+    list_filter = ('date_added', 'is_active', 'is_for_all')
+    search_fields = ('title', 'description')
+    ordering = ('-date_added',)
+    list_editable = ('is_active',)
+    filter_horizontal = ('groups',)
+
+@admin.register(LeaderboardEntry)
+class LeaderboardEntryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'topmoney', 'group', 'semester', 'rank_in_group', 'rank_in_course', 'date')
+    list_filter = ('group', 'semester', 'date')
+    search_fields = ('student__surname', 'group__name')
+    ordering = ('-date', 'rank_in_group')
+    readonly_fields = ('topmoney', 'rank_in_group', 'rank_in_course', 'date')
+
+@admin.register(StudentStats)
+class StudentStatsAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'total_attendance_days', 'consecutive_days_attended', 'consecutive_days_on_time')
+    list_filter = ('student',)
+    search_fields = ('student__surname',)
+    readonly_fields = ('total_attendance_days', 'consecutive_days_attended', 'consecutive_days_on_time', 'last_attendance_date', 'topcoins_awarded_total', 'topgems_awarded_total')
+
+@admin.register(Reward)
+class RewardAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'reward_type', 'topcoins_award', 'topgems_award', 'is_active')
+    list_filter = ('reward_type', 'is_active')
+    search_fields = ('name',)
+
+@admin.register(UserReward)
+class UserRewardAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'reward', 'awarded_at', 'topcoins_given', 'topgems_given')
+    list_filter = ('awarded_at',)
+    search_fields = ('student__surname', 'reward__name')
+    readonly_fields = ('awarded_at',)
+
+@admin.register(PaymentInfo)
+class PaymentInfoAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'payment_account', 'amount_paid', 'payment_date', 'period_start', 'period_end', 'part_number', 'due_date')
+    list_filter = ('payment_date', 'due_date')
+    search_fields = ('student__surname', 'paid_by')
+    ordering = ('-payment_date',)
+
+@admin.register(Ranking)
+class RankingAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'semester', 'group_rank', 'course_rank', 'average_grade', 'date')
+    list_filter = ('semester', 'date')
+    search_fields = ('student__surname',)
+    ordering = ('-date', 'group_rank')
+    readonly_fields = ('date',)
+
+@admin.register(EducationalMaterial)
+class EducationalMaterialAdmin(admin.ModelAdmin):
+    list_display = ('id', 'title', 'professor', 'upload_date', 'is_public', 'subject')
+    list_filter = ('upload_date', 'is_public', 'subject')
+    search_fields = ('title', 'professor__surname')
+    filter_horizontal = ('groups',)
+
+@admin.register(PersonalAccount)
+class PersonalAccountAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'role', 'student_profile', 'professor_profile')
+    list_filter = ('role',)
+    search_fields = ('user__user', 'student_profile__surname', 'professor_profile__surname')
     fieldsets = (
-        ('Расписание по дням', {
-            'fields': ('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday')
+        ('Основное', {
+            'fields': ('user', 'role', 'student_profile', 'professor_profile')
         }),
-        ('Информация о расписании', {
-            'fields': ('course', 'week_start_date', 'week_end_date', 'is_active', 'is_current_week', 'note')
+        ('Документы студента', {
+            'fields': ('school_certificate', 'health_certificate')
         }),
-        ('Метаданные', {
-            'fields': ('created_by', 'created_at', 'updated_at')
+        ('Документы преподавателя', {
+            'fields': ('diploma', 'employment_contract')
+        }),
+        ('Документы учебной части', {
+            'fields': ('internal_documents',)
+        }),
+        ('Общие', {
+            'fields': ('additional_docs',)
         }),
     )
-    
-    def get_pairs_count(self, obj):
-        return obj.get_pairs_count()
-    get_pairs_count.short_description = 'Количество пар'
 
-@admin.register(First_pair)
-class FirstPairAdmin(admin.ModelAdmin):
-    list_display = ('id', 'get_pair_time_display', 'professor_surname', 'professor_name', 'professor_patronymic', 'subject', 'classroom_name')
-    list_display_links = ('id', 'professor_surname')
-    search_fields = ('professor_name', 'professor_surname', 'professor_patronymic', 'subject', 'classroom_name')
-    list_filter = ('type_pair', 'professor', 'classroom')
-    readonly_fields = ('professor_name', 'professor_surname', 'professor_patronymic', 'subject', 'classroom_name')
-    fields = ('type_pair', 'professor', 'classroom')
-    
-    def get_pair_time_display(self, obj):
-        return obj.get_type_pair_display()
-    get_pair_time_display.short_description = 'Время пары'
+@admin.register(Debtor)
+class DebtorAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'debt_amount', 'due_date', 'is_paid', 'notification_sent')
+    list_filter = ('is_paid', 'notification_sent', 'due_date')
+    search_fields = ('student__surname',)
+    ordering = ('due_date',)
+    list_editable = ('is_paid', 'notification_sent')
 
-@admin.register(Second_pair)
-class SecondPairAdmin(admin.ModelAdmin):
-    list_display = ('id', 'get_pair_time_display', 'professor_surname', 'professor_name', 'professor_patronymic', 'subject', 'classroom_name')
-    list_display_links = ('id', 'professor_surname')
-    search_fields = ('professor_name', 'professor_surname', 'professor_patronymic', 'subject', 'classroom_name')
-    list_filter = ('type_pair', 'professor', 'classroom')
-    readonly_fields = ('professor_name', 'professor_surname', 'professor_patronymic', 'subject', 'classroom_name')
-    fields = ('type_pair', 'professor', 'classroom')
-    
-    def get_pair_time_display(self, obj):
-        return obj.get_type_pair_display()
-    get_pair_time_display.short_description = 'Время пары'
+@admin.register(Scholarship)
+class ScholarshipAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'amount', 'month', 'is_paid')
+    list_filter = ('is_paid', 'month')
+    search_fields = ('student__surname',)
+    ordering = ('-month',)
+    list_editable = ('is_paid',)
 
-@admin.register(Third_pair)
-class ThirdPairAdmin(admin.ModelAdmin):
-    list_display = ('id', 'get_pair_time_display', 'professor_surname', 'professor_name', 'professor_patronymic', 'subject', 'classroom_name')
-    list_display_links = ('id', 'professor_surname')
-    search_fields = ('professor_name', 'professor_surname', 'professor_patronymic', 'subject', 'classroom_name')
-    list_filter = ('type_pair', 'professor', 'classroom')
-    readonly_fields = ('professor_name', 'professor_surname', 'professor_patronymic', 'subject', 'classroom_name')
-    fields = ('type_pair', 'professor', 'classroom')
-    
-    def get_pair_time_display(self, obj):
-        return obj.get_type_pair_display()
-    get_pair_time_display.short_description = 'Время пары'
+@admin.register(AcademicDebt)
+class AcademicDebtAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'subject', 'semester', 'exam_date', 'is_passed', 'retake_count')
+    list_filter = ('is_passed', 'semester', 'exam_date')
+    search_fields = ('student__surname', 'subject__name_subject')
+    ordering = ('exam_date',)
+    list_editable = ('is_passed',)
 
-@admin.register(Fourth_pair)
-class FourthPairAdmin(admin.ModelAdmin):
-    list_display = ('id', 'get_pair_time_display', 'professor_surname', 'professor_name', 'professor_patronymic', 'subject', 'classroom_name')
-    list_display_links = ('id', 'professor_surname')
-    search_fields = ('professor_name', 'professor_surname', 'professor_patronymic', 'subject', 'classroom_name')
-    list_filter = ('type_pair', 'professor', 'classroom')
-    readonly_fields = ('professor_name', 'professor_surname', 'professor_patronymic', 'subject', 'classroom_name')
-    fields = ('type_pair', 'professor', 'classroom')
-    
-    def get_pair_time_display(self, obj):
-        return obj.get_type_pair_display()
-    get_pair_time_display.short_description = 'Время пары'
+@admin.register(GraduationWork)
+class GraduationWorkAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'title', 'supervisor', 'defense_date', 'grade')
+    list_filter = ('defense_date', 'grade')
+    search_fields = ('student__surname', 'title', 'supervisor__surname')
+    ordering = ('-defense_date',)
 
-@admin.register(Fifth_pair)
-class FifthPairAdmin(admin.ModelAdmin):
-    list_display = ('id', 'get_pair_time_display', 'professor_surname', 'professor_name', 'professor_patronymic', 'subject', 'classroom_name')
-    list_display_links = ('id', 'professor_surname')
-    search_fields = ('professor_name', 'professor_surname', 'professor_patronymic', 'subject', 'classroom_name')
-    list_filter = ('type_pair', 'professor', 'classroom')
-    readonly_fields = ('professor_name', 'professor_surname', 'professor_patronymic', 'subject', 'classroom_name')
-    fields = ('type_pair', 'professor', 'classroom')
-    
-    def get_pair_time_display(self, obj):
-        return obj.get_type_pair_display()
-    get_pair_time_display.short_description = 'Время пары'
+@admin.register(Internship)
+class InternshipAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'internship_type', 'organization', 'start_date', 'end_date', 'grade')
+    list_filter = ('internship_type', 'start_date', 'end_date')
+    search_fields = ('student__surname', 'organization')
+    ordering = ('-start_date',)
 
-@admin.register(Sixth_pair)
-class SixthPairAdmin(admin.ModelAdmin):
-    list_display = ('id', 'get_pair_time_display', 'professor_surname', 'professor_name', 'professor_patronymic', 'subject', 'classroom_name')
-    list_display_links = ('id', 'professor_surname')
-    search_fields = ('professor_name', 'professor_surname', 'professor_patronymic', 'subject', 'classroom_name')
-    list_filter = ('type_pair', 'professor', 'classroom')
-    readonly_fields = ('professor_name', 'professor_surname', 'professor_patronymic', 'subject', 'classroom_name')
-    fields = ('type_pair', 'professor', 'classroom')
-    
-    def get_pair_time_display(self, obj):
-        return obj.get_type_pair_display()
-    get_pair_time_display.short_description = 'Время пары'
+@admin.register(Event)
+class EventAdmin(admin.ModelAdmin):
+    list_display = ('id', 'title', 'event_type', 'start_date', 'end_date', 'location', 'is_for_all')
+    list_filter = ('event_type', 'start_date', 'is_for_all')
+    search_fields = ('title', 'description', 'location')
+    ordering = ('start_date',)
+    filter_horizontal = ('groups',)
 
-@admin.register(Seventh_pair)
-class SeventhPairAdmin(admin.ModelAdmin):
-    list_display = ('id', 'get_pair_time_display', 'professor_surname', 'professor_name', 'professor_patronymic', 'subject', 'classroom_name')
-    list_display_links = ('id', 'professor_surname')
-    search_fields = ('professor_name', 'professor_surname', 'professor_patronymic', 'subject', 'classroom_name')
-    list_filter = ('type_pair', 'professor', 'classroom')
-    readonly_fields = ('professor_name', 'professor_surname', 'professor_patronymic', 'subject', 'classroom_name')
-    fields = ('type_pair', 'professor', 'classroom')
-    
-    def get_pair_time_display(self, obj):
-        return obj.get_type_pair_display()
-    get_pair_time_display.short_description = 'Время пары'
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ('id', 'title', 'user', 'notification_type', 'created_at', 'is_read')
+    list_filter = ('notification_type', 'is_read', 'created_at')
+    search_fields = ('title', 'message', 'user__user')
+    ordering = ('-created_at',)
+    list_editable = ('is_read',)
 
-@admin.register(Mondays_schedule)
-class MondaysScheduleAdmin(admin.ModelAdmin):
-    list_display = ('id', 'first_pair', 'second_pair', 'third_pair', 'fourth_pair', 'fifth_pair', 'sixth_pair', 'seventh_pair')
-    list_display_links = ('id',)
-    search_fields = ('first_pair__professor_surname', 'second_pair__professor_surname', 'third_pair__professor_surname')
-    list_filter = ('first_pair', 'second_pair', 'third_pair', 'fourth_pair', 'fifth_pair', 'sixth_pair', 'seventh_pair')
-    ordering = ('id',)
+@admin.register(Poll)
+class PollAdmin(admin.ModelAdmin):
+    list_display = ('id', 'title', 'start_date', 'end_date', 'is_active')
+    list_filter = ('is_active', 'start_date', 'end_date')
+    search_fields = ('title', 'description')
+    ordering = ('-start_date',)
+    filter_horizontal = ('groups',)
 
-@admin.register(Tuesdays_schedule)
-class TuesdaysScheduleAdmin(admin.ModelAdmin):
-    list_display = ('id', 'first_pair', 'second_pair', 'third_pair', 'fourth_pair', 'fifth_pair', 'sixth_pair', 'seventh_pair')
-    list_display_links = ('id',)
-    search_fields = ('first_pair__professor_surname', 'second_pair__professor_surname', 'third_pair__professor_surname')
-    list_filter = ('first_pair', 'second_pair', 'third_pair', 'fourth_pair', 'fifth_pair', 'sixth_pair', 'seventh_pair')
-    ordering = ('id',)
+@admin.register(PollOption)
+class PollOptionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'poll', 'text', 'votes')
+    list_filter = ('poll',)
+    search_fields = ('text',)
+    ordering = ('poll',)
 
-@admin.register(Wednesdays_schedule)
-class WednesdaysScheduleAdmin(admin.ModelAdmin):
-    list_display = ('id', 'first_pair', 'second_pair', 'third_pair', 'fourth_pair', 'fifth_pair', 'sixth_pair', 'seventh_pair')
-    list_display_links = ('id',)
-    search_fields = ('first_pair__professor_surname', 'second_pair__professor_surname', 'third_pair__professor_surname')
-    list_filter = ('first_pair', 'second_pair', 'third_pair', 'fourth_pair', 'fifth_pair', 'sixth_pair', 'seventh_pair')
-    ordering = ('id',)
+@admin.register(PollVote)
+class PollVoteAdmin(admin.ModelAdmin):
+    list_display = ('id', 'poll', 'option', 'user', 'voted_at')
+    list_filter = ('voted_at',)
+    search_fields = ('user__user',)
+    ordering = ('-voted_at',)
 
-@admin.register(Thursdays_schedule)
-class ThursdaysScheduleAdmin(admin.ModelAdmin):
-    list_display = ('id', 'first_pair', 'second_pair', 'third_pair', 'fourth_pair', 'fifth_pair', 'sixth_pair', 'seventh_pair')
-    list_display_links = ('id',)
-    search_fields = ('first_pair__professor_surname', 'second_pair__professor_surname', 'third_pair__professor_surname')
-    list_filter = ('first_pair', 'second_pair', 'third_pair', 'fourth_pair', 'fifth_pair', 'sixth_pair', 'seventh_pair')
-    ordering = ('id',)
+@admin.register(Chat)
+class ChatAdmin(admin.ModelAdmin):
+    list_display = ('id', 'created_at', 'updated_at')
+    filter_horizontal = ('participants',)
+    ordering = ('-updated_at',)
 
-@admin.register(Fridays_schedule)
-class FridaysScheduleAdmin(admin.ModelAdmin):
-    list_display = ('id', 'first_pair', 'second_pair', 'third_pair', 'fourth_pair', 'fifth_pair', 'sixth_pair', 'seventh_pair')
-    list_display_links = ('id',)
-    search_fields = ('first_pair__professor_surname', 'second_pair__professor_surname', 'third_pair__professor_surname')
-    list_filter = ('first_pair', 'second_pair', 'third_pair', 'fourth_pair', 'fifth_pair', 'sixth_pair', 'seventh_pair')
-    ordering = ('id',)
-
-@admin.register(Saturdays_schedule)
-class SaturdaysScheduleAdmin(admin.ModelAdmin):
-    list_display = ('id', 'first_pair', 'second_pair', 'third_pair', 'fourth_pair', 'fifth_pair', 'sixth_pair', 'seventh_pair')
-    list_display_links = ('id',)
-    search_fields = ('first_pair__professor_surname', 'second_pair__professor_surname', 'third_pair__professor_surname')
-    list_filter = ('first_pair', 'second_pair', 'third_pair', 'fourth_pair', 'fifth_pair', 'sixth_pair', 'seventh_pair')
-    ordering = ('id',)
-
-@admin.register(Sundays_schedule)
-class SundaysScheduleAdmin(admin.ModelAdmin):
-    list_display = ('id', 'first_pair', 'second_pair', 'third_pair', 'fourth_pair', 'fifth_pair', 'sixth_pair', 'seventh_pair')
-    list_display_links = ('id',)
-    search_fields = ('first_pair__professor_surname', 'second_pair__professor_surname', 'third_pair__professor_surname')
-    list_filter = ('first_pair', 'second_pair', 'third_pair', 'fourth_pair', 'fifth_pair', 'sixth_pair', 'seventh_pair')
-    ordering = ('id',)
+@admin.register(Message)
+class MessageAdmin(admin.ModelAdmin):
+    list_display = ('id', 'chat', 'sender', 'created_at', 'is_read')
+    list_filter = ('is_read', 'created_at')
+    search_fields = ('text', 'sender__user')
+    ordering = ('-created_at',)
+    list_editable = ('is_read',)
