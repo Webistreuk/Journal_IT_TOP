@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import (
-    Autoriz, Professor, Student, Subjects, Group, Course, Direction, AcademicYear,
+    Autoriz, Professor, Student, Subjects, Group, Course, Direction, AcademicYear, AcademicStaff,
     balance_topcoins_and_topgems, All_payment_of_education, 
     Students_payment_account, image_student, image_professor, 
     Add_HW_Professor_to_course, Review_of_the_Academy, 
@@ -28,6 +28,14 @@ class ProfessorAdmin(admin.ModelAdmin):
     list_display_links = ('id', 'name', 'surname')
     search_fields = ('name', 'surname', 'patronymic', 'leads_the_subject__name_subject')
     list_filter = ('name',)
+    ordering = ('id',)
+
+@admin.register(AcademicStaff)
+class AcademicStaffAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'surname', 'patronymic', 'position', 'autoriz')
+    list_display_links = ('id', 'name', 'surname')
+    search_fields = ('name', 'surname', 'patronymic', 'position')
+    list_filter = ('position',)
     ordering = ('id',)
 
 @admin.register(Student)
@@ -325,12 +333,12 @@ class EducationalMaterialAdmin(admin.ModelAdmin):
 
 @admin.register(PersonalAccount)
 class PersonalAccountAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'role', 'student_profile', 'professor_profile')
+    list_display = ('id', 'user', 'role', 'student_profile', 'professor_profile', 'academic_staff_profile')
     list_filter = ('role',)
     search_fields = ('user__user', 'student_profile__surname', 'professor_profile__surname')
     fieldsets = (
         ('Основное', {
-            'fields': ('user', 'role', 'student_profile', 'professor_profile')
+            'fields': ('user', 'role', 'student_profile', 'professor_profile', 'academic_staff_profile')
         }),
         ('Документы студента', {
             'fields': ('school_certificate', 'health_certificate')

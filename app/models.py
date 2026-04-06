@@ -40,6 +40,21 @@ class Professor(models.Model):
     def __str__(self):
         return f"{self.surname} {self.name[0]}. {self.patronymic[0]}."
 
+class AcademicStaff(models.Model):
+    name = models.CharField(max_length = 30, verbose_name = 'Имя')
+    surname = models.CharField(max_length = 30, verbose_name = 'Фамилия')
+    patronymic = models.CharField(max_length = 40, verbose_name = 'Отчество')
+    position = models.CharField(max_length = 100, verbose_name = 'Должность')
+    autoriz = models.OneToOneField(Autoriz, on_delete = models.CASCADE, verbose_name = 'Пользователь')
+
+    class Meta:
+        db_table = 'List_of_academic_staff'
+        verbose_name = 'Сотрудник учебной части'
+        verbose_name_plural = 'Сотрудники учебной части'
+
+    def __str__(self):
+        return f"{self.surname} {self.name[0]}. {self.patronymic[0]}. - {self.position}"
+
 class Direction(models.Model):
     name = models.CharField(max_length = 100, verbose_name = 'Название направления')
     code = models.CharField(max_length = 20, unique = True, verbose_name = 'Код направления')
@@ -741,6 +756,7 @@ class PersonalAccount(models.Model):
     role = models.CharField(max_length = 20, choices = ROLE_CHOICES, verbose_name = 'Роль')
     student_profile = models.OneToOneField(Student, on_delete = models.CASCADE, null = True, blank = True, verbose_name = 'Профиль студента')
     professor_profile = models.OneToOneField(Professor, on_delete = models.CASCADE, null = True, blank = True, verbose_name = 'Профиль преподавателя')
+    academic_staff_profile = models.OneToOneField(AcademicStaff, on_delete = models.CASCADE, null = True, blank = True, verbose_name = 'Профиль сотрудника')
     school_certificate = models.FileField(upload_to = 'static/image/personal/student/', blank = True, null = True, verbose_name = 'Аттестат школы (для студента)')
     health_certificate = models.FileField(upload_to = 'static/image/personal/student/', blank = True, null = True, verbose_name = 'Справка 086У (для студента)')
     diploma = models.FileField(upload_to = 'static/image/personal/professor/', blank = True, null = True, verbose_name = 'Диплом (для преподавателя)')
