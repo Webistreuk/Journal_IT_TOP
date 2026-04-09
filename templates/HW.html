@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Journal</title>
+</head>
+<body>
+    <form action="{% url "Домашки" %}" method="post">
+        {% csrf_token %}
+        <div class="fields_of_Journal">
+            <input class="file_field" type="file" name="file" placeholder="Файл">
+            <input class="comment_field" type="text" name="comment" placeholder="Комментарий">
+            <input class="time_work_field" type="number" name="time_work" placeholder="Время выполнения домашнего задания:">
+            <input type="the_usefulness_of_knowledge_field" type="number" name="the_usefulness_of_knowledge" placeholder="Польза от полученных знаний">
+        </div>
+        <input class="Login" type="submit" value="Отправить">
+    </form> 
+</body>
+</html>
