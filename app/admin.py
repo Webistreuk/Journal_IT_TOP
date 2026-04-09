@@ -3,7 +3,7 @@ from .models import (
     Autoriz, Professor, Student, Subjects, Group, Course, Direction, AcademicYear, AcademicStaff,
     balance_topcoins_and_topgems, All_payment_of_education, 
     Students_payment_account, image_student, image_professor, 
-    Add_HW_Professor_to_course, Review_of_the_Academy, 
+    Add_HW_Professor_to_course, HomeworkSubmission, Review_of_the_Academy, 
     Appeals_to_the_educational_unit, Shop_add_products, 
     Topmoney_student, Complaint_to_the_CEO, Schedule, Estimation,
     Semester, Vacation, LessonType, Pair, DailySchedule,
@@ -132,6 +132,14 @@ class Add_HW_Professor_to_courseAdmin(admin.ModelAdmin):
     search_fields = ('comment', 'group__name', 'professor__name', 'subject__name_subject')
     list_filter = ('group', 'subject', 'date_start', 'date_final')
     ordering = ('-date_start',)
+
+@admin.register(HomeworkSubmission)
+class HomeworkSubmissionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'homework', 'student', 'submitted_at', 'grade', 'is_checked')
+    list_display_links = ('id', 'student')
+    search_fields = ('student__name', 'student__surname', 'comment', 'professor_comment')
+    list_filter = ('is_checked', 'grade', 'submitted_at')
+    ordering = ('-submitted_at',)
 
 @admin.register(Review_of_the_Academy)
 class Review_of_the_AcademyAdmin(admin.ModelAdmin):

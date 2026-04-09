@@ -387,6 +387,25 @@ class Add_HW_Professor_to_course(models.Model):
     def __str__(self):
         return f'Домашнее задание от {self.professor} студентам группы {self.group}'
 
+class HomeworkSubmission(models.Model):
+    homework = models.ForeignKey(Add_HW_Professor_to_course, on_delete = models.CASCADE, verbose_name = 'Задание')
+    student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
+    file = models.FileField(upload_to = 'static/image/homework_submissions/', verbose_name = 'Файл с выполненным заданием')
+    comment = models.TextField(blank = True, null = True, verbose_name = 'Комментарий студента')
+    submitted_at = models.DateTimeField(auto_now_add = True, verbose_name = 'Дата сдачи')
+    grade = models.IntegerField(null = True, blank = True, verbose_name = 'Оценка')
+    professor_comment = models.TextField(blank = True, null = True, verbose_name = 'Комментарий преподавателя')
+    is_checked = models.BooleanField(default = False, verbose_name = 'Проверено')
+    
+    class Meta:
+        db_table = 'List_of_homework_submissions'
+        verbose_name = 'Выполненное ДЗ'
+        verbose_name_plural = 'Выполненные ДЗ'
+        unique_together = ['homework', 'student']
+
+    def __str__(self):
+        return f'Работа студента {self.student} по заданию {self.homework}'
+
 class balance_topcoins_and_topgems(models.Model):
     topcoins = models.PositiveIntegerField(blank = False, null = False, default = 0, verbose_name = 'Топкоины')
     topgems = models.PositiveIntegerField(blank = False, null = False, default = 0, verbose_name = 'Топгемы')
