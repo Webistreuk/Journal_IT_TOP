@@ -392,6 +392,8 @@ class HomeworkSubmission(models.Model):
     student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
     file = models.FileField(upload_to = 'static/image/homework_submissions/', verbose_name = 'Файл с выполненным заданием')
     comment = models.TextField(blank = True, null = True, verbose_name = 'Комментарий студента')
+    time_work = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Время выполения домашнего задания')
+    the_usefulness_of_knowledge = models.IntegerField(blank = True, null = True, verbose_name = 'Польза от полученных знаний')
     submitted_at = models.DateTimeField(auto_now_add = True, verbose_name = 'Дата сдачи')
     grade = models.IntegerField(null = True, blank = True, verbose_name = 'Оценка')
     professor_comment = models.TextField(blank = True, null = True, verbose_name = 'Комментарий преподавателя')
