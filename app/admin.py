@@ -135,11 +135,12 @@ class Add_HW_Professor_to_courseAdmin(admin.ModelAdmin):
 
 @admin.register(HomeworkSubmission)
 class HomeworkSubmissionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'homework', 'student', 'submitted_at', 'grade', 'is_checked')
-    list_display_links = ('id', 'student')
-    search_fields = ('student__name', 'student__surname', 'comment', 'professor_comment')
+    list_display = ('id', 'homework', 'student', 'submitted_at', 'grade', 'is_checked', 'time_work', 'the_usefulness_of_knowledge')
+    list_display_links = ('id',)
+    search_fields = ('student__name', 'student__surname', 'homework__group__name')
     list_filter = ('is_checked', 'grade', 'submitted_at')
     ordering = ('-submitted_at',)
+    readonly_fields = ('submitted_at',)
 
 @admin.register(Review_of_the_Academy)
 class Review_of_the_AcademyAdmin(admin.ModelAdmin):
