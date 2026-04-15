@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/course_list.css' %}">
+    <title>Курсы - Journal</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Journal</div>
+            <nav class="nav-menu">
+                <a href="{% url 'main_view' %}">Главная</a>
+                <a href="{% url 'schedule_create_view' %}">Расписание</a>
+                <a href="{% url 'group_list_view' %}">Группы</a>
+                <a href="{% url 'subject_list_view' %}">Предметы</a>
+                <a href="{% url 'direction_list_view' %}">Направления</a>
+                <a href="{% url 'course_list_view' %}">Курсы</a>
+                <a href="{% url 'academic_year_list_view' %}">Учебные годы</a>
+                <a href="{% url 'payment_info_view' %}">Оплаты</a>
+                <a href="{% url 'debtor_list_view' %}">Должники</a>
+                <a href="{% url 'chat_list_view' %}">Чаты</a>
+            </nav>
+            <div class="user-info">
+                <span class="user-name">{{ user.user }}</span>
+                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
+                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="course-container">
+            <div class="page-header">
+                <h1 class="page-title">🎓 Курсы обучения</h1>
+                <a href="{% url 'course_create_view' %}" class="btn-create">➕ Добавить курс</a>
+            </div>
+
+            <div class="courses-grid">
+                {% for course in courses %}
+                <div class="course-card" data-number="{{ course.number }}">
+                    <div class="course-number">{{ course.number }}</div>
+                    <div class="course-title">Курс</div>
+                    <div class="course-stats">
+                        <div class="stat-item">
+                            <span class="stat-value">{{ course.group_set.count }}</span>
+                            <span class="stat-label">групп</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">{{ course.student_count|default:0 }}</span>
+                            <span class="stat-label">студентов</span>
+                        </div>
+                    </div>
+                    <div class="course-actions">
+                        <button class="btn-edit" data-id="{{ course.id }}" data-number="{{ course.number }}">✏️ Редактировать</button>
+                        <button class="btn-delete" data-id="{{ course.id }}" data-number="{{ course.number }}">🗑️ Удалить</button>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-courses">
+                    <p>📭 Нет курсов</p>
+                    <a href="{% url 'course_create_view' %}" class="btn-create-first">Создать первый курс</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/course_list.js' %}"></script>
+</body>
+</html>

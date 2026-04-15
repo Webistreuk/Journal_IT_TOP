@@ -11,7 +11,7 @@ from .models import (
     LeaderboardEntry, StudentStats, Reward, UserReward,
     PaymentInfo, Ranking, EducationalMaterial, PersonalAccount,
     Debtor, Scholarship, AcademicDebt, GraduationWork, Internship,
-    Event, Notification, Poll, PollOption, PollVote, Chat, Message
+    Event, Notification, Poll, PollOption, PollVote, Chat, Message, Story
 )
 
 @admin.register(Autoriz)
@@ -452,3 +452,10 @@ class MessageAdmin(admin.ModelAdmin):
     search_fields = ('text', 'sender__user')
     ordering = ('-created_at',)
     list_editable = ('is_read',)
+
+@admin.register(Story)
+class StoryAdmin(admin.ModelAdmin):
+    list_display = ('id', 'student', 'created_at', 'expires_at', 'is_video')
+    list_filter = ('is_video', 'created_at')
+    search_fields = ('student__surname', 'caption')
+    ordering = ('-created_at',)

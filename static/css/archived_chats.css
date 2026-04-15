@@ -1,0 +1,275 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.archived-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+}
+
+.archived-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eef2f5;
+}
+
+.menu-icon {
+    cursor: pointer;
+    width: 24px;
+}
+
+.menu-icon .line {
+    background-color: #2f2f2f;
+    height: 2px;
+    display: block;
+    border-radius: 2px;
+}
+
+.menu-icon .line + .line {
+    margin-top: 5px;
+}
+
+.back-link {
+    color: #4f8df3;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.back-link:hover {
+    opacity: 0.7;
+}
+
+.archived-header h1 {
+    font-size: 24px;
+    font-weight: 500;
+    color: #1f2d3d;
+    margin: 0;
+}
+
+.archived-sidebar-menu {
+    position: absolute;
+    top: 70px;
+    left: 20px;
+    width: 280px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 200;
+    display: none;
+    overflow: hidden;
+}
+
+.archived-sidebar-menu.show {
+    display: block;
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+    gap: 12px;
+    font-size: 15px;
+}
+
+.menu-item:hover {
+    background: #f5f5f5;
+}
+
+.menu-icon-small {
+    font-size: 20px;
+    width: 28px;
+}
+
+.menu-badge {
+    margin-left: auto;
+    background: #c4c9cc;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: #1f2d3d;
+}
+
+.more-item {
+    position: relative;
+}
+
+.menu-arrow {
+    margin-left: auto;
+    font-size: 12px;
+    color: #8e9eae;
+}
+
+.more-submenu {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    width: 220px;
+    display: none;
+    z-index: 300;
+}
+
+.more-item:hover .more-submenu {
+    display: block;
+}
+
+.submenu-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 14px;
+}
+
+.submenu-item:hover {
+    background: #f5f5f5;
+}
+
+.submenu-version {
+    padding: 10px 16px;
+    font-size: 12px;
+    color: #8e9eae;
+    border-top: 1px solid #eef2f5;
+}
+
+.archived-content {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+.archived-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.archived-avatar {
+    width: 48px;
+    height: 48px;
+    background: #f0f2f5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-right: 12px;
+}
+
+.archived-info {
+    flex: 1;
+}
+
+.archived-name {
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #1f2d3d;
+}
+
+.archived-preview {
+    font-size: 13px;
+    color: #8b9eb0;
+}
+
+.unarchive-btn {
+    padding: 6px 12px;
+    background: #4f8df3;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.unarchive-btn:hover {
+    background: #3c7ae0;
+}
+
+body.dark-mode {
+    background: #1a1a2e;
+}
+
+body.dark-mode .archived-header {
+    border-bottom-color: #2a2c42;
+}
+
+body.dark-mode .menu-icon .line {
+    background-color: #fff;
+}
+
+body.dark-mode .archived-header h1 {
+    color: #fff;
+}
+
+body.dark-mode .archived-sidebar-menu,
+body.dark-mode .more-submenu {
+    background: #24263b;
+}
+
+body.dark-mode .menu-item:hover {
+    background: #2a2c42;
+}
+
+body.dark-mode .menu-item {
+    color: #fff;
+}
+
+body.dark-mode .menu-badge {
+    background: #3a3d5e;
+    color: #fff;
+}
+
+body.dark-mode .submenu-version {
+    border-top-color: #2a2c42;
+    color: #9a9ec0;
+}
+
+body.dark-mode .archived-content {
+    background: #24263b;
+}
+
+body.dark-mode .archived-item {
+    border-bottom-color: #2a2c42;
+}
+
+body.dark-mode .archived-name {
+    color: #fff;
+}
+
+body.dark-mode .archived-preview {
+    color: #9a9ec0;
+}
+
+body.dark-mode .archived-avatar {
+    background: #2a2c42;
+}
+
+body.no-animations * {
+    transition: none !important;
+    animation: none !important;
+}

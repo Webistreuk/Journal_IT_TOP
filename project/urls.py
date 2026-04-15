@@ -1,30 +1,118 @@
-"""
-URL configuration for project project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/6.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
+from django.urls import path
+from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
-from django.contrib import admin
-from django.urls import path
 from app import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.main, name='Главная'),
-    path('autorize/', views.autoriz, name = 'Вход'),
+    path('', views.autoriz_view, name='autoriz_view'),
+    path('reset-password/', views.autoriz_remove_password_view, name='autoriz_remove_password_view'),
+    path('register/', views.register_view, name='register_view'),
+    path('main/', views.main_view, name='main_view'),
+    path('logout/', views.logout_view, name='logout_view'),
+    path('profile/edit/', views.profile_edit_view, name='profile_edit_view'),
+    path('homeworks/', views.homework_list_view, name='homework_list_view'),
+    path('homeworks/add/', views.homework_add_view, name='homework_add_view'),
+    path('homeworks/submit/<int:homework_id>/', views.homework_submit_view, name='homework_submit_view'),
+    path('homeworks/check/<int:submission_id>/', views.homework_check_view, name='homework_check_view'),
+    path('schedule/', views.schedule_view, name='schedule_view'),
+    path('schedule/create/', views.schedule_create_view, name='schedule_create_view'),
+    path('attendance/mark/', views.attendance_mark_view, name='attendance_mark_view'),
+    path('attendance/mark/<int:schedule_id>/', views.attendance_mark_view, name='attendance_mark_view_with_id'),
+    path('attendance/', views.attendance_list_view, name='attendance_list_view'),
+    path('estimations/', views.estimation_view, name='estimation_view'),
+    path('shop/', views.shop_view, name='shop_view'),
+    path('shop/product/add/', views.shop_product_create_view, name='shop_product_create_view'),
+    path('leaderboard/', views.leaderboard_view, name='leaderboard_view'),
+    path('polls/', views.polls_view, name='polls_view'),
+    path('polls/<int:poll_id>/', views.poll_detail_view, name='poll_detail_view'),
+    path('polls/create/', views.poll_create_view, name='poll_create_view'),
+    path('announcements/', views.announcements_view, name='announcements_view'),
+    path('announcements/create/', views.announcement_create_view, name='announcement_create_view'),
+    path('events/', views.events_view, name='events_view'),
+    path('events/create/', views.event_create_view, name='event_create_view'),
+    path('payments/', views.payment_info_view, name='payment_info_view'),
+    path('materials/', views.educational_materials_view, name='educational_materials_view'),
+    path('materials/create/', views.educational_material_create_view, name='educational_material_create_view'),
+    path('appeal/', views.appeal_view, name='appeal_view'),
+    path('review/', views.review_view, name='review_view'),
+    path('complaint/', views.complaint_view, name='complaint_view'),
+    path('student-reviews/', views.student_review_list_view, name='student_review_list_view'),
+    path('student-reviews/create/', views.student_review_create_view, name='student_review_create_view'),
+    path('chats/', views.chat_list_view, name='chat_list_view'),
+    path('chats/<int:chat_id>/', views.chat_list_view, name='chat_detail_view'),
+    path('chats/create/', views.create_chat_view, name='create_chat_view'),
+    path('chats/create/<int:user_id>/', views.create_chat_with_user_view, name='create_chat_with_user_view'),
+    path('exams/', views.exam_list_view, name='exam_list_view'),
+    path('exams/create/', views.exam_create_view, name='exam_create_view'),
+    path('exam-sessions/', views.exam_session_list_view, name='exam_session_list_view'),
+    path('exam-sessions/create/', views.exam_session_create_view, name='exam_session_create_view'),
+    path('scheduled-exams/', views.scheduled_exam_list_view, name='scheduled_exam_list_view'),
+    path('scheduled-exams/create/', views.scheduled_exam_create_view, name='scheduled_exam_create_view'),
+    path('academic-debts/', views.academic_debt_list_view, name='academic_debt_list_view'),
+    path('academic-debts/create/', views.academic_debt_create_view, name='academic_debt_create_view'),
+    path('graduation-works/', views.graduation_work_list_view, name='graduation_work_list_view'),
+    path('graduation-works/create/', views.graduation_work_create_view, name='graduation_work_create_view'),
+    path('internships/', views.internship_list_view, name='internship_list_view'),
+    path('internships/create/', views.internship_create_view, name='internship_create_view'),
+    path('groups/', views.group_list_view, name='group_list_view'),
+    path('groups/create/', views.group_create_view, name='group_create_view'),
+    path('subjects/', views.subject_list_view, name='subject_list_view'),
+    path('subjects/create/', views.subject_create_view, name='subject_create_view'),
+    path('courses/', views.course_list_view, name='course_list_view'),
+    path('courses/create/', views.course_create_view, name='course_create_view'),
+    path('directions/', views.direction_list_view, name='direction_list_view'),
+    path('directions/create/', views.direction_create_view, name='direction_create_view'),
+    path('academic-years/', views.academic_year_list_view, name='academic_year_list_view'),
+    path('academic-years/create/', views.academic_year_create_view, name='academic_year_create_view'),
+    path('notifications/', views.notification_list_view, name='notification_list_view'),
+    path('debtors/', views.debtor_list_view, name='debtor_list_view'),
+    path('scholarships/', views.scholarship_list_view, name='scholarship_list_view'),
+    path('personal-account/', views.personal_account_view, name='personal_account_view'),
+    path('personal-account/edit/', views.personal_account_edit_view, name='personal_account_edit_view'),
+    path('students/', views.student_list_view, name='student_list_view'),
+    path('students/<int:student_id>/', views.student_detail_view, name='student_detail_view'),
+    path('professors/', views.professor_list_view, name='professor_list_view'),
+    path('professors/<int:professor_id>/', views.professor_detail_view, name='professor_detail_view'),
+    path('academic-staff/', views.academic_staff_list_view, name='academic_staff_list_view'),
+    path('balances/', views.balance_list_view, name='balance_list_view'),
+    path('topmoney/', views.topmoney_list_view, name='topmoney_list_view'),
+    path('rankings/', views.ranking_list_view, name='ranking_list_view'),
+    path('rewards/', views.reward_list_view, name='reward_list_view'),
+    path('my-rewards/', views.user_reward_list_view, name='user_reward_list_view'),
+    path('pairs/', views.pair_list_view, name='pair_list_view'),
+    path('pairs/create/', views.pair_create_view, name='pair_create_view'),
+    path('lesson-types/', views.lesson_type_list_view, name='lesson_type_list_view'),
+    path('lesson-types/create/', views.lesson_type_create_view, name='lesson_type_create_view'),
+    path('classrooms/', views.classroom_list_view, name='classroom_list_view'),
+    path('classrooms/create/', views.add_classroom_view, name='add_classroom_view'),
+    path('semesters/', views.semester_list_view, name='semester_list_view'),
+    path('semesters/create/', views.semester_create_view, name='semester_create_view'),
+    path('vacations/', views.vacation_list_view, name='vacation_list_view'),
+    path('vacations/create/', views.vacation_create_view, name='vacation_create_view'),
+    path('schedule-replacements/', views.schedule_replacement_list_view, name='schedule_replacement_list_view'),
+    path('schedule-replacements/create/', views.schedule_replacement_create_view, name='schedule_replacement_create_view'),
+    path('daily-schedule/add/', views.daily_schedule_add_view, name='daily_schedule_add_view'),
+    path('api/get-pairs/', views.api_get_pairs, name='api_get_pairs'),
+    path('api/get-students/', views.api_get_students, name='api_get_students'),
+    path('api/chat/messages/<int:chat_id>/', views.api_chat_messages, name='api_chat_messages'),
+    path('api/chat/delete-for-me/<int:chat_id>/', views.api_delete_chat_for_me, name='api_delete_chat_for_me'),
+    path('api/chat/delete-for-both/<int:chat_id>/', views.api_delete_chat_for_both, name='api_delete_chat_for_both'),
+    path('api/chat/order/', views.api_chat_order, name='api_chat_order'),
+    path('api/user-profile/<int:user_id>/', views.api_user_profile, name='api_user_profile'),
+    path('api/chat/participant/<int:chat_id>/', views.api_chat_participant, name='api_chat_participant'),
+    path('profile/settings/', views.profile_settings_view, name='profile_settings_view'),
+    path('saved-messages/', views.saved_messages_view, name='saved_messages_view'),
+    path('archived-chats/', views.archived_chats_view, name='archived_chats_view'),
+    path('my-stories/', views.my_stories_view, name='my_stories_view'),
+    path('contacts/', views.contacts_view, name='contacts_view'),
+    path('wallet/', views.wallet_view, name='wallet_view'),
+    path('settings/', views.settings_view, name='settings_view'),
+    path('api/create-story/', views.api_create_story, name='api_create_story'),
+    path('api/delete-story/<int:story_id>/', views.api_delete_story, name='api_delete_story'),
 ]
 
 if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

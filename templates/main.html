@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+{% if user_role == 'student' %}
+<div class="dashboard-stats">
+    <div class="stat-card">
+        <div class="stat-number">{{ balance.topcoins|default:"0" }}</div>
+        <div class="stat-label">Топкоины</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{ balance.topgems|default:"0" }}</div>
+        <div class="stat-label">Топгемы</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{ student.group.name|default:"-" }}</div>
+        <div class="stat-label">Группа</div>
+    </div>
+</div>
+
+<div class="grid-3">
+    <div class="card">
+        <h3 class="card-title">📚 Домашние задания</h3>
+        {% for homework in homeworks %}
+            <p>📖 {{ homework.subject.name_subject }} - до {{ homework.date_final|date:"d.m.Y" }}</p>
+        {% empty %}
+            <p>Нет заданий</p>
+        {% endfor %}
+        <a href="{% url 'homework_list_view' %}" class="btn btn-primary">Все задания</a>
+    </div>
+    <div class="card">
+        <h3 class="card-title">📢 Объявления</h3>
+        {% for announcement in announcements %}
+            <p>📌 {{ announcement.title }}</p>
+        {% empty %}
+            <p>Нет объявлений</p>
+        {% endfor %}
+        <a href="{% url 'announcements_view' %}" class="btn btn-primary">Читать</a>
+    </div>
+    <div class="card">
+        <h3 class="card-title">🎉 События</h3>
+        {% for event in events %}
+            <p>🎯 {{ event.title }} - {{ event.start_date|date:"d.m.Y" }}</p>
+        {% empty %}
+            <p>Нет событий</p>
+        {% endfor %}
+        <a href="{% url 'events_view' %}" class="btn btn-primary">Все события</a>
+    </div>
+</div>
+
+{% elif user_role == 'professor' %}
+<div class="dashboard-stats">
+    <div class="stat-card">
+        <div class="stat-number">{{ unchecked_homeworks }}</div>
+        <div class="stat-label">Непроверенных ДЗ</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{ my_subjects.count }}</div>
+        <div class="stat-label">Мои предметы</div>
+    </div>
+</div>
+
+<div class="grid-3">
+    <div class="card">
+        <h3 class="card-title">📝 Проверка работ</h3>
+        <p>Необходимо проверить {{ unchecked_homeworks }} работ</p>
+        <a href="{% url 'homework_list_view' %}" class="btn btn-primary">Проверить</a>
+    </div>
+    <div class="card">
+        <h3 class="card-title">➕ Создать ДЗ</h3>
+        <a href="{% url 'homework_add_view' %}" class="btn btn-primary">Создать</a>
+    </div>
+    <div class="card">
+        <h3 class="card-title">📋 Отметить посещаемость</h3>
+        <a href="{% url 'attendance_mark_view' %}" class="btn btn-primary">Отметить</a>
+    </div>
+    <div class="card">
+        <h3 class="card-title">💬 Чаты</h3>
+        <a href="{% url 'chat_list_view' %}" class="btn btn-primary">Перейти в чаты</a>
+    </div>
+</div>
+
+{% elif user_role == 'academic_staff' %}
+<div class="dashboard-stats">
+    <div class="stat-card">
+        <div class="stat-number">{{ total_students }}</div>
+        <div class="stat-label">Студентов</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{ total_professors }}</div>
+        <div class="stat-label">Преподавателей</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{ pending_payments }}</div>
+        <div class="stat-label">Должников</div>
+    </div>
+</div>
+
+<div class="grid-3">
+    <div class="card">
+        <h3 class="card-title">🎓 Управление группами</h3>
+        <a href="{% url 'group_list_view' %}" class="btn btn-primary">Группы</a>
+    </div>
+    <div class="card">
+        <h3 class="card-title">💰 Управление оплатами</h3>
+        <a href="{% url 'payment_info_view' %}" class="btn btn-primary">Оплаты</a>
+    </div>
+    <div class="card">
+        <h3 class="card-title">⚠️ Должники</h3>
+        <a href="{% url 'debtor_list_view' %}" class="btn btn-primary">Список</a>
+    </div>
+    <div class="card">
+        <h3 class="card-title">💬 Чаты</h3>
+        <a href="{% url 'chat_list_view' %}" class="btn btn-primary">Перейти в чаты</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

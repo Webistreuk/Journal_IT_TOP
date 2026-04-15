@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Домашние задания{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/homework.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="homework-container">
+    <div class="card">
+        <h2 class="card-title">Домашние задания</h2>
+        <table class="homework-table">
+            <thead>
+                <tr>
+                    <th>Предмет</th>
+                    <th>Дата выдачи</th>
+                    <th>Срок сдачи</th>
+                    <th>Статус</th>
+                    <th>Действие</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in homework_data %}
+                <tr>
+                    <td><strong>{{ item.homework.subject.name_subject }}</strong></td>
+                    <td>{{ item.homework.date_start|date:"d.m.Y" }}</td>
+                    <td>{{ item.homework.date_final|date:"d.m.Y" }}</td>
+                    <td>
+                        {% if item.has_submission %}
+                            {% if item.is_checked %}
+                            <span class="status-badge status-checked">✅ Проверено</span>
+                            {% else %}
+                            <span class="status-badge status-pending">⏳ На проверке</span>
+                            {% endif %}
+                        {% else %}
+                        <span class="status-badge status-missing">❌ Не сдано</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'homework_submit_view' item.homework.id %}" class="btn-submit">
+                            {% if item.has_submission %}Изменить{% else %}Сдать{% endif %}
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center;">Нет домашних заданий</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

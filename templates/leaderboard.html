@@ -1,0 +1,141 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/leaderboard.css' %}">
+    <title>Рейтинг - Journal</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Journal</div>
+            <nav class="nav-menu">
+                <a href="{% url 'main_view' %}">Главная</a>
+                <a href="{% url 'schedule_view' %}">Расписание</a>
+                <a href="{% url 'homework_list_view' %}">ДЗ</a>
+                <a href="{% url 'estimation_view' %}">Оценки</a>
+                <a href="{% url 'attendance_list_view' %}">Посещаемость</a>
+                <a href="{% url 'shop_view' %}">Магазин</a>
+                <a href="{% url 'leaderboard_view' %}">Рейтинг</a>
+                <a href="{% url 'chat_list_view' %}">Чаты</a>
+            </nav>
+            <div class="user-info">
+                <span class="user-name">{{ user.user }}</span>
+                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
+                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="leaderboard-container">
+            <div class="leaderboard-header">
+                <h1 class="page-title">🏆 Рейтинг студентов</h1>
+                <p class="page-subtitle">Топ студентов по количеству топмани</p>
+            </div>
+
+            <div class="leaderboard-card">
+                <div class="podium">
+                    <div class="podium-item second">
+                        <div class="podium-avatar">🥈</div>
+                        <div class="podium-name">
+                            {% if entries|length >= 2 %}
+                                {{ entries.1.student }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                        <div class="podium-points">
+                            {% if entries|length >= 2 %}
+                                {{ entries.1.topmoney }}
+                            {% else %}
+                                0
+                            {% endif %}
+                        </div>
+                        <div class="podium-medal">2 место</div>
+                    </div>
+                    <div class="podium-item first">
+                        <div class="podium-avatar">👑</div>
+                        <div class="podium-name">
+                            {% if entries|length >= 1 %}
+                                {{ entries.0.student }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                        <div class="podium-points">
+                            {% if entries|length >= 1 %}
+                                {{ entries.0.topmoney }}
+                            {% else %}
+                                0
+                            {% endif %}
+                        </div>
+                        <div class="podium-medal">1 место</div>
+                    </div>
+                    <div class="podium-item third">
+                        <div class="podium-avatar">🥉</div>
+                        <div class="podium-name">
+                            {% if entries|length >= 3 %}
+                                {{ entries.2.student }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </div>
+                        <div class="podium-points">
+                            {% if entries|length >= 3 %}
+                                {{ entries.2.topmoney }}
+                            {% else %}
+                                0
+                            {% endif %}
+                        </div>
+                        <div class="podium-medal">3 место</div>
+                    </div>
+                </div>
+
+                <div class="leaderboard-table-wrapper">
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Место</th>
+                                <th>Студент</th>
+                                <th>Группа</th>
+                                <th>Топмани</th>
+                                <th>Действие</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for entry in entries %}
+                            <tr class="{% if forloop.counter <= 3 %}top-three{% endif %}">
+                                <td class="rank-cell">
+                                    {% if forloop.counter == 1 %}
+                                        <span class="rank-medal gold">🥇</span>
+                                    {% elif forloop.counter == 2 %}
+                                        <span class="rank-medal silver">🥈</span>
+                                    {% elif forloop.counter == 3 %}
+                                        <span class="rank-medal bronze">🥉</span>
+                                    {% else %}
+                                        {{ forloop.counter }}
+                                    {% endif %}
+                                </td>
+                                <td class="student-name">{{ entry.student }}</td>
+                                <td>{{ entry.group.name }}</td>
+                                <td class="points-cell">{{ entry.topmoney }}</td>
+                                <td><button class="btn-view" data-student="{{ entry.student.id }}">👁️</button></td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="empty-row">Нет данных для отображения</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/leaderboard.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Чат{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="{% static 'css/chat_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+    <div class="chat-header">
+        <a href="{% url 'chat_list_view' %}" class="back-link">← Назад</a>
+        <div class="chat-with">
+            {% for participant in chat.participants.all %}
+                {% if participant != user %}
+                    {% if participant.student %}
+                        {{ participant.student.surname }} {{ participant.student.name }} {{ participant.student.patronymic }}
+                    {% elif participant.professor %}
+                        {{ participant.professor.surname }} {{ participant.professor.name }} {{ participant.professor.patronymic }}
+                    {% elif participant.academicstaff %}
+                        {{ participant.academicstaff.surname }} {{ participant.academicstaff.name }} {{ participant.academicstaff.patronymic }}
+                    {% else %}
+                        {{ participant.user }}
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div></div>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+        {% for msg in messages %}
+        <div class="message {% if msg.sender == user %}message-sent{% else %}message-received{% endif %}" data-id="{{ msg.id }}" data-text="{{ msg.text|escapejs }}">
+            <div class="message-bubble">
+                <div class="message-text">{{ msg.text|linebreaksbr }}</div>
+                {% if msg.file %}
+                <div class="message-file">
+                    <a href="{{ msg.file.url }}" target="_blank">📎 {{ msg.file.name|cut:"static/image/messages/"|truncatechars:30 }}</a>
+                </div>
+                {% endif %}
+                <div class="message-time">{{ msg.created_at|date:"d.m.Y H:i" }}</div>
+                {% if msg.sender == user %}
+                <div class="message-actions">
+                    <button class="edit-btn" onclick="editMessage({{ msg.id }})">✏️</button>
+                    <button class="delete-btn" onclick="deleteMessage({{ msg.id }})">🗑️</button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-messages" style="text-align: center; padding: 40px; color: #999;">
+            <p>💭 Нет сообщений. Напишите что-нибудь!</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="chat-input-area">
+        <div class="input-toolbar">
+            <button type="button" class="toolbar-btn" id="emojiBtn" title="Смайлики">😊</button>
+            <button type="button" class="toolbar-btn" id="attachBtn" title="Прикрепить файл">📎</button>
+        </div>
+        
+        <div id="filePreview" class="file-preview" style="display: none;">
+            <span id="fileName"></span>
+            <button type="button" id="removeFileBtn" style="background: none; border: none; cursor: pointer;">✖</button>
+        </div>
+
+        <div class="input-wrapper">
+            <textarea id="messageText" class="chat-input" rows="1" placeholder="Введите сообщение..."></textarea>
+            <button type="button" id="sendBtn" class="btn-send">Отправить</button>
+        </div>
+    </div>
+</div>
+
+<div id="emojiPicker" class="emoji-picker"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.min.js"></script>
+<script src="{% static 'js/chat_detail.js' %}"></script>
+{% endblock %}

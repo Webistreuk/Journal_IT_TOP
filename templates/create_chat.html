@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Новый чат{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/create_chat.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="create-chat-container">
+    <div class="card">
+        <div class="card-header">
+            <a href="{% url 'chat_list_view' %}" class="back-link">← Назад к чатам</a>
+            <h1 class="page-title">➕ Новый чат</h1>
+        </div>
+
+        <form method="post" id="createChatForm">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label>🔍 Поиск по ФИО, логину или email</label>
+                <input type="text" id="searchInput" class="search-input" placeholder="Введите ФИО, логин или email для поиска...">
+            </div>
+
+            <div class="users-list" id="usersList">
+                {% for u in users %}
+                <div class="user-item" data-id="{{ u.id }}" data-name="{{ u.full_name }}" data-username="{{ u.username }}" data-email="{{ u.email }}">
+                    <div class="user-name">
+                        {{ u.full_name }}
+                        <span class="user-role {% if u.role == 'Студент' %}student{% elif u.role == 'Преподаватель' %}professor{% elif u.role == 'Учебная часть' %}staff{% endif %}">
+                            {{ u.role }}
+                        </span>
+                    </div>
+                    <div class="user-details">
+                        📧 {{ u.email }} | 👤 {{ u.username }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div id="selectedInfo" class="selected-info" style="display: none;">
+                <span>✅ Выбран: <strong id="selectedName"></strong></span>
+                <button type="button" class="btn-clear" id="clearSelected">✖</button>
+            </div>
+
+            <input type="hidden" name="target_user" id="targetUserId" value="">
+
+            <div class="form-actions">
+                <button type="submit" class="btn-create" id="submitBtn" disabled>💬 Начать чат</button>
+                <a href="{% url 'chat_list_view' %}" class="btn-cancel">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/create_chat.js' %}"></script>
+{% endblock %}

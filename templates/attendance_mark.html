@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/attendance_mark.css' %}">
+    <title>Отметка посещаемости - Journal</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Journal</div>
+            <nav class="nav-menu">
+                <a href="{% url 'main_view' %}">Главная</a>
+                <a href="{% url 'schedule_view' %}">Расписание</a>
+                <a href="{% url 'homework_list_view' %}">ДЗ студентов</a>
+                <a href="{% url 'homework_add_view' %}">Создать ДЗ</a>
+                <a href="{% url 'attendance_mark_view' %}">Посещаемость</a>
+                <a href="{% url 'estimation_view' %}">Оценки</a>
+                <a href="{% url 'chat_list_view' %}">Чаты</a>
+            </nav>
+            <div class="user-info">
+                <span class="user-name">{{ user.user }}</span>
+                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
+                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="attendance-container">
+            <div class="page-header">
+                <h1 class="page-title">📋 Отметка посещаемости</h1>
+                <div class="schedule-selector">
+                    <select id="scheduleSelect" class="schedule-select">
+                        <option value="">Выберите расписание</option>
+                        {% for schedule in schedules %}
+                        <option value="{{ schedule.id }}">{{ schedule.group.name }} - {{ schedule.week_start_date|date:"d.m.Y" }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="pairSelect" class="pair-select" style="display: none;">
+                        <option value="">Выберите пару</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="attendanceFormContainer" style="display: none;">
+                <div class="attendance-card">
+                    <div class="attendance-info">
+                        <div class="info-row">
+                            <span class="info-label">Группа:</span>
+                            <span class="info-value" id="groupName"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Дата:</span>
+                            <span class="info-value" id="scheduleDate"></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Пара:</span>
+                            <span class="info-value" id="pairInfo"></span>
+                        </div>
+                    </div>
+
+                    <form method="post" id="attendanceForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="schedule_id" id="scheduleId">
+                        <input type="hidden" name="pair_id" id="pairId">
+                        
+                        <div class="students-table-wrapper">
+                            <table class="students-table">
+                                <thead>
+                                    <tr>
+                                        <th>Студент</th>
+                                        <th>Статус посещаемости</th>
+                                        <th>Комментарий</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="studentsList">
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="quick-actions">
+                            <button type="button" class="btn-quick" data-status="presence">✅ Все присутствуют</button>
+                            <button type="button" class="btn-quick" data-status="late">⚠️ Все опоздали</button>
+                            <button type="button" class="btn-quick" data-status="absence">❌ Все отсутствуют</button>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn-save">💾 Сохранить посещаемость</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/attendance_mark.js' %}"></script>
+</body>
+</html>

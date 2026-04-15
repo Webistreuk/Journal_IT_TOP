@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/group_list.css' %}">
+    <title>Группы - Journal</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Journal</div>
+            <nav class="nav-menu">
+                <a href="{% url 'main_view' %}">Главная</a>
+                <a href="{% url 'schedule_create_view' %}">Расписание</a>
+                <a href="{% url 'group_list_view' %}">Группы</a>
+                <a href="{% url 'payment_info_view' %}">Оплаты</a>
+                <a href="{% url 'debtor_list_view' %}">Должники</a>
+                <a href="{% url 'chat_list_view' %}">Чаты</a>
+            </nav>
+            <div class="user-info">
+                <span class="user-name">{{ user.user }}</span>
+                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
+                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="group-list-container">
+            <div class="page-header">
+                <h1 class="page-title">🎓 Управление группами</h1>
+                <a href="{% url 'group_create_view' %}" class="btn-create">➕ Создать группу</a>
+            </div>
+
+            <div class="groups-card">
+                <div class="table-wrapper">
+                    <table class="groups-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Название группы</th>
+                                <th>Курс</th>
+                                <th>Направление</th>
+                                <th>Учебный год</th>
+                                <th>Студентов</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for group in groups %}
+                            <tr>
+                                <td>{{ group.id }}</td>
+                                <td class="group-name">{{ group.name }}</td>
+                                <td>{{ group.course.number }} курс</td>
+                                <td>{{ group.direction.code }} - {{ group.direction.name|truncatechars:30 }}</td>
+                                <td>{{ group.academic_year }}</td>
+                                <td>{{ group.student_set.count }}</td>
+                                <td class="actions">
+                                    <button class="btn-edit" data-id="{{ group.id }}">✏️</button>
+                                    <button class="btn-delete" data-id="{{ group.id }}">🗑️</button>
+                                    <button class="btn-view-students" data-id="{{ group.id }}">👥</button>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="empty-row">Нет созданных групп</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/group_list.js' %}"></script>
+</body>
+</html>

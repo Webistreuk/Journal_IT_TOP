@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/appeal.css' %}">
+    <title>Обращение в учебную часть - Journal</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Journal</div>
+            <nav class="nav-menu">
+                <a href="{% url 'main_view' %}">Главная</a>
+                <a href="{% url 'schedule_view' %}">Расписание</a>
+                <a href="{% url 'homework_list_view' %}">ДЗ</a>
+                <a href="{% url 'estimation_view' %}">Оценки</a>
+                <a href="{% url 'attendance_list_view' %}">Посещаемость</a>
+                <a href="{% url 'shop_view' %}">Магазин</a>
+                <a href="{% url 'leaderboard_view' %}">Рейтинг</a>
+                <a href="{% url 'polls_view' %}">Опросы</a>
+                <a href="{% url 'announcements_view' %}">Объявления</a>
+                <a href="{% url 'events_view' %}">События</a>
+                <a href="{% url 'educational_materials_view' %}">Материалы</a>
+                <a href="{% url 'appeal_view' %}">Обращение</a>
+                <a href="{% url 'chat_list_view' %}">Чаты</a>
+            </nav>
+            <div class="user-info">
+                <span class="user-name">{{ user.user }}</span>
+                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
+                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="appeal-container">
+            <div class="page-header">
+                <h1 class="page-title">📨 Обращение в учебную часть</h1>
+                <p class="page-subtitle">Задайте вопрос, оставьте предложение или сообщите о проблеме</p>
+            </div>
+
+            <div class="appeal-card">
+                <form method="post" id="appealForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="id_Select_the_signal_type">📌 Тип обращения</label>
+                        <select name="Select_the_signal_type" id="id_Select_the_signal_type" class="form-control" required>
+                            <option value="">Выберите тип</option>
+                            <option value="proposal">💡 Предложение</option>
+                            <option value="question_in_the_study_section">❓ Вопрос к учебной части</option>
+                            <option value="question_about_payment">💰 Вопрос по оплате</option>
+                            <option value="question_about_homework">📚 Вопрос по домашнему заданию</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_question">📝 Ваш вопрос или предложение</label>
+                        <textarea name="question" id="id_question" class="form-control" rows="8" placeholder="Опишите подробно ваш вопрос, предложение или проблему..." required></textarea>
+                        <div id="charCount" class="char-counter">0/500</div>
+                    </div>
+
+                    <div class="form-tips">
+                        <h4>💡 Советы:</h4>
+                        <ul>
+                            <li>Опишите ситуацию максимально подробно</li>
+                            <li>Укажите конкретные даты, если это важно</li>
+                            <li>Будьте вежливы и корректны</li>
+                            <li>Ответ придет в личные сообщения</li>
+                        </ul>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit">📤 Отправить обращение</button>
+                        <a href="{% url 'main_view' %}" class="btn-cancel">Отмена</a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="info-card">
+                <h3>ℹ️ Информация</h3>
+                <p>Обращения обрабатываются в течение 3 рабочих дней. Ответ будет направлен в ваш личный кабинет в раздел "Уведомления".</p>
+                <p>По срочным вопросам вы можете обратиться в учебную часть лично или по телефону: <strong>+7 (XXX) XXX-XX-XX</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/appeal.js' %}"></script>
+</body>
+</html>

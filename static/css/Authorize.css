@@ -8,8 +8,9 @@ body {
     margin: 0;
     min-height: 100vh;
     display: flex;
-    justify-content: center; 
+    justify-content: center;
     align-items: center;
+    background-color: #f2f2f2;
 }
 
 .page {
@@ -17,8 +18,7 @@ body {
     position: relative;
     max-width: 630px;
     margin-top: 160px;
-    height: 460px;
-    overflow: hidden;
+    height: 500px;
     left: 90px;
 }
 
@@ -37,7 +37,6 @@ body {
 }
 
 .Journal p {
-    /* font-family: 'Arial', 'Helvetica', sans-serif; */
     color: #2c3e50;
     font-weight: bold;
     font-size: 55px;
@@ -145,7 +144,7 @@ body {
 .Forgot_your_password:hover {
     color: #2c3e50;
     font-weight: bold;
-    font-size: 11;
+    font-size: 11px;
     text-decoration: underline;
     transition: 0.35s;
 }
@@ -166,7 +165,6 @@ body {
 }
 
 .Journal_remove_password p {
-    /* font-family: 'Arial', 'Helvetica', sans-serif; */
     color: #2c3e50;
     font-weight: bold;
     font-size: 55px;
@@ -261,7 +259,7 @@ body {
 .Return_to_the_login_page:hover {
     color: #2c3e50;
     font-weight: bold;
-    font-size: 11;
+    font-size: 11px;
     text-decoration: underline;
     transition: 0.35s;
 }
@@ -282,4 +280,25 @@ body {
     background-color: rgba(255, 0, 0, 0.178);
     border-radius: 5px;
     transition: 1s;
+}
+
+.language-switcher {
+    position: relative;
+    bottom: -35px;
+    left: 172px;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 15px;
+    font-size: 11px;
+    color: #888;
+}
+
+.language-switcher span {
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.language-switcher span:hover {
+    color: #2c3e50;
+    font-weight: bold;
 }

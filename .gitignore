@@ -1,4 +1,3 @@
-# Создаем файл .gitignore
 echo "# Виртуальная среда" > .gitignore
 echo ".rob/" >> .gitignore
 echo "venv/" >> .gitignore

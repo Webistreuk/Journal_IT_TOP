@@ -1,0 +1,143 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/schedule_create.css' %}">
+    <title>Создание расписания - Journal</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Journal</div>
+            <nav class="nav-menu">
+                <a href="{% url 'main_view' %}">Главная</a>
+                <a href="{% url 'schedule_create_view' %}">Расписание</a>
+                <a href="{% url 'group_list_view' %}">Группы</a>
+                <a href="{% url 'subject_list_view' %}">Предметы</a>
+                <a href="{% url 'payment_info_view' %}">Оплаты</a>
+                <a href="{% url 'debtor_list_view' %}">Должники</a>
+                <a href="{% url 'chat_list_view' %}">Чаты</a>
+            </nav>
+            <div class="user-info">
+                <span class="user-name">{{ user.user }}</span>
+                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
+                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="schedule-create-container">
+            <div class="page-header">
+                <a href="{% url 'main_view' %}" class="back-link">← Назад</a>
+                <h1 class="page-title">📅 Создание расписания</h1>
+            </div>
+
+            <div class="create-card">
+                <form method="post" id="scheduleForm">
+                    {% csrf_token %}
+                    <div class="form-section">
+                        <h3 class="section-title">Основная информация</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="id_group">🎓 Группа</label>
+                                <select name="group" id="id_group" class="form-control" required>
+                                    <option value="">Выберите группу</option>
+                                    {% for group in form.fields.group.queryset %}
+                                    <option value="{{ group.id }}">{{ group.name }} ({{ group.course.number }} курс)</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="id_semester">📖 Семестр</label>
+                                <select name="semester" id="id_semester" class="form-control" required>
+                                    <option value="">Выберите семестр</option>
+                                    {% for semester in form.fields.semester.queryset %}
+                                    <option value="{{ semester.id }}">{{ semester.name }} ({{ semester.academic_year.name }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="id_week_start_date">📅 Дата начала недели</label>
+                                <input type="date" name="week_start_date" id="id_week_start_date" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="id_note">📝 Примечание</label>
+                                <input type="text" name="note" id="id_note" class="form-control" placeholder="Дополнительная информация">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="section-title">Добавление пар</h3>
+                        <div class="pairs-list" id="pairsList">
+                            <div class="pair-item" data-index="0">
+                                <div class="pair-header">
+                                    <span class="pair-number">Пара 1</span>
+                                    <button type="button" class="btn-remove-pair" disabled>🗑️</button>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>День недели</label>
+                                        <select name="weekday_0" class="form-control weekday-select">
+                                            <option value="1">Понедельник</option>
+                                            <option value="2">Вторник</option>
+                                            <option value="3">Среда</option>
+                                            <option value="4">Четверг</option>
+                                            <option value="5">Пятница</option>
+                                            <option value="6">Суббота</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Порядковый номер</label>
+                                        <input type="number" name="pair_order_0" class="form-control pair-order" value="1" min="1" max="7">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Предмет</label>
+                                        <select name="subject_0" class="form-control subject-select">
+                                            <option value="">Выберите предмет</option>
+                                            {% for subject in subjects %}
+                                            <option value="{{ subject.id }}">{{ subject.name_subject }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Преподаватель</label>
+                                        <select name="professor_0" class="form-control professor-select">
+                                            <option value="">Выберите преподавателя</option>
+                                            {% for professor in professors %}
+                                            <option value="{{ professor.id }}">{{ professor }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Аудитория</label>
+                                        <select name="classroom_0" class="form-control classroom-select">
+                                            <option value="">Выберите аудиторию</option>
+                                            {% for classroom in classrooms %}
+                                            <option value="{{ classroom.id }}">{{ classroom.name_classroom }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-add-pair" id="addPairBtn">➕ Добавить еще пару</button>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-create">✅ Создать расписание</button>
+                        <a href="{% url 'main_view' %}" class="btn-cancel">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/schedule_create.js' %}"></script>
+</body>
+</html>

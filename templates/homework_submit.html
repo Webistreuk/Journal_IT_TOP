@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/homework_submit.css' %}">
+    <title>Сдать задание - Journal</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Journal</div>
+            <nav class="nav-menu">
+                <a href="{% url 'main_view' %}">Главная</a>
+                <a href="{% url 'schedule_view' %}">Расписание</a>
+                <a href="{% url 'homework_list_view' %}">ДЗ</a>
+                <a href="{% url 'estimation_view' %}">Оценки</a>
+                <a href="{% url 'attendance_list_view' %}">Посещаемость</a>
+                <a href="{% url 'shop_view' %}">Магазин</a>
+                <a href="{% url 'leaderboard_view' %}">Рейтинг</a>
+                <a href="{% url 'chat_list_view' %}">Чаты</a>
+            </nav>
+            <div class="user-info">
+                <span class="user-name">{{ user.user }}</span>
+                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
+                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="submit-container">
+            <div class="card">
+                <h2 class="card-title">📝 {{ homework.subject.name_subject }}</h2>
+                <div class="homework-info">
+                    <div class="info-row">
+                        <span class="info-label">📅 Срок сдачи:</span>
+                        <span class="info-value">{{ homework.date_final|date:"d.m.Y" }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">💬 Комментарий преподавателя:</span>
+                        <div class="comment-box">{{ homework.comment }}</div>
+                    </div>
+                    {% if homework.file %}
+                    <div class="info-row">
+                        <span class="info-label">📎 Файл задания:</span>
+                        <a href="{{ homework.file.url }}" class="file-link" download>Скачать задание</a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <form method="post" enctype="multipart/form-data" id="submitForm">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="id_file">📁 Файл с работой</label>
+                        <input type="file" name="file" id="id_file" class="form-control" required>
+                        <small class="form-text">Поддерживаемые форматы: PDF, DOC, DOCX, ZIP</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_comment">💭 Комментарий к работе</label>
+                        <textarea name="comment" id="id_comment" class="form-control" rows="4" placeholder="Опишите, что было сделано..."></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label for="id_time_work">⏱ Время выполнения (минуты)</label>
+                            <input type="number" name="time_work" id="id_time_work" class="form-control" placeholder="Например: 120">
+                        </div>
+                        <div class="form-group half">
+                            <label for="id_the_usefulness_of_knowledge">⭐ Польза знаний (1-5)</label>
+                            <select name="the_usefulness_of_knowledge" id="id_the_usefulness_of_knowledge" class="form-control">
+                                <option value="">Выберите оценку</option>
+                                <option value="5">5 - Очень полезно</option>
+                                <option value="4">4 - Полезно</option>
+                                <option value="3">3 - Средне</option>
+                                <option value="2">2 - Мало полезно</option>
+                                <option value="1">1 - Бесполезно</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit">Отправить на проверку</button>
+                        <a href="{% url 'homework_list_view' %}" class="btn-cancel">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/homework_submit.js' %}"></script>
+</body>
+</html>

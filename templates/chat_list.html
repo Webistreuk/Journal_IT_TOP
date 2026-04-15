@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Мессенджер{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/chat_list.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.21.0/index.css">
+{% endblock %}
+
+{% block user_info %}
+<div class="user-info">
+    <span class="user-name">{{ user.user }}</span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="telegram-container">
+    <div class="telegram-sidebar">
+        <div class="sidebar-header">
+            <div class="menu-icon" id="menuIcon">
+                <span class="line"></span>
+                <span class="line"></span>
+                <span class="line"></span>
+            </div>
+            <a href="{% url 'create_chat_view' %}" class="new-chat-btn">
+                <svg viewBox="0 0 24 24" width="24" height="24"><path fill="white" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            </a>
+        </div>
+        <div class="sidebar-menu" id="sidebarMenu">
+            <div class="menu-item" id="addAccountBtn">
+                <span class="menu-icon-small">👤</span>
+                <span>{{ user.get_full_name }}</span>
+            </div>
+            <div class="menu-item" id="savedMessagesBtn">
+                <span class="menu-icon-small">📁</span>
+                <span>Saved Messages</span>
+            </div>
+            <div class="menu-item" id="archivedChatsBtn">
+                <span class="menu-icon-small">📦</span>
+                <span>Archived Chats</span>
+                <span class="menu-badge">19</span>
+            </div>
+            <div class="menu-item" id="myStoriesBtn">
+                <span class="menu-icon-small">📖</span>
+                <span>My Stories</span>
+            </div>
+            <div class="menu-item" id="contactsBtn">
+                <span class="menu-icon-small">📞</span>
+                <span>Contacts</span>
+            </div>
+            <div class="menu-item" id="walletBtn">
+                <span class="menu-icon-small">💳</span>
+                <span>Wallet</span>
+            </div>
+            <div class="menu-item" id="settingsBtn">
+                <span class="menu-icon-small">⚙️</span>
+                <span>Settings</span>
+            </div>
+            <div class="menu-item more-item" id="moreMenuItem">
+                <span class="menu-icon-small">🔽</span>
+                <span>More</span>
+                <span class="menu-arrow">▶</span>
+            </div>
+        </div>
+        <div class="more-submenu" id="moreSubmenu">
+            <div class="submenu-item" id="darkModeBtn">Enable Dark Mode</div>
+            <div class="submenu-item" id="disableAnimationsBtn">Disable Animations</div>
+            <div class="submenu-item" id="switchVersionBtn">Switch to A version</div>
+            <div class="submenu-item" id="telegramFeaturesBtn">Telegram Features</div>
+            <div class="submenu-item" id="reportBugBtn">Report Bug</div>
+            <div class="submenu-item" id="installAppBtn">Install App</div>
+            <div class="submenu-version">Telegram WebK 2.2 (647)</div>
+        </div>
+        <div class="sidebar-search">
+            <input type="text" id="searchChats" placeholder="Поиск">
+        </div>
+        <div class="sidebar-chats" id="chatsList">
+            {% for chat in chats %}
+            <div class="chat-item {% if selected_chat and selected_chat.id == chat.id %}active{% endif %}" data-chat-id="{{ chat.id }}">
+                <div class="chat-avatar">
+                    {% for p in chat.participants.all %}
+                        {% if p != user %}
+                            <div class="avatar">
+                                {% if p.student %}{{ p.student.surname|first|upper }}{{ p.student.name|first|upper }}
+                                {% elif p.professor %}{{ p.professor.surname|first|upper }}{{ p.professor.name|first|upper }}
+                                {% elif p.academicstaff %}{{ p.academicstaff.surname|first|upper }}{{ p.academicstaff.name|first|upper }}
+                                {% else %}{{ p.user|first|upper }}{% endif %}
+                                <span class="online-dot" style="display: none;"></span>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="chat-info">
+                    <div class="chat-name">
+                        {% for p in chat.participants.all %}
+                            {% if p != user %}
+                                {{ p.get_full_name }}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="chat-last-msg">
+                        {% with last=chat.messages.last %}
+                            {{ last.text|truncatechars:30|default:"Нет сообщений" }}
+                        {% endwith %}
+                    </div>
+                </div>
+                <div class="chat-time">
+                    {% with last=chat.messages.last %}
+                        {{ last.created_at|date:"H:i"|default:"" }}
+                    {% endwith %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-chats">Нет чатов. Создайте новый.</div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="telegram-chat">
+        {% if selected_chat %}
+        <div class="chat-header">
+            <div class="chat-user-info" id="chatUserInfo" style="cursor: pointer;">
+                <div class="chat-avatar-lg">
+                    {% for p in selected_chat.participants.all %}
+                        {% if p != user %}
+                            <div class="avatar-lg">
+                                {% if p.student %}{{ p.student.surname|first|upper }}{{ p.student.name|first|upper }}
+                                {% elif p.professor %}{{ p.professor.surname|first|upper }}{{ p.professor.name|first|upper }}
+                                {% elif p.academicstaff %}{{ p.academicstaff.surname|first|upper }}{{ p.academicstaff.name|first|upper }}
+                                {% else %}{{ p.user|first|upper }}{% endif %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="chat-user-name">
+                    {% for p in selected_chat.participants.all %}
+                        {% if p != user %}
+                            {{ p.get_full_name }}
+                            <div class="chat-user-role">
+                                {% if p.student %}Студент{% elif p.professor %}Преподаватель{% elif p.academicstaff %}Учебная часть{% else %}Пользователь{% endif %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="chat-actions">
+                <button id="chatMenuBtn" class="chat-menu-btn">
+                    <svg viewBox="0 0 24 24" width="20" height="20"><path fill="currentColor" d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                </button>
+                <div id="chatMenuDropdown" class="chat-menu-dropdown" style="display: none;">
+                    <button id="deleteForMeBtn" class="delete-chat-btn">Удалить чат для себя</button>
+                    <button id="deleteForBothBtn" class="delete-chat-btn both">Удалить для обоих</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages" data-chat-id="{{ selected_chat.id }}" data-user-id="{{ user.id }}">
+            {% regroup messages by created_at|date:"Y-m-d" as messages_by_date %}
+            {% for date_group in messages_by_date %}
+                <div class="date-divider">
+                    <span>
+                        {% if date_group.grouper == today %}Сегодня
+                        {% elif date_group.grouper == yesterday %}Вчера
+                        {% else %}{{ date_group.grouper|date:"d F Y" }}{% endif %}
+                    </span>
+                </div>
+                {% for msg in date_group.list %}
+                <div class="message {% if msg.sender == user %}sent{% else %}received{% endif %}" data-id="{{ msg.id }}">
+                    <div class="message-bubble">
+                        <div class="message-text">{{ msg.text|linebreaksbr }}</div>
+                        {% if msg.file %}
+                        <div class="message-file">
+                            <a href="{{ msg.file.url }}" target="_blank">📎 {{ msg.display_filename }}</a>
+                        </div>
+                        {% endif %}
+                        <div class="message-time">
+                            {{ msg.created_at|date:"H:i" }}
+                            {% if msg.sender == user %}
+                                {% if msg.is_read %}
+                                    <i class="fa-solid fa-check-double message-status read"></i>
+                                {% elif msg.is_delivered %}
+                                    <i class="fa-solid fa-check-double message-status delivered"></i>
+                                {% else %}
+                                    <i class="fa-solid fa-check message-status sent"></i>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        {% if msg.sender == user %}
+                        <div class="message-actions">
+                            <button class="edit-msg" data-id="{{ msg.id }}">✏️</button>
+                            <button class="delete-msg" data-id="{{ msg.id }}">🗑️</button>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        <div class="chat-input-area">
+            <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                <span></span><span></span><span></span> печатает...
+            </div>
+            <div class="input-wrapper">
+                <div class="input-field">
+                    <button type="button" id="emojiBtn" class="tool-btn">😊</button>
+                    <button type="button" id="attachFileBtn" class="tool-btn">📎</button>
+                    <textarea id="messageInput" class="message-input" placeholder="Сообщение" rows="1"></textarea>
+                </div>
+                <button id="sendMsgBtn" class="send-btn">
+                    <svg viewBox="0 0 24 24" width="24" height="24"><path fill="white" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                </button>
+            </div>
+            <input type="file" id="fileInput" style="display:none">
+        </div>
+        {% else %}
+        <div class="no-chat-selected">Выберите чат из списка слева</div>
+        {% endif %}
+    </div>
+
+    <div id="profileSidebar" class="profile-sidebar">
+        <div class="profile-sidebar-header">
+            <h3>Профиль пользователя</h3>
+            <button id="closeSidebarBtn" class="close-sidebar">&times;</button>
+        </div>
+        <div id="profileContent" class="profile-sidebar-content"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<script src="{% static 'js/chat_list.js' %}"></script>
+{% endblock %}

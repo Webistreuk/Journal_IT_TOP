@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/complaint.css' %}">
+    <title>Жалоба генеральному директору - Journal</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Journal</div>
+            <nav class="nav-menu">
+                <a href="{% url 'main_view' %}">Главная</a>
+                <a href="{% url 'schedule_view' %}">Расписание</a>
+                <a href="{% url 'homework_list_view' %}">ДЗ</a>
+                <a href="{% url 'estimation_view' %}">Оценки</a>
+                <a href="{% url 'attendance_list_view' %}">Посещаемость</a>
+                <a href="{% url 'shop_view' %}">Магазин</a>
+                <a href="{% url 'leaderboard_view' %}">Рейтинг</a>
+                <a href="{% url 'polls_view' %}">Опросы</a>
+                <a href="{% url 'announcements_view' %}">Объявления</a>
+                <a href="{% url 'events_view' %}">События</a>
+                <a href="{% url 'educational_materials_view' %}">Материалы</a>
+                <a href="{% url 'appeal_view' %}">Обращение</a>
+                <a href="{% url 'review_view' %}">Отзыв</a>
+                <a href="{% url 'complaint_view' %}">Жалоба</a>
+                <a href="{% url 'chat_list_view' %}">Чаты</a>
+            </nav>
+            <div class="user-info">
+                <span class="user-name">{{ user.user }}</span>
+                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
+                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="complaint-container">
+            <div class="page-header">
+                <h1 class="page-title">⚠️ Жалоба генеральному директору</h1>
+                <p class="page-subtitle">Ваше обращение будет рассмотрено лично руководством академии</p>
+            </div>
+
+            <div class="warning-banner">
+                <div class="warning-icon">⚠️</div>
+                <div class="warning-text">
+                    <h3>Важно!</h3>
+                    <p>Жалоба рассматривается в особом порядке. Пожалуйста, указывайте только достоверную информацию.</p>
+                    <p>Анонимные жалобы не рассматриваются.</p>
+                </div>
+            </div>
+
+            <div class="complaint-card">
+                <form method="post" id="complaintForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="id_claim">📝 Текст жалобы</label>
+                        <textarea name="claim" id="id_claim" class="form-control" rows="10" placeholder="Опишите ситуацию подробно. Укажите факты, даты, имена сотрудников (если есть). Максимально конкретно изложите суть проблемы..." required></textarea>
+                        <div id="charCount" class="char-counter">0/500</div>
+                    </div>
+
+                    <div class="form-tips">
+                        <h4>📋 Рекомендации:</h4>
+                        <ul>
+                            <li>Опишите ситуацию максимально подробно и конкретно</li>
+                            <li>Укажите точные даты и время происшествия</li>
+                            <li>Назовите имена свидетелей (если есть)</li>
+                            <li>Приложите доказательства (скриншоты, фото) - можно отправить в ответном письме</li>
+                            <li>Сохраняйте корректный тон изложения</li>
+                        </ul>
+                    </div>
+
+                    <div class="form-check">
+                        <input type="checkbox" id="confirmCheck" required>
+                        <label for="confirmCheck">Я подтверждаю, что указанная информация соответствует действительности и не является ложной</label>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit">📤 Отправить жалобу</button>
+                        <a href="{% url 'main_view' %}" class="btn-cancel">Отмена</a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="info-card">
+                <h3>ℹ️ Что происходит после отправки жалобы?</h3>
+                <ul>
+                    <li>Ваша жалоба поступает напрямую генеральному директору</li>
+                    <li>Срок рассмотрения: до 10 рабочих дней</li>
+                    <li>По результатам рассмотрения вы получите официальный ответ</li>
+                    <li>В случае необходимости с вами свяжутся для уточнения деталей</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/complaint.js' %}"></script>
+</body>
+</html>

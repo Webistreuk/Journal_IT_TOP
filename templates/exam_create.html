@@ -1,0 +1,129 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/exam_create.css' %}">
+    <title>Выставление оценки за экзамен - Journal</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Journal</div>
+            <nav class="nav-menu">
+                <a href="{% url 'main_view' %}">Главная</a>
+                <a href="{% url 'schedule_view' %}">Расписание</a>
+                <a href="{% url 'homework_list_view' %}">ДЗ студентов</a>
+                <a href="{% url 'homework_add_view' %}">Создать ДЗ</a>
+                <a href="{% url 'attendance_mark_view' %}">Посещаемость</a>
+                <a href="{% url 'estimation_view' %}">Оценки</a>
+                <a href="{% url 'educational_materials_view' %}">Материалы</a>
+                <a href="{% url 'exam_list_view' %}">Экзамены</a>
+                <a href="{% url 'exam_create_view' %}">Выставить оценку</a>
+                <a href="{% url 'chat_list_view' %}">Чаты</a>
+            </nav>
+            <div class="user-info">
+                <span class="user-name">{{ user.user }}</span>
+                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
+                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="exam-create-container">
+            <div class="page-header">
+                <a href="{% url 'exam_list_view' %}" class="back-link">← Назад к экзаменам</a>
+                <h1 class="page-title">📝 Выставление оценки за экзамен</h1>
+            </div>
+
+            <div class="create-card">
+                <form method="post" enctype="multipart/form-data" id="examForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="id_student">👨‍🎓 Студент</label>
+                        <select name="student" id="id_student" class="form-control" required>
+                            <option value="">Выберите студента</option>
+                            {% for student in students %}
+                            <option value="{{ student.id }}">{{ student.surname }} {{ student.name }} {{ student.patronymic }} ({{ student.group.name }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_subject">📚 Предмет</label>
+                        <select name="subject" id="id_subject" class="form-control" required>
+                            <option value="">Выберите предмет</option>
+                            {% for subject in subjects %}
+                            <option value="{{ subject.id }}">{{ subject.name_subject }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_professor">👨‍🏫 Преподаватель</label>
+                        <select name="professor" id="id_professor" class="form-control" required>
+                            <option value="">Выберите преподавателя</option>
+                            {% for prof in professors %}
+                            <option value="{{ prof.id }}" {% if prof.id == professor.id %}selected{% endif %}>{{ prof.surname }} {{ prof.name }} {{ prof.patronymic }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_grade">🎯 Оценка</label>
+                        <select name="grade" id="id_grade" class="form-control" required>
+                            <option value="">Выберите оценку</option>
+                            <option value="5">5 - Отлично</option>
+                            <option value="4">4 - Хорошо</option>
+                            <option value="3">3 - Удовлетворительно</option>
+                            <option value="2">2 - Неудовлетворительно</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label for="id_exam_date">📅 Дата экзамена</label>
+                            <input type="date" name="exam_date" id="id_exam_date" class="form-control" required>
+                        </div>
+                        <div class="form-group half">
+                            <label for="id_semester">📖 Семестр</label>
+                            <select name="semester" id="id_semester" class="form-control" required>
+                                <option value="">Выберите семестр</option>
+                                {% for semester in semesters %}
+                                <option value="{{ semester.id }}">{{ semester.name }} ({{ semester.academic_year.name }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_exam_file">📎 Файл экзамена (необязательно)</label>
+                        <input type="file" name="exam_file" id="id_exam_file" class="form-control-file" accept=".pdf,.doc,.docx,.zip">
+                        <div id="fileInfo" class="file-info" style="display: none;">
+                            <span id="fileName"></span>
+                            <button type="button" class="btn-remove-file">✖</button>
+                        </div>
+                        <small class="form-text">Можно прикрепить экзаменационные материалы, билеты и т.д.</small>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>ℹ️ Информация:</h4>
+                        <p>Оценка за экзамен влияет на средний балл студента и его рейтинг.</p>
+                        <p>Неудовлетворительная оценка (2) требует пересдачи в установленные сроки.</p>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-create">✅ Выставить оценку</button>
+                        <a href="{% url 'exam_list_view' %}" class="btn-cancel">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/exam_create.js' %}"></script>
+</body>
+</html>

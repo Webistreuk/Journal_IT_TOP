@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/materials.css' %}">
+    <title>Учебные материалы - Journal</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Journal</div>
+            <nav class="nav-menu">
+                <a href="{% url 'main_view' %}">Главная</a>
+                {% if user_role == 'student' %}
+                    <a href="{% url 'schedule_view' %}">Расписание</a>
+                    <a href="{% url 'homework_list_view' %}">ДЗ</a>
+                    <a href="{% url 'estimation_view' %}">Оценки</a>
+                    <a href="{% url 'attendance_list_view' %}">Посещаемость</a>
+                    <a href="{% url 'shop_view' %}">Магазин</a>
+                    <a href="{% url 'leaderboard_view' %}">Рейтинг</a>
+                    <a href="{% url 'polls_view' %}">Опросы</a>
+                    <a href="{% url 'announcements_view' %}">Объявления</a>
+                    <a href="{% url 'events_view' %}">События</a>
+                    <a href="{% url 'educational_materials_view' %}">Материалы</a>
+                    <a href="{% url 'chat_list_view' %}">Чаты</a>
+                {% elif user_role == 'professor' %}
+                    <a href="{% url 'schedule_view' %}">Расписание</a>
+                    <a href="{% url 'homework_list_view' %}">ДЗ студентов</a>
+                    <a href="{% url 'homework_add_view' %}">Создать ДЗ</a>
+                    <a href="{% url 'attendance_mark_view' %}">Посещаемость</a>
+                    <a href="{% url 'estimation_view' %}">Оценки</a>
+                    <a href="{% url 'educational_materials_view' %}">Материалы</a>
+                    <a href="{% url 'chat_list_view' %}">Чаты</a>
+                {% endif %}
+            </nav>
+            <div class="user-info">
+                <span class="user-name">{{ user.user }}</span>
+                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
+                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="materials-container">
+            <div class="page-header">
+                <h1 class="page-title">📚 Учебные материалы</h1>
+                {% if user_role == 'professor' %}
+                <a href="{% url 'educational_material_create_view' %}" class="btn-create">➕ Загрузить материал</a>
+                {% endif %}
+            </div>
+
+            <div class="filter-bar">
+                <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск по названию...">
+                <select id="subjectFilter" class="subject-filter">
+                    <option value="">Все предметы</option>
+                    {% for subject in subjects %}
+                    <option value="{{ subject.id }}">{{ subject.name_subject }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="materials-grid" id="materialsGrid">
+                {% for material in materials %}
+                <div class="material-card" data-id="{{ material.id }}" data-subject="{{ material.subject.id|default:'' }}">
+                    <div class="material-icon">📄</div>
+                    <div class="material-info">
+                        <h3 class="material-title">{{ material.title }}</h3>
+                        <p class="material-description">{{ material.description|truncatechars:80 }}</p>
+                        <div class="material-meta">
+                            <span class="meta-item">👨‍🏫 {{ material.professor }}</span>
+                            <span class="meta-item">📅 {{ material.upload_date|date:"d.m.Y" }}</span>
+                        </div>
+                        <div class="material-subject">
+                            <span class="subject-tag">{{ material.subject.name_subject|default:"Общий" }}</span>
+                        </div>
+                        <a href="{{ material.file.url }}" class="btn-download" download>📥 Скачать</a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-materials">
+                    <p>📭 Нет учебных материалов</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/materials.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,275 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f5f7fa;
+}
+
+.header {
+    background: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.nav-menu a {
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+    transition: color 0.3s;
+}
+
+.nav-menu a:hover {
+    color: #667eea;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.user-name {
+    font-size: 14px;
+    color: #333;
+}
+
+.btn-profile, .btn-logout {
+    padding: 6px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.btn-profile {
+    background: #667eea;
+    color: white;
+}
+
+.btn-profile:hover {
+    background: #5a67d8;
+}
+
+.btn-logout {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-logout:hover {
+    background: #c82333;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 80px auto 20px;
+    padding: 0 20px;
+}
+
+.page-header {
+    margin-bottom: 25px;
+}
+
+.page-title {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.schedule-selector {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.schedule-select, .pair-select {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    min-width: 250px;
+    cursor: pointer;
+}
+
+.schedule-select:focus, .pair-select:focus {
+    border-color: #667eea;
+}
+
+.attendance-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.attendance-info {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.info-row {
+    margin-bottom: 8px;
+}
+
+.info-row:last-child {
+    margin-bottom: 0;
+}
+
+.info-label {
+    font-weight: bold;
+    color: #555;
+    width: 80px;
+    display: inline-block;
+}
+
+.info-value {
+    color: #333;
+}
+
+.students-table-wrapper {
+    overflow-x: auto;
+    margin-bottom: 20px;
+}
+
+.students-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.students-table th,
+.students-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.students-table th {
+    background: #f8f9fa;
+    font-weight: bold;
+}
+
+.students-table tr:hover {
+    background: #f8f9fa;
+}
+
+.status-select {
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.status-select.presence {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-select.late {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-select.absence {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.comment-input {
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 12px;
+    width: 150px;
+}
+
+.quick-actions {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.btn-quick {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.3s;
+}
+
+.btn-quick:hover {
+    transform: translateY(-2px);
+}
+
+.form-actions {
+    text-align: center;
+}
+
+.btn-save {
+    padding: 12px 30px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-save:hover {
+    background: #218838;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .schedule-selector {
+        flex-direction: column;
+    }
+    
+    .students-table th,
+    .students-table td {
+        padding: 8px;
+        font-size: 12px;
+    }
+    
+    .comment-input {
+        width: 100px;
+    }
+    
+    .quick-actions {
+        flex-direction: column;
+    }
+}

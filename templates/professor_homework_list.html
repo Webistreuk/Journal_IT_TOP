@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/professor_homework.css' %}">
+    <title>ДЗ студентов - Journal</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Journal</div>
+            <nav class="nav-menu">
+                <a href="{% url 'main_view' %}">Главная</a>
+                <a href="{% url 'homework_list_view' %}">ДЗ студентов</a>
+                <a href="{% url 'homework_add_view' %}">Создать ДЗ</a>
+                <a href="{% url 'attendance_mark_view' %}">Посещаемость</a>
+                <a href="{% url 'estimation_view' %}">Оценки</a>
+            </nav>
+            <div class="user-info">
+                <span class="user-name">{{ user.user }}</span>
+                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
+                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="homework-container">
+            <h1 class="page-title">📝 Домашние задания студентов</h1>
+            
+            {% for homework in homeworks %}
+            <div class="homework-card">
+                <div class="homework-header">
+                    <div class="homework-title">{{ homework.subject.name_subject }}</div>
+                    <div class="homework-group">Группа: {{ homework.group.name }}</div>
+                </div>
+                <div class="homework-dates">
+                    <span>📅 Выдано: {{ homework.date_start|date:"d.m.Y" }}</span>
+                    <span>⏰ Срок: {{ homework.date_final|date:"d.m.Y" }}</span>
+                </div>
+                <div class="homework-comment">
+                    <strong>💬 Комментарий:</strong>
+                    <p>{{ homework.comment }}</p>
+                </div>
+                {% if homework.file %}
+                <div class="homework-file">
+                    <a href="{{ homework.file.url }}" class="file-link" download>📎 Скачать задание</a>
+                </div>
+                {% endif %}
+                
+                {% with submissions=homework.homeworksubmission_set.all %}
+                <div class="submissions-section">
+                    <h3>📋 Сданные работы ({{ submissions|length }})</h3>
+                    <div class="submissions-list">
+                        {% for submission in submissions %}
+                        <div class="submission-item {% if not submission.is_checked %}unchecked{% endif %}">
+                            <div class="submission-info">
+                                <span class="student-name">{{ submission.student }}</span>
+                                <span class="submission-date">Сдано: {{ submission.submitted_at|date:"d.m.Y H:i" }}</span>
+                                {% if submission.is_checked %}
+                                    <span class="status-checked">✅ Проверено</span>
+                                {% else %}
+                                    <span class="status-pending">⏳ Ожидает проверки</span>
+                                {% endif %}
+                            </div>
+                            <div class="submission-actions">
+                                <a href="{% url 'homework_check_view' submission.id %}" class="btn-check">
+                                    {% if submission.is_checked %}Изменить оценку{% else %}Проверить{% endif %}
+                                </a>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="empty-submissions">Нет сданных работ</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endwith %}
+            </div>
+            {% empty %}
+            <div class="empty-state">
+                <p>Нет созданных домашних заданий</p>
+                <a href="{% url 'homework_add_view' %}" class="btn-create">➕ Создать задание</a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="{% static 'js/professor_homework.js' %}"></script>
+</body>
+</html>

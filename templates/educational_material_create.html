@@ -1,0 +1,104 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/educational_material_create.css' %}">
+    <title>Загрузка материала - Journal</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Journal</div>
+            <nav class="nav-menu">
+                <a href="{% url 'main_view' %}">Главная</a>
+                <a href="{% url 'schedule_view' %}">Расписание</a>
+                <a href="{% url 'homework_list_view' %}">ДЗ студентов</a>
+                <a href="{% url 'homework_add_view' %}">Создать ДЗ</a>
+                <a href="{% url 'attendance_mark_view' %}">Посещаемость</a>
+                <a href="{% url 'estimation_view' %}">Оценки</a>
+                <a href="{% url 'educational_materials_view' %}">Материалы</a>
+                <a href="{% url 'chat_list_view' %}">Чаты</a>
+            </nav>
+            <div class="user-info">
+                <span class="user-name">{{ user.user }}</span>
+                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
+                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="create-material-container">
+            <div class="page-header">
+                <a href="{% url 'educational_materials_view' %}" class="back-link">← Назад к материалам</a>
+                <h1 class="page-title">📤 Загрузка учебного материала</h1>
+            </div>
+
+            <div class="create-card">
+                <form method="post" enctype="multipart/form-data" id="materialForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="id_title">📌 Название материала</label>
+                        <input type="text" name="title" id="id_title" class="form-control" placeholder="Введите название" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_file">📎 Файл материала</label>
+                        <input type="file" name="file" id="id_file" class="form-control-file" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip" required>
+                        <div id="fileInfo" class="file-info" style="display: none;">
+                            <span id="fileName"></span>
+                            <span id="fileSize"></span>
+                            <button type="button" class="btn-remove-file">✖</button>
+                        </div>
+                        <small class="form-text">Поддерживаемые форматы: PDF, DOC, DOCX, PPT, PPTX, ZIP. Максимум 50MB</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_description">📝 Описание материала</label>
+                        <textarea name="description" id="id_description" class="form-control" rows="4" placeholder="Опишите содержание материала..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_subject">📚 Предмет</label>
+                        <select name="subject" id="id_subject" class="form-control">
+                            <option value="">Выберите предмет (необязательно)</option>
+                            {% for subject in subjects %}
+                            <option value="{{ subject.id }}">{{ subject.name_subject }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="is_public" id="id_is_public" class="checkbox-input">
+                            <span>🌍 Для всех групп (публичный доступ)</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group" id="groupsContainer">
+                        <label>🎓 Для конкретных групп</label>
+                        <div class="groups-checkboxes">
+                            {% for group in groups %}
+                            <label class="group-checkbox">
+                                <input type="checkbox" name="groups" value="{{ group.id }}" class="group-input">
+                                <span>{{ group.name }} ({{ group.course.number }} курс)</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-create">📤 Загрузить материал</button>
+                        <a href="{% url 'educational_materials_view' %}" class="btn-cancel">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/educational_material_create.js' %}"></script>
+</body>
+</html>

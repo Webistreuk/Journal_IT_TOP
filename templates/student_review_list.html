@@ -1,0 +1,105 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/student_review_list.css' %}">
+    <title>Отзывы о студентах - Journal</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Journal</div>
+            <nav class="nav-menu">
+                <a href="{% url 'main_view' %}">Главная</a>
+                {% if user_role == 'professor' %}
+                    <a href="{% url 'schedule_view' %}">Расписание</a>
+                    <a href="{% url 'homework_list_view' %}">ДЗ студентов</a>
+                    <a href="{% url 'homework_add_view' %}">Создать ДЗ</a>
+                    <a href="{% url 'attendance_mark_view' %}">Посещаемость</a>
+                    <a href="{% url 'estimation_view' %}">Оценки</a>
+                    <a href="{% url 'educational_materials_view' %}">Материалы</a>
+                    <a href="{% url 'student_review_create_view' %}">Отзыв о студенте</a>
+                    <a href="{% url 'student_review_list_view' %}">Все отзывы</a>
+                    <a href="{% url 'chat_list_view' %}">Чаты</a>
+                {% elif user_role == 'academic_staff' %}
+                    <a href="{% url 'schedule_create_view' %}">Расписание</a>
+                    <a href="{% url 'group_list_view' %}">Группы</a>
+                    <a href="{% url 'subject_list_view' %}">Предметы</a>
+                    <a href="{% url 'payment_info_view' %}">Оплаты</a>
+                    <a href="{% url 'debtor_list_view' %}">Должники</a>
+                    <a href="{% url 'announcements_view' %}">Объявления</a>
+                    <a href="{% url 'events_view' %}">События</a>
+                    <a href="{% url 'student_review_list_view' %}">Отзывы</a>
+                    <a href="{% url 'chat_list_view' %}">Чаты</a>
+                {% endif %}
+            </nav>
+            <div class="user-info">
+                <span class="user-name">{{ user.user }}</span>
+                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
+                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="reviews-container">
+            <div class="page-header">
+                <h1 class="page-title">📋 Отзывы о студентах</h1>
+                {% if user_role == 'professor' %}
+                <a href="{% url 'student_review_create_view' %}" class="btn-create">➕ Написать отзыв</a>
+                {% endif %}
+            </div>
+
+            <div class="filter-bar">
+                <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск по студенту...">
+                <select id="groupFilter" class="group-filter">
+                    <option value="">Все группы</option>
+                    {% for group in groups %}
+                    <option value="{{ group.name }}">{{ group.name }}</option>
+                    {% endfor %}
+                </select>
+                <select id="subjectFilter" class="subject-filter">
+                    <option value="">Все предметы</option>
+                    {% for subject in subjects %}
+                    <option value="{{ subject.id }}">{{ subject.name_subject }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="reviews-list">
+                {% for review in reviews %}
+                <div class="review-card" data-student="{{ review.student.surname }} {{ review.student.name }}" data-group="{{ review.student.group.name }}" data-subject="{{ review.subject.id }}">
+                    <div class="review-header">
+                        <div class="student-info">
+                            <div class="student-name">{{ review.student.surname }} {{ review.student.name }} {{ review.student.patronymic }}</div>
+                            <div class="student-group">{{ review.student.group.name }}</div>
+                        </div>
+                        <div class="review-date">{{ review.date|date:"d.m.Y" }}</div>
+                    </div>
+                    <div class="review-meta">
+                        <span class="meta-subject">📚 {{ review.subject.name_subject }}</span>
+                        <span class="meta-professor">👨‍🏫 {{ review.professor }}</span>
+                    </div>
+                    <div class="review-content">
+                        <p>{{ review.comment }}</p>
+                    </div>
+                    {% if user_role == 'academic_staff' %}
+                    <div class="review-actions">
+                        <button class="btn-delete" data-id="{{ review.id }}">🗑️ Удалить</button>
+                    </div>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <div class="empty-reviews">
+                    <p>📭 Нет отзывов о студентах</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/student_review_list.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/direction_create.css' %}">
+    <title>Создание направления - Journal</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Journal</div>
+            <nav class="nav-menu">
+                <a href="{% url 'main_view' %}">Главная</a>
+                <a href="{% url 'schedule_create_view' %}">Расписание</a>
+                <a href="{% url 'group_list_view' %}">Группы</a>
+                <a href="{% url 'subject_list_view' %}">Предметы</a>
+                <a href="{% url 'direction_list_view' %}">Направления</a>
+                <a href="{% url 'course_list_view' %}">Курсы</a>
+                <a href="{% url 'academic_year_list_view' %}">Учебные годы</a>
+                <a href="{% url 'payment_info_view' %}">Оплаты</a>
+                <a href="{% url 'debtor_list_view' %}">Должники</a>
+                <a href="{% url 'chat_list_view' %}">Чаты</a>
+            </nav>
+            <div class="user-info">
+                <span class="user-name">{{ user.user }}</span>
+                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
+                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="create-direction-container">
+            <div class="page-header">
+                <a href="{% url 'direction_list_view' %}" class="back-link">← Назад к направлениям</a>
+                <h1 class="page-title">➕ Создание направления</h1>
+            </div>
+
+            <div class="create-card">
+                <form method="post" id="directionForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="id_code">📌 Код направления</label>
+                        <input type="text" name="code" id="id_code" class="form-control" placeholder="Например: 09.03.01" required>
+                        <small class="form-text">Уникальный код направления подготовки</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_name">📚 Название направления</label>
+                        <input type="text" name="name" id="id_name" class="form-control" placeholder="Например: Информатика и вычислительная техника" required>
+                        <small class="form-text">Полное название направления подготовки</small>
+                    </div>
+
+                    <div class="form-preview">
+                        <h4>Предпросмотр:</h4>
+                        <div class="preview-card">
+                            <div class="preview-code" id="previewCode"></div>
+                            <div class="preview-name" id="previewName"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-create">✅ Создать направление</button>
+                        <a href="{% url 'direction_list_view' %}" class="btn-cancel">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/direction_create.js' %}"></script>
+</body>
+</html>

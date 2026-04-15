@@ -5,11 +5,30 @@ class Autoriz(models.Model):
     user = models.CharField(unique = True, max_length = 30, blank = False, null = True, error_messages = {'max_length': 'Длина имени не может содержать более 30 символов', 'blank': 'Напишите имя.', 'null': 'Напишите имя.'}, verbose_name = 'Имя аккаунта')
     password = models.CharField(max_length = 120, blank = False, null = False, error_messages = {'max_length': 'Длина пароля не может содержать более 40 символов', 'blank': 'Напишите пароль.', 'null': 'Напишите пароль.'}, verbose_name = 'Пароль от аккаунта')
     email = models.EmailField(unique = True, max_length = 100, blank = False, null = False, error_messages = {'max_length': 'Длина почты не может содержать более 100 символов', 'blank': 'Напишите почту.', 'null': 'Напишите почту.'}, verbose_name = 'Почта от аккаунта')
+    birth_date = models.DateField(null=True, blank=True, verbose_name='Дата рождения')
+    gender = models.CharField(max_length=1, choices=[('M', 'Мужской'), ('F', 'Женский')], blank=True, verbose_name='Пол')
+    phone = models.CharField(max_length=20, blank=True, verbose_name='Номер телефона')
+    hide_phone = models.BooleanField(default=False, verbose_name='Скрыть номер телефона')
 
     class Meta:
         db_table = 'List_of_users'
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+
+    def get_full_name(self):
+        try:
+            student = Student.objects.get(autoriz=self)
+            return f"{student.surname} {student.name} {student.patronymic}".strip()
+        except Student.DoesNotExist:
+            try:
+                professor = Professor.objects.get(autoriz=self)
+                return f"{professor.surname} {professor.name} {professor.patronymic}".strip()
+            except Professor.DoesNotExist:
+                try:
+                    staff = AcademicStaff.objects.get(autoriz=self)
+                    return f"{staff.surname} {staff.name} {staff.patronymic}".strip()
+                except AcademicStaff.DoesNotExist:
+                    return self.user
 
     def __str__(self):
         return self.user
@@ -1016,12 +1035,15 @@ class Chat(models.Model):
         return f'Чат {self.id}'
 
 class Message(models.Model):
-    chat = models.ForeignKey(Chat, on_delete = models.CASCADE, related_name = 'messages', verbose_name = 'Чат')
-    sender = models.ForeignKey(Autoriz, on_delete = models.CASCADE, verbose_name = 'Отправитель')
-    text = models.TextField(verbose_name = 'Текст сообщения')
-    file = models.FileField(upload_to = 'static/image/messages/', blank = True, null = True, verbose_name = 'Файл')
-    is_read = models.BooleanField(default = False, verbose_name = 'Прочитано')
-    created_at = models.DateTimeField(auto_now_add = True)
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(Autoriz, on_delete=models.CASCADE)
+    text = models.TextField(blank=True, null=True)
+    file = models.FileField(upload_to='chat_files/', blank=True, null=True)
+    original_filename = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+    is_delivered = models.BooleanField(default=False)
+    is_saved = models.BooleanField(default=False)
     
     class Meta:
         db_table = 'List_of_messages'
@@ -1029,5 +1051,57 @@ class Message(models.Model):
         verbose_name_plural = 'Сообщения'
         ordering = ['created_at']
     
+    @property
+    def display_filename(self):
+        if self.original_filename:
+            return self.original_filename
+        if self.file:
+            name = self.file.name
+            if 'chat_files/' in name:
+                name = name.replace('chat_files/', '')
+            elif 'static/image/messages/' in name:
+                name = name.replace('static/image/messages/', '')
+            return name
+        return 'Файл'
+
     def __str__(self):
         return f'Сообщение от {self.sender} в {self.created_at}'
+
+class ChatProfile(models.Model):
+    user = models.OneToOneField(Autoriz, on_delete=models.CASCADE, related_name='chat_profile')
+    interests = models.TextField(blank=True, verbose_name='Интересы')
+    avatar = models.ImageField(upload_to='chat_avatars/', blank=True, null=True, verbose_name='Аватар')
+    about = models.TextField(blank=True, verbose_name='О себе')
+    city = models.CharField(max_length=100, blank=True, verbose_name='Город')
+    
+    class Meta:
+        db_table = 'List_of_chat_profiles'
+        verbose_name = 'Профиль для чата'
+        verbose_name_plural = 'Профили для чата'
+    
+    def __str__(self):
+        return f'Chat профиль {self.user.user}'
+    
+class Story(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='stories')
+    file = models.FileField(upload_to='stories/')
+    caption = models.TextField(blank=True, null=True)
+    is_video = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    
+    class Meta:
+        db_table = 'List_of_stories'
+        verbose_name = 'История'
+        verbose_name_plural = 'Истории'
+        ordering = ['-created_at']
+    
+    def save(self, *args, **kwargs):
+        if not self.expires_at:
+            from datetime import timedelta
+            from django.utils import timezone
+            self.expires_at = timezone.now() + timedelta(days=1)
+        super().save(*args, **kwargs)
+    
+    def __str__(self):
+        return f'Story from {self.student} at {self.created_at}'

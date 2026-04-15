@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/announcement_create.css' %}">
+    <title>Создание объявления - Journal</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Journal</div>
+            <nav class="nav-menu">
+                <a href="{% url 'main_view' %}">Главная</a>
+                <a href="{% url 'schedule_create_view' %}">Расписание</a>
+                <a href="{% url 'group_list_view' %}">Группы</a>
+                <a href="{% url 'subject_list_view' %}">Предметы</a>
+                <a href="{% url 'payment_info_view' %}">Оплаты</a>
+                <a href="{% url 'debtor_list_view' %}">Должники</a>
+                <a href="{% url 'announcements_view' %}">Объявления</a>
+                <a href="{% url 'chat_list_view' %}">Чаты</a>
+            </nav>
+            <div class="user-info">
+                <span class="user-name">{{ user.user }}</span>
+                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
+                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="create-announcement-container">
+            <div class="page-header">
+                <a href="{% url 'announcements_view' %}" class="back-link">← Назад к объявлениям</a>
+                <h1 class="page-title">➕ Создание объявления</h1>
+            </div>
+
+            <div class="create-card">
+                <form method="post" enctype="multipart/form-data" id="announcementForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="id_title">📌 Заголовок объявления</label>
+                        <input type="text" name="title" id="id_title" class="form-control" placeholder="Введите заголовок" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_photo">🖼️ Фото (необязательно)</label>
+                        <input type="file" name="photo" id="id_photo" class="form-control-file" accept="image/*">
+                        <div id="imagePreview" class="image-preview" style="display: none;">
+                            <img id="previewImg" src="#" alt="Предпросмотр">
+                            <button type="button" class="btn-remove-image">✖</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_description">📝 Текст объявления</label>
+                        <textarea name="description" id="id_description" class="form-control" rows="8" placeholder="Введите текст объявления..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="is_for_all" id="id_is_for_all" class="checkbox-input">
+                            <span>📢 Для всех (без выбора групп)</span>
+                        </label>
+                    </div>
+
+                    <div class="form-group" id="groupsContainer">
+                        <label>🎓 Для конкретных групп</label>
+                        <div class="groups-checkboxes">
+                            {% for group in groups %}
+                            <label class="group-checkbox">
+                                <input type="checkbox" name="groups" value="{{ group.id }}" class="group-input">
+                                <span>{{ group.name }} ({{ group.course.number }} курс)</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-create">📢 Опубликовать</button>
+                        <a href="{% url 'announcements_view' %}" class="btn-cancel">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/announcement_create.js' %}"></script>
+</body>
+</html>

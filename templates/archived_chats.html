@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Archived Chats{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/archived_chats.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="archived-container">
+    <div class="archived-header">
+        <div class="menu-icon" id="menuIcon">
+            <span class="line"></span>
+            <span class="line"></span>
+            <span class="line"></span>
+        </div>
+        <a href="{% url 'chat_list_view' %}" class="back-link">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+            </svg>
+        </a>
+        <h1>Archived Chats</h1>
+    </div>
+    <div class="archived-sidebar-menu" id="sidebarMenu">
+        <div class="menu-item" id="addAccountBtn">
+            <span class="menu-icon-small">👤</span>
+            <span>{{ user.get_full_name }}</span>
+        </div>
+        <div class="menu-item" id="savedMessagesBtn">
+            <span class="menu-icon-small">📁</span>
+            <span>Saved Messages</span>
+        </div>
+        <div class="menu-item" id="archivedChatsBtn">
+            <span class="menu-icon-small">📦</span>
+            <span>Archived Chats</span>
+            <span class="menu-badge">19</span>
+        </div>
+        <div class="menu-item" id="myStoriesBtn">
+            <span class="menu-icon-small">📖</span>
+            <span>My Stories</span>
+        </div>
+        <div class="menu-item" id="contactsBtn">
+            <span class="menu-icon-small">📞</span>
+            <span>Contacts</span>
+        </div>
+        <div class="menu-item" id="walletBtn">
+            <span class="menu-icon-small">💳</span>
+            <span>Wallet</span>
+        </div>
+        <div class="menu-item" id="settingsBtn">
+            <span class="menu-icon-small">⚙️</span>
+            <span>Settings</span>
+        </div>
+        <div class="menu-item more-item" id="moreMenuItem">
+            <span class="menu-icon-small">🔽</span>
+            <span>More</span>
+            <span class="menu-arrow">▶</span>
+        </div>
+    </div>
+    <div class="more-submenu" id="moreSubmenu">
+        <div class="submenu-item" id="darkModeBtn">Enable Dark Mode</div>
+        <div class="submenu-item" id="disableAnimationsBtn">Disable Animations</div>
+        <div class="submenu-item" id="switchVersionBtn">Switch to A version</div>
+        <div class="submenu-item" id="telegramFeaturesBtn">Telegram Features</div>
+        <div class="submenu-item" id="reportBugBtn">Report Bug</div>
+        <div class="submenu-item" id="installAppBtn">Install App</div>
+        <div class="submenu-version">Telegram WebK 2.2 (647)</div>
+    </div>
+    <div class="archived-content">
+        <div class="archived-list">
+            <div class="archived-item">
+                <div class="archived-avatar">📦</div>
+                <div class="archived-info">
+                    <div class="archived-name">Example Chat</div>
+                    <div class="archived-preview">This chat was archived</div>
+                </div>
+                <button class="unarchive-btn">Unarchive</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/archived_chats.js' %}"></script>
+{% endblock %}

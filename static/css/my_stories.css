@@ -1,0 +1,260 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.stories-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+}
+
+.stories-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eef2f5;
+}
+
+.menu-icon {
+    cursor: pointer;
+    width: 24px;
+}
+
+.menu-icon .line {
+    background-color: #2f2f2f;
+    height: 2px;
+    display: block;
+    border-radius: 2px;
+}
+
+.menu-icon .line + .line {
+    margin-top: 5px;
+}
+
+.back-link {
+    color: #4f8df3;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.back-link:hover {
+    opacity: 0.7;
+}
+
+.stories-header h1 {
+    font-size: 24px;
+    font-weight: 500;
+    color: #1f2d3d;
+    margin: 0;
+    flex: 1;
+}
+
+.add-story-btn {
+    padding: 8px 16px;
+    background: #4f8df3;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.add-story-btn:hover {
+    background: #3c7ae0;
+    transform: scale(1.02);
+}
+
+.stories-sidebar-menu {
+    position: absolute;
+    top: 70px;
+    left: 20px;
+    width: 280px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 200;
+    display: none;
+    overflow: hidden;
+}
+
+.stories-sidebar-menu.show {
+    display: block;
+    animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+    gap: 12px;
+    font-size: 15px;
+}
+
+.menu-item:hover {
+    background: #f5f5f5;
+}
+
+.menu-icon-small {
+    font-size: 20px;
+    width: 28px;
+}
+
+.menu-badge {
+    margin-left: auto;
+    background: #c4c9cc;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: #1f2d3d;
+}
+
+.more-item {
+    position: relative;
+}
+
+.menu-arrow {
+    margin-left: auto;
+    font-size: 12px;
+    color: #8e9eae;
+}
+
+.more-submenu {
+    position: absolute;
+    left: 100%;
+    top: 0;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    width: 220px;
+    display: none;
+    z-index: 300;
+}
+
+.more-item:hover .more-submenu {
+    display: block;
+}
+
+.submenu-item {
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 14px;
+}
+
+.submenu-item:hover {
+    background: #f5f5f5;
+}
+
+.submenu-version {
+    padding: 10px 16px;
+    font-size: 12px;
+    color: #8e9eae;
+    border-top: 1px solid #eef2f5;
+}
+
+.stories-content {
+    background: white;
+    border-radius: 12px;
+    padding: 60px 40px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+
+.stories-empty .empty-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.stories-empty h3 {
+    font-size: 18px;
+    font-weight: 500;
+    color: #1f2d3d;
+    margin-bottom: 10px;
+}
+
+.stories-empty p {
+    font-size: 14px;
+    color: #8b9eb0;
+}
+
+body.dark-mode {
+    background: #1a1a2e;
+}
+
+body.dark-mode .stories-header {
+    border-bottom-color: #2a2c42;
+}
+
+body.dark-mode .menu-icon .line {
+    background-color: #fff;
+}
+
+body.dark-mode .stories-header h1 {
+    color: #fff;
+}
+
+body.dark-mode .stories-sidebar-menu,
+body.dark-mode .more-submenu {
+    background: #24263b;
+}
+
+body.dark-mode .menu-item:hover {
+    background: #2a2c42;
+}
+
+body.dark-mode .menu-item {
+    color: #fff;
+}
+
+body.dark-mode .menu-badge {
+    background: #3a3d5e;
+    color: #fff;
+}
+
+body.dark-mode .submenu-version {
+    border-top-color: #2a2c42;
+    color: #9a9ec0;
+}
+
+body.dark-mode .stories-content {
+    background: #24263b;
+}
+
+body.dark-mode .stories-empty h3 {
+    color: #fff;
+}
+
+body.dark-mode .stories-empty p {
+    color: #9a9ec0;
+}
+
+body.dark-mode .add-story-btn {
+    background: #4f8df3;
+}
+
+body.no-animations * {
+    transition: none !important;
+    animation: none !important;
+}

@@ -1,0 +1,105 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/announcements.css' %}">
+    <title>Объявления - Journal</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Journal</div>
+            <nav class="nav-menu">
+                <a href="{% url 'main_view' %}">Главная</a>
+                {% if user_role == 'student' %}
+                    <a href="{% url 'schedule_view' %}">Расписание</a>
+                    <a href="{% url 'homework_list_view' %}">ДЗ</a>
+                    <a href="{% url 'estimation_view' %}">Оценки</a>
+                    <a href="{% url 'attendance_list_view' %}">Посещаемость</a>
+                    <a href="{% url 'shop_view' %}">Магазин</a>
+                    <a href="{% url 'leaderboard_view' %}">Рейтинг</a>
+                    <a href="{% url 'polls_view' %}">Опросы</a>
+                    <a href="{% url 'announcements_view' %}">Объявления</a>
+                    <a href="{% url 'chat_list_view' %}">Чаты</a>
+                {% elif user_role == 'professor' %}
+                    <a href="{% url 'schedule_view' %}">Расписание</a>
+                    <a href="{% url 'homework_list_view' %}">ДЗ студентов</a>
+                    <a href="{% url 'homework_add_view' %}">Создать ДЗ</a>
+                    <a href="{% url 'attendance_mark_view' %}">Посещаемость</a>
+                    <a href="{% url 'estimation_view' %}">Оценки</a>
+                    <a href="{% url 'announcements_view' %}">Объявления</a>
+                    <a href="{% url 'chat_list_view' %}">Чаты</a>
+                {% elif user_role == 'academic_staff' %}
+                    <a href="{% url 'schedule_create_view' %}">Расписание</a>
+                    <a href="{% url 'group_list_view' %}">Группы</a>
+                    <a href="{% url 'subject_list_view' %}">Предметы</a>
+                    <a href="{% url 'payment_info_view' %}">Оплаты</a>
+                    <a href="{% url 'debtor_list_view' %}">Должники</a>
+                    <a href="{% url 'announcements_view' %}">Объявления</a>
+                    <a href="{% url 'chat_list_view' %}">Чаты</a>
+                {% endif %}
+            </nav>
+            <div class="user-info">
+                <span class="user-name">{{ user.user }}</span>
+                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
+                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="announcements-container">
+            <div class="page-header">
+                <h1 class="page-title">📢 Объявления</h1>
+                {% if user_role == 'academic_staff' %}
+                <a href="{% url 'announcement_create_view' %}" class="btn-create">➕ Создать объявление</a>
+                {% endif %}
+            </div>
+
+            <div class="announcements-list">
+                {% for announcement in announcements %}
+                <div class="announcement-card" data-id="{{ announcement.id }}">
+                    <div class="announcement-header">
+                        <h3 class="announcement-title">{{ announcement.title }}</h3>
+                        <div class="announcement-date">{{ announcement.date_added|date:"d.m.Y H:i" }}</div>
+                    </div>
+                    {% if announcement.photo %}
+                    <div class="announcement-image">
+                        <img src="{{ announcement.photo.url }}" alt="{{ announcement.title }}">
+                    </div>
+                    {% endif %}
+                    <div class="announcement-content">
+                        <p>{{ announcement.description|linebreaks }}</p>
+                    </div>
+                    <div class="announcement-footer">
+                        <div class="announcement-groups">
+                            {% if announcement.is_for_all %}
+                                <span class="group-tag all">📢 Для всех</span>
+                            {% else %}
+                                {% for group in announcement.groups.all %}
+                                    <span class="group-tag">{{ group.name }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        {% if user_role == 'academic_staff' %}
+                        <div class="announcement-actions">
+                            <button class="btn-edit" data-id="{{ announcement.id }}">✏️</button>
+                            <button class="btn-delete" data-id="{{ announcement.id }}">🗑️</button>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-announcements">
+                    <p>📭 Нет объявлений</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/announcements.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/homework_check.css' %}">
+    <title>Проверка ДЗ - Journal</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Journal</div>
+            <nav class="nav-menu">
+                <a href="{% url 'main_view' %}">Главная</a>
+                <a href="{% url 'homework_list_view' %}">ДЗ студентов</a>
+                <a href="{% url 'homework_add_view' %}">Создать ДЗ</a>
+                <a href="{% url 'attendance_mark_view' %}">Посещаемость</a>
+                <a href="{% url 'estimation_view' %}">Оценки</a>
+            </nav>
+            <div class="user-info">
+                <span class="user-name">{{ user.user }}</span>
+                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
+                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="check-container">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">📝 Проверка работы</h2>
+                    <div class="student-badge">{{ submission.student }}</div>
+                </div>
+
+                <div class="homework-info">
+                    <div class="info-row">
+                        <span class="info-label">📚 Предмет:</span>
+                        <span class="info-value">{{ submission.homework.subject.name_subject }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">👨‍🏫 Группа:</span>
+                        <span class="info-value">{{ submission.homework.group.name }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">📅 Дата сдачи:</span>
+                        <span class="info-value">{{ submission.submitted_at|date:"d.m.Y H:i" }}</span>
+                    </div>
+                    {% if submission.time_work %}
+                    <div class="info-row">
+                        <span class="info-label">⏱ Время выполнения:</span>
+                        <span class="info-value">{{ submission.time_work }} минут</span>
+                    </div>
+                    {% endif %}
+                    {% if submission.the_usefulness_of_knowledge %}
+                    <div class="info-row">
+                        <span class="info-label">⭐ Польза знаний:</span>
+                        <span class="info-value">{{ submission.the_usefulness_of_knowledge }}/5</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="assignment-info">
+                    <div class="assignment-title">📋 Задание от преподавателя</div>
+                    <div class="assignment-comment">{{ submission.homework.comment }}</div>
+                    {% if submission.homework.file %}
+                    <a href="{{ submission.homework.file.url }}" class="file-link" download>📎 Скачать задание</a>
+                    {% endif %}
+                </div>
+
+                <div class="student-work">
+                    <div class="work-title">📄 Работа студента</div>
+                    {% if submission.file %}
+                    <a href="{{ submission.file.url }}" class="work-file-link" download>📥 Скачать работу студента</a>
+                    {% endif %}
+                    {% if submission.comment %}
+                    <div class="work-comment">
+                        <strong>Комментарий студента:</strong>
+                        <p>{{ submission.comment }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <form method="post" id="checkForm">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="id_grade">🎯 Оценка</label>
+                        <select name="grade" id="id_grade" class="form-control">
+                            <option value="">Выберите оценку</option>
+                            <option value="5" {% if submission.grade == 5 %}selected{% endif %}>5 - Отлично</option>
+                            <option value="4" {% if submission.grade == 4 %}selected{% endif %}>4 - Хорошо</option>
+                            <option value="3" {% if submission.grade == 3 %}selected{% endif %}>3 - Удовлетворительно</option>
+                            <option value="2" {% if submission.grade == 2 %}selected{% endif %}>2 - Неудовлетворительно</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_professor_comment">💬 Комментарий преподавателя</label>
+                        <textarea name="professor_comment" id="id_professor_comment" class="form-control" rows="4" placeholder="Напишите замечания, рекомендации...">{{ submission.professor_comment }}</textarea>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" name="is_checked" id="id_is_checked" {% if submission.is_checked %}checked{% endif %}>
+                        <label for="id_is_checked">✅ Отметить как проверенное</label>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-save">💾 Сохранить оценку</button>
+                        <a href="{% url 'homework_list_view' %}" class="btn-back">← Назад к списку</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/homework_check.js' %}"></script>
+</body>
+</html>

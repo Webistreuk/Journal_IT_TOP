@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/attendance_list.css' %}">
+    <title>Моя посещаемость - Journal</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Journal</div>
+            <nav class="nav-menu">
+                <a href="{% url 'main_view' %}">Главная</a>
+                <a href="{% url 'schedule_view' %}">Расписание</a>
+                <a href="{% url 'homework_list_view' %}">ДЗ</a>
+                <a href="{% url 'estimation_view' %}">Оценки</a>
+                <a href="{% url 'attendance_list_view' %}">Посещаемость</a>
+                <a href="{% url 'shop_view' %}">Магазин</a>
+                <a href="{% url 'leaderboard_view' %}">Рейтинг</a>
+                <a href="{% url 'polls_view' %}">Опросы</a>
+                <a href="{% url 'chat_list_view' %}">Чаты</a>
+            </nav>
+            <div class="user-info">
+                <span class="user-name">{{ user.user }}</span>
+                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
+                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="attendance-list-container">
+            <div class="page-header">
+                <h1 class="page-title">📊 Моя посещаемость</h1>
+                <div class="stats-summary">
+                    <div class="stat-item present">
+                        <span class="stat-count">{{ present_count }}</span>
+                        <span class="stat-label">Присутствий</span>
+                    </div>
+                    <div class="stat-item late">
+                        <span class="stat-count">{{ late_count }}</span>
+                        <span class="stat-label">Опозданий</span>
+                    </div>
+                    <div class="stat-item absent">
+                        <span class="stat-count">{{ absent_count }}</span>
+                        <span class="stat-label">Пропусков</span>
+                    </div>
+                    <div class="stat-item total">
+                        <span class="stat-count">{{ total_count }}</span>
+                        <span class="stat-label">Всего занятий</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="attendance-card">
+                <div class="filter-bar">
+                    <input type="text" id="dateSearch" class="search-input" placeholder="🔍 Поиск по дате...">
+                    <select id="statusFilter" class="status-filter">
+                        <option value="">Все статусы</option>
+                        <option value="presence">✅ Присутствует</option>
+                        <option value="late">⚠️ Опоздал</option>
+                        <option value="absence">❌ Отсутствует</option>
+                    </select>
+                    <select id="subjectFilter" class="subject-filter">
+                        <option value="">Все предметы</option>
+                        {% for subject in subjects %}
+                        <option value="{{ subject.id }}">{{ subject.name_subject }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="attendance-table" id="attendanceTable">
+                        <thead>
+                            <tr>
+                                <th>Дата</th>
+                                <th>Предмет</th>
+                                <th>Преподаватель</th>
+                                <th>Пара</th>
+                                <th>Статус</th>
+                                <th>Комментарий</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for attendance in attendances %}
+                            <tr data-date="{{ attendance.data_created|date:'Y-m-d' }}" 
+                                data-status="{{ attendance.type }}"
+                                data-subject="{{ attendance.pair.subject.id|default:'' }}">
+                                <td>{{ attendance.data_created|date:"d.m.Y" }}</td>
+                                <td>{{ attendance.pair.subject.name_subject|default:"-" }}</td>
+                                <td>{{ attendance.pair.professor|default:"-" }}</td>
+                                <td>{{ attendance.pair.get_pair_number_display|default:"-" }}</td>
+                                <td>
+                                    {% if attendance.type == 'presence' %}
+                                        <span class="status-badge presence">✅ Присутствует</span>
+                                    {% elif attendance.type == 'late' %}
+                                        <span class="status-badge late">⚠️ Опоздал</span>
+                                    {% else %}
+                                        <span class="status-badge absence">❌ Отсутствует</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ attendance.comment|default:"-" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="empty-row">Нет данных о посещаемости</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/attendance_list.js' %}"></script>
+</body>
+</html>

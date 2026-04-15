@@ -1,0 +1,79 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/polls.css' %}">
+    <title>Опросы - Journal</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Journal</div>
+            <nav class="nav-menu">
+                <a href="{% url 'main_view' %}">Главная</a>
+                <a href="{% url 'schedule_view' %}">Расписание</a>
+                <a href="{% url 'homework_list_view' %}">ДЗ</a>
+                <a href="{% url 'estimation_view' %}">Оценки</a>
+                <a href="{% url 'attendance_list_view' %}">Посещаемость</a>
+                <a href="{% url 'shop_view' %}">Магазин</a>
+                <a href="{% url 'leaderboard_view' %}">Рейтинг</a>
+                <a href="{% url 'polls_view' %}">Опросы</a>
+                <a href="{% url 'chat_list_view' %}">Чаты</a>
+            </nav>
+            <div class="user-info">
+                <span class="user-name">{{ user.user }}</span>
+                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
+                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="polls-container">
+            <div class="polls-header">
+                <h1 class="page-title">📊 Опросы</h1>
+                <p class="page-subtitle">Примите участие в опросах и повлияйте на жизнь академии</p>
+            </div>
+
+            <div class="polls-grid">
+                {% for poll in polls %}
+                <div class="poll-card">
+                    <div class="poll-status">
+                        {% if poll.end_date < now %}
+                            <span class="status-closed">🔒 Закрыт</span>
+                        {% else %}
+                            <span class="status-active">🟢 Активен</span>
+                        {% endif %}
+                    </div>
+                    <h3 class="poll-title">{{ poll.title }}</h3>
+                    <p class="poll-description">{{ poll.description|truncatechars:120 }}</p>
+                    <div class="poll-dates">
+                        <div class="date-item">
+                            <span class="date-label">📅 Начало:</span>
+                            <span class="date-value">{{ poll.start_date|date:"d.m.Y H:i" }}</span>
+                        </div>
+                        <div class="date-item">
+                            <span class="date-label">⏰ Окончание:</span>
+                            <span class="date-value">{{ poll.end_date|date:"d.m.Y H:i" }}</span>
+                        </div>
+                    </div>
+                    <div class="poll-footer">
+                        <a href="{% url 'poll_detail_view' poll.id %}" class="btn-poll">
+                            {% if poll.end_date < now %}Посмотреть результаты{% else %}Пройти опрос{% endif %}
+                        </a>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="empty-polls">
+                    <p>📭 Нет активных опросов</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/polls.js' %}"></script>
+</body>
+</html>

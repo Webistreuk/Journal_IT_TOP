@@ -1,3 +1,4 @@
+<!-- templates/Authorize.html -->
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -14,47 +15,46 @@
                 <p>Journal</p>
                 <div class="red_line_x"></div>
                 <div class="red_line_y"></div>
-                <form action="{% url "Вход" %}" method="post">
+                <form method="post">
                     {% csrf_token %}
                     <div class="fields_of_Journal">
-                        <input class="username_field" type="text" name="username" placeholder="Логин">
+                        <input class="username_field" type="text" name="user" placeholder="Логин">
                         {% if error %}
-                            <div class="error-message">
-                                {{ error }}
-                            </div>
+                            <div class="error-message">{{ error }}</div>
                         {% endif %}
-                        <input class="userpassword_field" type="password" name="userpassword" placeholder="Пароль">
+                        <input class="userpassword_field" type="password" name="password" placeholder="Пароль">
                     </div>
                     <input class="Login" type="submit" value="Вход">
                     <button class="Forgot_your_password" type="button">Забыли пароль?</button>
-                    <div class="Choice_of_Language">
-                        
+                    <div class="language-switcher">
+                        <span>RU</span>
+                        <span>EN</span>
+                        <span>ES</span>
+                        <span>TR</span>
                     </div>
                 </form>
             </div>
-
             <div class="Journal_remove_password">
                 <p>Journal</p>
                 <div class="red_line_x_JRP"></div>
                 <div class="red_line_y_JRP"></div>
-                <form action="{% url "Вход" %}" method="post">
+                <form method="post" action="{% url 'autoriz_remove_password_view' %}">
                     {% csrf_token %}
                     <div class="fields_of_JournalRP">
-                        <input class="useremail_field" type="email" name="useremail" placeholder="E-mail">
+                        <input class="useremail_field" type="email" name="email" placeholder="E-mail">
                     </div>
                     <input class="form_Send" type="submit" value="Отправить">
                     <button class="Return_to_the_login_page" type="button">Вернуться на страницу входа</button>
-                    <div class="Choice_of_Language">
-                        
+                    <div class="language-switcher">
+                        <span>RU</span>
+                        <span>EN</span>
+                        <span>ES</span>
+                        <span>TR</span>
                     </div>
-                    
                 </form>
             </div>
         </div>
     </div>
-    
-
     <script src="{% static 'js/Authorize.js' %}"></script>
-
 </body>
 </html>

@@ -1,0 +1,95 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/academic_year_create.css' %}">
+    <title>Создание учебного года - Journal</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Journal</div>
+            <nav class="nav-menu">
+                <a href="{% url 'main_view' %}">Главная</a>
+                <a href="{% url 'schedule_create_view' %}">Расписание</a>
+                <a href="{% url 'group_list_view' %}">Группы</a>
+                <a href="{% url 'subject_list_view' %}">Предметы</a>
+                <a href="{% url 'direction_list_view' %}">Направления</a>
+                <a href="{% url 'course_list_view' %}">Курсы</a>
+                <a href="{% url 'academic_year_list_view' %}">Учебные годы</a>
+                <a href="{% url 'payment_info_view' %}">Оплаты</a>
+                <a href="{% url 'debtor_list_view' %}">Должники</a>
+                <a href="{% url 'chat_list_view' %}">Чаты</a>
+            </nav>
+            <div class="user-info">
+                <span class="user-name">{{ user.user }}</span>
+                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
+                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="create-year-container">
+            <div class="page-header">
+                <a href="{% url 'academic_year_list_view' %}" class="back-link">← Назад к учебным годам</a>
+                <h1 class="page-title">➕ Создание учебного года</h1>
+            </div>
+
+            <div class="create-card">
+                <form method="post" id="academicYearForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="id_name">📌 Название учебного года</label>
+                        <input type="text" name="name" id="id_name" class="form-control" placeholder="Например: 2024-2025" required>
+                        <small class="form-text">Формат: ГГГГ-ГГГГ (например, 2024-2025)</small>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group half">
+                            <label for="id_start_date">📅 Дата начала</label>
+                            <input type="date" name="start_date" id="id_start_date" class="form-control" required>
+                        </div>
+                        <div class="form-group half">
+                            <label for="id_end_date">📅 Дата окончания</label>
+                            <input type="date" name="end_date" id="id_end_date" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="is_current" id="id_is_current" class="checkbox-input">
+                            <span>⭐ Сделать текущим учебным годом</span>
+                        </label>
+                        <small class="form-text">Если выбран этот пункт, предыдущий текущий год перестанет быть текущим</small>
+                    </div>
+
+                    <div class="form-preview">
+                        <h4>Предпросмотр:</h4>
+                        <div class="preview-card">
+                            <div class="preview-name" id="previewName">Учебный год</div>
+                            <div class="preview-dates" id="previewDates"></div>
+                        </div>
+                    </div>
+
+                    <div class="info-box">
+                        <h4>ℹ️ Информация:</h4>
+                        <p>Учебный год определяет период обучения студентов. Обычно начинается 1 сентября и заканчивается 31 августа следующего года.</p>
+                        <p>Текущий учебный год используется для отображения актуальных данных в системе.</p>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-create">✅ Создать учебный год</button>
+                        <a href="{% url 'academic_year_list_view' %}" class="btn-cancel">Отмена</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/academic_year_create.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/review.css' %}">
+    <title>Отзыв об академии - Journal</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Journal</div>
+            <nav class="nav-menu">
+                <a href="{% url 'main_view' %}">Главная</a>
+                <a href="{% url 'schedule_view' %}">Расписание</a>
+                <a href="{% url 'homework_list_view' %}">ДЗ</a>
+                <a href="{% url 'estimation_view' %}">Оценки</a>
+                <a href="{% url 'attendance_list_view' %}">Посещаемость</a>
+                <a href="{% url 'shop_view' %}">Магазин</a>
+                <a href="{% url 'leaderboard_view' %}">Рейтинг</a>
+                <a href="{% url 'polls_view' %}">Опросы</a>
+                <a href="{% url 'announcements_view' %}">Объявления</a>
+                <a href="{% url 'events_view' %}">События</a>
+                <a href="{% url 'educational_materials_view' %}">Материалы</a>
+                <a href="{% url 'appeal_view' %}">Обращение</a>
+                <a href="{% url 'review_view' %}">Отзыв</a>
+                <a href="{% url 'chat_list_view' %}">Чаты</a>
+            </nav>
+            <div class="user-info">
+                <span class="user-name">{{ user.user }}</span>
+                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
+                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="review-container">
+            <div class="page-header">
+                <h1 class="page-title">⭐ Отзыв об академии</h1>
+                <p class="page-subtitle">Поделитесь своим мнением о качестве обучения и получите бонусы!</p>
+            </div>
+
+            <div class="reward-banner">
+                <div class="reward-icon">🎁</div>
+                <div class="reward-text">
+                    <h3>Бонус за отзыв!</h3>
+                    <p>За публикацию отзыва с фото вы получите <strong>+50 топкоинов</strong> и <strong>+10 топгемов</strong></p>
+                </div>
+            </div>
+
+            <div class="review-card">
+                <form method="post" enctype="multipart/form-data" id="reviewForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="id_type_a_social_network">🌐 Выберите платформу</label>
+                        <select name="type_a_social_network" id="id_type_a_social_network" class="form-control" required>
+                            <option value="">Выберите платформу</option>
+                            <option value="google">Google Карты</option>
+                            <option value="yandex">Яндекс Карты</option>
+                            <option value="zoon">Zoon.ru</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_confirmation_review">📸 Скриншот отзыва</label>
+                        <input type="file" name="confirmation_review" id="id_confirmation_review" class="form-control-file" accept="image/*" required>
+                        <div id="imagePreview" class="image-preview" style="display: none;">
+                            <img id="previewImg" src="#" alt="Предпросмотр">
+                            <button type="button" class="btn-remove-image">✖</button>
+                        </div>
+                        <small class="form-text">Загрузите скриншот вашего отзыва на выбранной платформе. Поддерживаются форматы: JPG, PNG</small>
+                    </div>
+
+                    <div class="form-tips">
+                        <h4>📝 Как получить бонус?</h4>
+                        <ul>
+                            <li>1. Напишите отзыв об академии на одной из платформ (Google, Яндекс, Zoon)</li>
+                            <li>2. Сделайте скриншот вашего отзыва</li>
+                            <li>3. Загрузите скриншот в форму выше</li>
+                            <li>4. После проверки модератором вы получите бонусные баллы</li>
+                        </ul>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit">📤 Отправить на проверку</button>
+                        <a href="{% url 'main_view' %}" class="btn-cancel">Отмена</a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="my-reviews">
+                <h3 class="my-reviews-title">📋 Мои отзывы</h3>
+                <div class="reviews-list">
+                    {% for review in my_reviews %}
+                    <div class="review-item">
+                        <div class="review-status">
+                            {% if review.is_verified %}
+                                <span class="status-verified">✅ Проверен</span>
+                            {% else %}
+                                <span class="status-pending">⏳ На проверке</span>
+                            {% endif %}
+                        </div>
+                        <div class="review-platform">{{ review.get_type_a_social_network_display }}</div>
+                        <div class="review-date">{{ review.created_at|date:"d.m.Y" }}</div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-reviews">У вас пока нет отправленных отзывов</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/review.js' %}"></script>
+</body>
+</html>

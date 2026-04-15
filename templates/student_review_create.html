@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/student_review_create.css' %}">
+    <title>Отзыв о студенте - Journal</title>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">Journal</div>
+            <nav class="nav-menu">
+                <a href="{% url 'main_view' %}">Главная</a>
+                <a href="{% url 'schedule_view' %}">Расписание</a>
+                <a href="{% url 'homework_list_view' %}">ДЗ студентов</a>
+                <a href="{% url 'homework_add_view' %}">Создать ДЗ</a>
+                <a href="{% url 'attendance_mark_view' %}">Посещаемость</a>
+                <a href="{% url 'estimation_view' %}">Оценки</a>
+                <a href="{% url 'educational_materials_view' %}">Материалы</a>
+                <a href="{% url 'student_review_create_view' %}">Отзыв о студенте</a>
+                <a href="{% url 'chat_list_view' %}">Чаты</a>
+            </nav>
+            <div class="user-info">
+                <span class="user-name">{{ user.user }}</span>
+                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
+                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="review-container">
+            <div class="page-header">
+                <a href="{% url 'main_view' %}" class="back-link">← Назад</a>
+                <h1 class="page-title">📝 Отзыв о студенте</h1>
+            </div>
+
+            <div class="review-card">
+                <form method="post" id="reviewForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="id_student">👨‍🎓 Студент</label>
+                        <select name="student" id="id_student" class="form-control" required>
+                            <option value="">Выберите студента</option>
+                            {% for student in students %}
+                            <option value="{{ student.id }}">{{ student.surname }} {{ student.name }} {{ student.patronymic }} ({{ student.group.name }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_professor">👨‍🏫 Преподаватель</label>
+                        <select name="professor" id="id_professor" class="form-control" required>
+                            <option value="">Выберите преподавателя</option>
+                            {% for prof in professors %}
+                            <option value="{{ prof.id }}" {% if prof.id == professor.id %}selected{% endif %}>{{ prof.surname }} {{ prof.name }} {{ prof.patronymic }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_subject">📚 Предмет</label>
+                        <select name="subject" id="id_subject" class="form-control" required>
+                            <option value="">Выберите предмет</option>
+                            {% for subject in subjects %}
+                            <option value="{{ subject.id }}">{{ subject.name_subject }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="id_comment">💬 Текст отзыва</label>
+                        <textarea name="comment" id="id_comment" class="form-control" rows="6" placeholder="Опишите успехи студента, его отношение к учебе, активность на парах..." required></textarea>
+                        <div id="charCount" class="char-counter">0/800</div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit">📤 Отправить отзыв</button>
+                        <a href="{% url 'main_view' %}" class="btn-cancel">Отмена</a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="recent-reviews">
+                <h3 class="recent-title">📋 Последние отзывы</h3>
+                <div class="reviews-list">
+                    {% for review in recent_reviews %}
+                    <div class="review-item">
+                        <div class="review-header">
+                            <strong>{{ review.student }}</strong>
+                            <span class="review-date">{{ review.date|date:"d.m.Y" }}</span>
+                        </div>
+                        <div class="review-meta">
+                            <span>📚 {{ review.subject.name_subject }}</span>
+                            <span>👨‍🏫 {{ review.professor }}</span>
+                        </div>
+                        <div class="review-text">{{ review.comment|truncatechars:100 }}</div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-reviews">Нет отзывов</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/student_review_create.js' %}"></script>
+</body>
+</html>
