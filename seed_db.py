@@ -1,8 +1,9 @@
-# seed_db.py
+# seed_full_db.py
 import os
 import django
 from datetime import date, timedelta
-from dateutil.relativedelta import relativedelta
+from random import choice, randint, uniform
+from decimal import Decimal
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
 django.setup()
@@ -11,57 +12,63 @@ from app.models import (
     Autoriz, Direction, Course, AcademicYear, Group, Subjects, Professor, 
     Student, Add_Сlassroom, LessonType, Pair, DailySchedule, Schedule, 
     Semester, balance_topcoins_and_topgems, Shop_add_products, 
-    All_payment_of_education, Students_payment_account, Announcement, Event
+    All_payment_of_education, Announcement, Event, Chat, Message, 
+    ChatProfile, Student_Reviews, Attendance, Estimation, 
+    HomeworkSubmission, Add_HW_Professor_to_course, Poll, PollOption, 
+    PollVote, LeaderboardEntry, Ranking, StudentStats, Reward, UserReward,
+    AcademicDebt, GraduationWork, Internship, EducationalMaterial,
+    PaymentInfo, Debtor, Scholarship, Notification, Review_of_the_Academy,
+    Appeals_to_the_educational_unit, Complaint_to_the_CEO, AcademicStaff, 
+    Topmoney_student
 )
+from django.contrib.auth.hashers import make_password
+from django.utils import timezone
 
 def create_directions():
     directions = [
         {'code': '09.02.07', 'name': 'Информационные системы и программирование'},
         {'code': '38.02.01', 'name': 'Экономика и бухгалтерский учет'},
         {'code': '40.02.01', 'name': 'Право и организация социального обеспечения'},
-        {'code': '13.02.11', 'name': 'Техническая эксплуатация и обслуживание электрического и электромеханического оборудования'},
+        {'code': '13.02.11', 'name': 'Техническая эксплуатация электрического оборудования'},
         {'code': '42.02.01', 'name': 'Реклама'},
+        {'code': '54.02.01', 'name': 'Дизайн (по отраслям)'},
+        {'code': '43.02.14', 'name': 'Гостиничное дело'},
     ]
     for d in directions:
         Direction.objects.get_or_create(code=d['code'], defaults={'name': d['name']})
-    print(f"✅ Создано {Direction.objects.count()} направлений")
+    print(f"Создано {Direction.objects.count()} направлений")
 
 def create_courses():
     for i in range(1, 5):
         Course.objects.get_or_create(number=i)
-    print(f"✅ Создано {Course.objects.count()} курсов")
+    print(f"Создано {Course.objects.count()} курсов")
 
 def create_academic_years():
     current_year = date.today().year
     years = [
-        {'name': f'{current_year-2}-{current_year-1}', 'start_date': date(current_year-2, 9, 1), 'end_date': date(current_year-1, 8, 31), 'is_current': False},
-        {'name': f'{current_year-1}-{current_year}', 'start_date': date(current_year-1, 9, 1), 'end_date': date(current_year, 8, 31), 'is_current': True},
-        {'name': f'{current_year}-{current_year+1}', 'start_date': date(current_year, 9, 1), 'end_date': date(current_year+1, 8, 31), 'is_current': False},
+        {'name': f'{current_year-2}-{current_year-1}', 'start_date': date(current_year-2, 9, 1), 
+         'end_date': date(current_year-1, 8, 31), 'is_current': False},
+        {'name': f'{current_year-1}-{current_year}', 'start_date': date(current_year-1, 9, 1), 
+         'end_date': date(current_year, 8, 31), 'is_current': True},
+        {'name': f'{current_year}-{current_year+1}', 'start_date': date(current_year, 9, 1), 
+         'end_date': date(current_year+1, 8, 31), 'is_current': False},
     ]
     for y in years:
         AcademicYear.objects.get_or_create(name=y['name'], defaults=y)
-    print(f"✅ Создано {AcademicYear.objects.count()} учебных годов")
+    print(f"Создано {AcademicYear.objects.count()} учебных годов")
 
 def create_groups():
-    directions = Direction.objects.all()
-    courses = Course.objects.all()
-    academic_year = AcademicYear.objects.filter(is_current=True).first()
-    
     groups_data = [
-        ('ПРО-11', 1, '09.02.07'),
-        ('ПРО-12', 1, '09.02.07'),
-        ('ПРО-21', 2, '09.02.07'),
-        ('ПРО-22', 2, '09.02.07'),
-        ('ПРО-31', 3, '09.02.07'),
-        ('ЭК-11', 1, '38.02.01'),
-        ('ЭК-12', 1, '38.02.01'),
-        ('ЭК-21', 2, '38.02.01'),
-        ('ПСО-11', 1, '40.02.01'),
-        ('ПСО-21', 2, '40.02.01'),
-        ('ЭЛ-11', 1, '13.02.11'),
-        ('РК-11', 1, '42.02.01'),
+        ('ПРО-11', 1, '09.02.07'), ('ПРО-12', 1, '09.02.07'), ('ПРО-13', 1, '09.02.07'),
+        ('ПРО-21', 2, '09.02.07'), ('ПРО-22', 2, '09.02.07'), ('ПРО-31', 3, '09.02.07'),
+        ('ПРО-32', 3, '09.02.07'), ('ПРО-41', 4, '09.02.07'), ('ЭК-11', 1, '38.02.01'),
+        ('ЭК-12', 1, '38.02.01'), ('ЭК-21', 2, '38.02.01'), ('ЭК-22', 2, '38.02.01'),
+        ('ЭК-31', 3, '38.02.01'), ('ПСО-11', 1, '40.02.01'), ('ПСО-21', 2, '40.02.01'),
+        ('ПСО-31', 3, '40.02.01'), ('ЭЛ-11', 1, '13.02.11'), ('ЭЛ-21', 2, '13.02.11'),
+        ('РК-11', 1, '42.02.01'), ('РК-21', 2, '42.02.01'), ('ДЗ-11', 1, '54.02.01'),
+        ('ГД-11', 1, '43.02.14'),
     ]
-    
+    academic_year = AcademicYear.objects.filter(is_current=True).first()
     for name, course_num, dir_code in groups_data:
         direction = Direction.objects.get(code=dir_code)
         course = Course.objects.get(number=course_num)
@@ -73,7 +80,7 @@ def create_groups():
                 'academic_year': academic_year.name if academic_year else '2024-2025'
             }
         )
-    print(f"✅ Создано {Group.objects.count()} групп")
+    print(f"Создано {Group.objects.count()} групп")
 
 def create_subjects():
     subjects = [
@@ -83,111 +90,217 @@ def create_subjects():
         'Экономика', 'Бухгалтерский учет', 'Налоги и налогообложение',
         'Гражданское право', 'Уголовное право', 'Административное право',
         'Электротехника', 'Схемотехника', 'Микропроцессоры',
-        'Маркетинг', 'Рекламные технологии'
+        'Маркетинг', 'Рекламные технологии', 'Графический дизайн',
+        'Web-дизайн', 'Гостиничный менеджмент', 'Правоведение'
     ]
     for subj in subjects:
         Subjects.objects.get_or_create(name_subject=subj)
-    print(f"✅ Создано {Subjects.objects.count()} предметов")
+    print(f"Создано {Subjects.objects.count()} предметов")
 
-def create_users_and_professors():
-    professors_data = [
-        {'user': 'ivanov', 'password': 'ivanov123', 'email': 'ivanov@college.ru', 
+def create_users():
+    users_data = [
+        # Преподаватели
+        {'user': 'ivanov_i', 'password': 'ivanov123', 'email': 'i.ivanov@college.ru', 'role': 'professor',
          'name': 'Иван', 'surname': 'Иванов', 'patronymic': 'Петрович', 'subject': 'Основы программирования'},
-        {'user': 'petrov', 'password': 'petrov123', 'email': 'petrov@college.ru',
+        {'user': 'petrov_p', 'password': 'petrov123', 'email': 'p.petrov@college.ru', 'role': 'professor',
          'name': 'Петр', 'surname': 'Петров', 'patronymic': 'Сергеевич', 'subject': 'Базы данных'},
-        {'user': 'sidorov', 'password': 'sidorov123', 'email': 'sidorov@college.ru',
+        {'user': 'sidorov_s', 'password': 'sidorov123', 'email': 's.sidorov@college.ru', 'role': 'professor',
          'name': 'Сидор', 'surname': 'Сидоров', 'patronymic': 'Алексеевич', 'subject': 'Математика'},
-        {'user': 'smirnova', 'password': 'smirnova123', 'email': 'smirnova@college.ru',
+        {'user': 'smirnova_a', 'password': 'smirnova123', 'email': 'a.smirnova@college.ru', 'role': 'professor',
          'name': 'Анна', 'surname': 'Смирнова', 'patronymic': 'Владимировна', 'subject': 'Английский язык'},
-        {'user': 'kozlov', 'password': 'kozlov123', 'email': 'kozlov@college.ru',
+        {'user': 'kozlov_d', 'password': 'kozlov123', 'email': 'd.kozlov@college.ru', 'role': 'professor',
          'name': 'Дмитрий', 'surname': 'Козлов', 'patronymic': 'Николаевич', 'subject': 'Экономика'},
+        {'user': 'morozova_e', 'password': 'morozova123', 'email': 'e.morozova@college.ru', 'role': 'professor',
+         'name': 'Елена', 'surname': 'Морозова', 'patronymic': 'Андреевна', 'subject': 'Web-разработка'},
+        {'user': 'volkov_a', 'password': 'volkov123', 'email': 'a.volkov@college.ru', 'role': 'professor',
+         'name': 'Алексей', 'surname': 'Волков', 'patronymic': 'Игоревич', 'subject': 'Правоведение'},
+        
+        # Сотрудники учебной части
+        {'user': 'admin_staff', 'password': 'admin123', 'email': 'admin@college.ru', 'role': 'staff',
+         'name': 'Ольга', 'surname': 'Николаева', 'patronymic': 'Владимировна', 'position': 'Заведующая учебной частью'},
+        {'user': 'methodist', 'password': 'method123', 'email': 'method@college.ru', 'role': 'staff',
+         'name': 'Сергей', 'surname': 'Михайлов', 'patronymic': 'Алексеевич', 'position': 'Методист'},
     ]
     
-    for prof in professors_data:
-        user, _ = Autoriz.objects.get_or_create(
-            user=prof['user'],
-            defaults={'password': prof['password'], 'email': prof['email']}
-        )
-        subject = Subjects.objects.filter(name_subject=prof['subject']).first()
-        Professor.objects.get_or_create(
-            autoriz=user,
-            defaults={
-                'name': prof['name'],
-                'surname': prof['surname'],
-                'patronymic': prof['patronymic'],
-                'leads_the_subject': subject
-            }
-        )
-    print(f"✅ Создано {Professor.objects.count()} преподавателей")
-
-def create_students():
-    groups = Group.objects.all()
     students_data = [
-        {'surname': 'Алексеев', 'name': 'Алексей', 'patronymic': 'Алексеевич'},
-        {'surname': 'Борисов', 'name': 'Борис', 'patronymic': 'Борисович'},
-        {'surname': 'Владимиров', 'name': 'Владимир', 'patronymic': 'Владимирович'},
-        {'surname': 'Григорьев', 'name': 'Григорий', 'patronymic': 'Григорьевич'},
-        {'surname': 'Дмитриев', 'name': 'Дмитрий', 'patronymic': 'Дмитриевич'},
-        {'surname': 'Егоров', 'name': 'Егор', 'patronymic': 'Егорович'},
-        {'surname': 'Жукова', 'name': 'Анна', 'patronymic': 'Сергеевна'},
-        {'surname': 'Зайцева', 'name': 'Елена', 'patronymic': 'Владимировна'},
-        {'surname': 'Иванова', 'name': 'Мария', 'patronymic': 'Петровна'},
-        {'surname': 'Кузнецов', 'name': 'Андрей', 'patronymic': 'Игоревич'},
+        # Студенты 1 курса ПРО-11
+        {'user': 'alekseev_a', 'surname': 'Алексеев', 'name': 'Алексей', 'patronymic': 'Алексеевич', 'group': 'ПРО-11'},
+        {'user': 'borisov_b', 'surname': 'Борисов', 'name': 'Борис', 'patronymic': 'Борисович', 'group': 'ПРО-11'},
+        {'user': 'vinogradov_v', 'surname': 'Виноградов', 'name': 'Виктор', 'patronymic': 'Викторович', 'group': 'ПРО-11'},
+        {'user': 'grigoriev_g', 'surname': 'Григорьев', 'name': 'Григорий', 'patronymic': 'Григорьевич', 'group': 'ПРО-11'},
+        {'user': 'dmitriev_d', 'surname': 'Дмитриев', 'name': 'Дмитрий', 'patronymic': 'Дмитриевич', 'group': 'ПРО-11'},
+        {'user': 'egorov_e', 'surname': 'Егоров', 'name': 'Егор', 'patronymic': 'Егорович', 'group': 'ПРО-11'},
+        {'user': 'zhukova_a', 'surname': 'Жукова', 'name': 'Анна', 'patronymic': 'Сергеевна', 'group': 'ПРО-11'},
+        {'user': 'zaytseva_e', 'surname': 'Зайцева', 'name': 'Елена', 'patronymic': 'Владимировна', 'group': 'ПРО-11'},
+        {'user': 'ivanova_m', 'surname': 'Иванова', 'name': 'Мария', 'patronymic': 'Петровна', 'group': 'ПРО-11'},
+        {'user': 'kuznetsov_a', 'surname': 'Кузнецов', 'name': 'Андрей', 'patronymic': 'Игоревич', 'group': 'ПРО-11'},
+        {'user': 'kuznetsov_a2', 'surname': 'Кузнецов', 'name': 'Александр', 'patronymic': 'Владимирович', 'group': 'ПРО-11'},
+        {'user': 'lebedeva_o', 'surname': 'Лебедева', 'name': 'Ольга', 'patronymic': 'Николаевна', 'group': 'ПРО-11'},
+        
+        # Студенты 1 курса ПРО-12
+        {'user': 'mikhailov_m', 'surname': 'Михайлов', 'name': 'Михаил', 'patronymic': 'Михайлович', 'group': 'ПРО-12'},
+        {'user': 'nikolaev_n', 'surname': 'Николаев', 'name': 'Николай', 'patronymic': 'Николаевич', 'group': 'ПРО-12'},
+        {'user': 'orlova_i', 'surname': 'Орлова', 'name': 'Ирина', 'patronymic': 'Алексеевна', 'group': 'ПРО-12'},
+        {'user': 'pavlov_p', 'surname': 'Павлов', 'name': 'Павел', 'patronymic': 'Павлович', 'group': 'ПРО-12'},
+        {'user': 'romanov_r', 'surname': 'Романов', 'name': 'Роман', 'patronymic': 'Романович', 'group': 'ПРО-12'},
+        {'user': 'sokolova_s', 'surname': 'Соколова', 'name': 'Светлана', 'patronymic': 'Сергеевна', 'group': 'ПРО-12'},
+        
+        # Студенты 2 курса ПРО-21
+        {'user': 'titov_t', 'surname': 'Титов', 'name': 'Тимофей', 'patronymic': 'Тимофеевич', 'group': 'ПРО-21'},
+        {'user': 'ustinov_u', 'surname': 'Устинов', 'name': 'Устин', 'patronymic': 'Устинович', 'group': 'ПРО-21'},
+        {'user': 'fedorov_f', 'surname': 'Федоров', 'name': 'Федор', 'patronymic': 'Федорович', 'group': 'ПРО-21'},
+        {'user': 'kharitonova_k', 'surname': 'Харитонова', 'name': 'Ксения', 'patronymic': 'Константиновна', 'group': 'ПРО-21'},
+        
+        # Студенты экономического направления
+        {'user': 'tsvetkova_t', 'surname': 'Цветкова', 'name': 'Татьяна', 'patronymic': 'Тимофеевна', 'group': 'ЭК-11'},
+        {'user': 'shapovalov_s', 'surname': 'Шаповалов', 'name': 'Сергей', 'patronymic': 'Сергеевич', 'group': 'ЭК-11'},
+        {'user': 'shcherbakova_s', 'surname': 'Щербакова', 'name': 'Софья', 'patronymic': 'Андреевна', 'group': 'ЭК-11'},
+        {'user': 'yakovlev_y', 'surname': 'Яковлев', 'name': 'Ярослав', 'patronymic': 'Яковлевич', 'group': 'ЭК-11'},
+        
+        # Студенты юридического направления
+        {'user': 'abramov_a', 'surname': 'Абрамов', 'name': 'Артем', 'patronymic': 'Артемович', 'group': 'ПСО-11'},
+        {'user': 'belova_b', 'surname': 'Белова', 'name': 'Валерия', 'patronymic': 'Викторовна', 'group': 'ПСО-11'},
+        {'user': 'vasiliev_v', 'surname': 'Васильев', 'name': 'Владислав', 'patronymic': 'Владиславович', 'group': 'ПСО-11'},
     ]
     
-    student_counter = 1
-    for group in groups:
-        for i in range(5):
-            if student_counter <= len(students_data):
-                data = students_data[student_counter - 1]
-            else:
-                data = {'surname': f'Студент{student_counter}', 'name': 'Имя', 'patronymic': 'Отчество'}
-            
+    # Создаем преподавателей
+    for data in users_data:
+        if data['role'] == 'professor':
             user, _ = Autoriz.objects.get_or_create(
-                user=f'student{student_counter}',
-                defaults={'password': f'student{student_counter}', 'email': f'student{student_counter}@college.ru'}
+                user=data['user'],
+                defaults={
+                    'password': data['password'],
+                    'email': data['email'],
+                    'birth_date': date(randint(1970, 1985), randint(1, 12), randint(1, 28)),
+                    'gender': choice(['M', 'F']),
+                    'phone': f'+7{randint(900, 999)}{randint(1000000, 9999999)}',
+                    'hide_phone': False
+                }
+            )
+            subject = Subjects.objects.filter(name_subject=data['subject']).first()
+            Professor.objects.get_or_create(
+                autoriz=user,
+                defaults={
+                    'name': data['name'],
+                    'surname': data['surname'],
+                    'patronymic': data['patronymic'],
+                    'leads_the_subject': subject
+                }
+            )
+            ChatProfile.objects.get_or_create(user=user, defaults={
+                'interests': choice(['Программирование', 'Чтение книг', 'Спорт', 'Путешествия', 'Музыка']),
+                'about': f'Преподаватель предмета {data["subject"]}. Опыт работы более {randint(5, 20)} лет.',
+                'city': choice(['Москва', 'Санкт-Петербург', 'Казань', 'Новосибирск', 'Екатеринбург'])
+            })
+    
+    # Создаем сотрудников учебной части
+    for data in users_data:
+        if data['role'] == 'staff':
+            user, _ = Autoriz.objects.get_or_create(
+                user=data['user'],
+                defaults={
+                    'password': data['password'],
+                    'email': data['email'],
+                    'birth_date': date(randint(1975, 1990), randint(1, 12), randint(1, 28)),
+                    'gender': choice(['M', 'F']),
+                    'phone': f'+7{randint(900, 999)}{randint(1000000, 9999999)}',
+                    'hide_phone': False
+                }
+            )
+            AcademicStaff.objects.get_or_create(
+                autoriz=user,
+                defaults={
+                    'name': data['name'],
+                    'surname': data['surname'],
+                    'patronymic': data['patronymic'],
+                    'position': data['position']
+                }
+            )
+            ChatProfile.objects.get_or_create(user=user, defaults={
+                'interests': 'Административная работа',
+                'about': f'Сотрудник учебной части, {data["position"]}',
+                'city': 'Москва'
+            })
+    
+    # Создаем студентов
+    groups = {g.name: g for g in Group.objects.all()}
+    student_counter = 1
+    for data in students_data:
+        group = groups.get(data['group'])
+        if group:
+            user, _ = Autoriz.objects.get_or_create(
+                user=data['user'],
+                defaults={
+                    'password': f'student{student_counter}',
+                    'email': f'{data["user"]}@college.ru',
+                    'birth_date': date(randint(2000, 2006), randint(1, 12), randint(1, 28)),
+                    'gender': choice(['M', 'F']),
+                    'phone': f'+7{randint(900, 999)}{randint(1000000, 9999999)}',
+                    'hide_phone': choice([True, False])
+                }
             )
             Student.objects.get_or_create(
                 autoriz=user,
                 defaults={
-                    'surname': data['surname'],
                     'name': data['name'],
+                    'surname': data['surname'],
                     'patronymic': data['patronymic'],
                     'group': group
                 }
             )
+            ChatProfile.objects.get_or_create(user=user, defaults={
+                'interests': choice(['Спорт', 'Музыка', 'Игры', 'Программирование', 'Дизайн', 'Кино']),
+                'about': f'Студент группы {data["group"]}, учусь на {group.course.number} курсе',
+                'city': choice(['Москва', 'Санкт-Петербург', 'Казань', 'Новосибирск', 'Екатеринбург', 'Самара', 'Ростов-на-Дону'])
+            })
             student_counter += 1
     
+    print(f"Создано: {Autoriz.objects.count()} пользователей")
+    print(f"  - Профессоров: {Professor.objects.count()}")
+    print(f"  - Сотрудников: {AcademicStaff.objects.count()}")
+    print(f"  - Студентов: {Student.objects.count()}")
+
+def create_balances():
     for student in Student.objects.all():
-        balance_topcoins_and_topgems.objects.get_or_create(
+        balance, _ = balance_topcoins_and_topgems.objects.get_or_create(
             student=student,
-            defaults={'topcoins': 100, 'topgems': 10}
+            defaults={
+                'topcoins': randint(50, 500),
+                'topgems': randint(5, 50)
+            }
         )
-    
-    print(f"✅ Создано {Student.objects.count()} студентов и балансов")
+        Topmoney_student.objects.get_or_create(
+            student=student,
+            balance_student=balance,
+            defaults={'topmoney': balance.topcoins + balance.topgems}
+        )
+    print(f"Создано {balance_topcoins_and_topgems.objects.count()} балансов")
 
 def create_classrooms():
-    rooms = ['101', '102', '103', '104', '105', '201', '202', '203', '204', '205', '301', '302', '303']
+    rooms = ['101', '102', '103', '104', '105', '106', '107', '201', '202', '203', '204', '205', '206', 
+             '207', '208', '301', '302', '303', '304', '305', '401', '402', 'Компьютерный класс A', 
+             'Компьютерный класс B', 'Лаборатория химии', 'Лаборатория физики', 'Актовый зал']
     for room in rooms:
         Add_Сlassroom.objects.get_or_create(name_classroom=f'Ауд. {room}')
-    print(f"✅ Создано {Add_Сlassroom.objects.count()} аудиторий")
+    print(f"Создано {Add_Сlassroom.objects.count()} аудиторий")
 
 def create_lesson_types():
     types = [
         {'type': 'lecture', 'name': 'Лекция'},
-        {'type': 'practice', 'name': 'Практика'},
+        {'type': 'practice', 'name': 'Практическое занятие'},
         {'type': 'lab', 'name': 'Лабораторная работа'},
         {'type': 'seminar', 'name': 'Семинар'},
         {'type': 'exam', 'name': 'Экзамен'},
+        {'type': 'consultation', 'name': 'Консультация'},
     ]
     for t in types:
         LessonType.objects.get_or_create(type=t['type'], defaults={'name': t['name']})
-    print(f"✅ Создано {LessonType.objects.count()} типов занятий")
+    print(f"Создано {LessonType.objects.count()} типов занятий")
 
 def create_semesters():
     academic_years = AcademicYear.objects.all()
     for year in academic_years:
-        autumn, _ = Semester.objects.get_or_create(
+        Semester.objects.get_or_create(
             name=f'Осенний семестр {year.name}',
             semester_type='autumn',
             academic_year=year,
@@ -197,7 +310,7 @@ def create_semesters():
                 'is_active': year.is_current
             }
         )
-        spring, _ = Semester.objects.get_or_create(
+        Semester.objects.get_or_create(
             name=f'Весенний семестр {year.name}',
             semester_type='spring',
             academic_year=year,
@@ -207,61 +320,72 @@ def create_semesters():
                 'is_active': False
             }
         )
-    print(f"✅ Создано {Semester.objects.count()} семестров")
+    print(f"Создано {Semester.objects.count()} семестров")
 
-def create_schedule():
-    groups = Group.objects.filter(course__number=1)[:3]
+def create_pairs():
     professors = Professor.objects.all()
     subjects = Subjects.objects.all()
     classrooms = Add_Сlassroom.objects.all()
     lesson_types = LessonType.objects.all()
+    
+    for pair_num in range(1, 7):
+        professor = professors[pair_num % len(professors)] if professors else None
+        subject = subjects[pair_num % len(subjects)] if subjects else None
+        classroom = classrooms[pair_num % len(classrooms)] if classrooms else None
+        lesson_type = lesson_types[pair_num % len(lesson_types)] if lesson_types else None
+        
+        if professor and subject:
+            Pair.objects.get_or_create(
+                pair_number=pair_num,
+                professor=professor,
+                subject=subject,
+                defaults={'classroom': classroom, 'lesson_type': lesson_type}
+            )
+    print(f"Создано {Pair.objects.count()} пар")
+
+def create_schedules():
+    groups = Group.objects.filter(course__number=1)[:5]
     semester = Semester.objects.filter(is_active=True).first()
+    pairs = Pair.objects.all()
     
     week_start = date.today()
     if week_start.weekday() != 0:
         days_ahead = 0 - week_start.weekday()
         week_start += timedelta(days=days_ahead)
     
-    schedule, _ = Schedule.objects.get_or_create(
-        group=groups[0] if groups else None,
-        semester=semester,
-        week_start_date=week_start,
-        defaults={'is_active': True, 'is_current_week': True}
-    )
-    
-    for day in range(1, 6):
-        for pair_order in range(1, 5):
-            professor = professors[pair_order % len(professors)] if professors else None
-            subject = subjects[pair_order % len(subjects)] if subjects else None
-            classroom = classrooms[pair_order % len(classrooms)] if classrooms else None
-            lesson_type = lesson_types[pair_order % len(lesson_types)] if lesson_types else None
-            
-            if professor and subject:
-                pair, _ = Pair.objects.get_or_create(
-                    pair_number=pair_order,
-                    professor=professor,
-                    subject=subject,
-                    defaults={'classroom': classroom, 'lesson_type': lesson_type}
-                )
-                DailySchedule.objects.get_or_create(
-                    weekday=day,
-                    pair_order=pair_order,
-                    group=groups[0],
-                    defaults={'pair': pair}
-                )
-    
-    print(f"✅ Создано расписание для группы {groups[0].name if groups else 'None'}")
+    for group in groups:
+        schedule, _ = Schedule.objects.get_or_create(
+            group=group,
+            semester=semester,
+            week_start_date=week_start,
+            defaults={'is_active': True, 'is_current_week': True}
+        )
+        for day in range(1, 6):
+            for pair_order in range(1, 5):
+                pair = pairs[(day * pair_order) % len(pairs)] if pairs else None
+                if pair:
+                    DailySchedule.objects.get_or_create(
+                        weekday=day,
+                        pair_order=pair_order,
+                        group=group,
+                        defaults={'pair': pair}
+                    )
+    print(f"Создано {Schedule.objects.count()} расписаний")
 
 def create_shop_products():
     products = [
-        {'name': 'Ручка', 'quantity': 50, 'coins': 10, 'gems': 1},
-        {'name': 'Тетрадь', 'quantity': 30, 'coins': 25, 'gems': 2},
-        {'name': 'Карандаш', 'quantity': 40, 'coins': 8, 'gems': 0},
-        {'name': 'Ластик', 'quantity': 35, 'coins': 5, 'gems': 0},
-        {'name': 'Линейка', 'quantity': 25, 'coins': 15, 'gems': 1},
-        {'name': 'Стикеры', 'quantity': 45, 'coins': 12, 'gems': 1},
-        {'name': 'Блокнот', 'quantity': 20, 'coins': 50, 'gems': 5},
-        {'name': 'Папка', 'quantity': 15, 'coins': 30, 'gems': 3},
+        {'name': 'Ручка гелевая', 'quantity': 100, 'coins': 15, 'gems': 1},
+        {'name': 'Тетрадь общая', 'quantity': 80, 'coins': 30, 'gems': 2},
+        {'name': 'Карандаш механический', 'quantity': 60, 'coins': 12, 'gems': 1},
+        {'name': 'Ластик', 'quantity': 90, 'coins': 8, 'gems': 0},
+        {'name': 'Линейка 15см', 'quantity': 50, 'coins': 20, 'gems': 1},
+        {'name': 'Набор стикеров', 'quantity': 120, 'coins': 10, 'gems': 1},
+        {'name': 'Блокнот A6', 'quantity': 40, 'coins': 60, 'gems': 5},
+        {'name': 'Папка для документов', 'quantity': 35, 'coins': 45, 'gems': 3},
+        {'name': 'Маркеры (набор)', 'quantity': 30, 'coins': 80, 'gems': 8},
+        {'name': 'Степлер', 'quantity': 15, 'coins': 120, 'gems': 12},
+        {'name': 'Дырокол', 'quantity': 10, 'coins': 150, 'gems': 15},
+        {'name': 'Скоросшиватель', 'quantity': 70, 'coins': 25, 'gems': 2},
     ]
     for p in products:
         Shop_add_products.objects.get_or_create(
@@ -272,69 +396,226 @@ def create_shop_products():
                 'price_product_topgems': p['gems']
             }
         )
-    print(f"✅ Создано {Shop_add_products.objects.count()} товаров в магазине")
+    print(f"Создано {Shop_add_products.objects.count()} товаров")
 
 def create_payment_settings():
     groups = Group.objects.all()
-    for group in groups[:3]:
+    for group in groups[:10]:
         All_payment_of_education.objects.get_or_create(
             group=group,
-            type_payment='month',
+            type_payment=choice(['month', 'year']),
             defaults={
-                'amount': 15000,
-                'period_of_study': 10,
+                'amount': choice([15000, 18000, 20000, 25000, 30000]),
+                'period_of_study': randint(9, 48),
                 'date': date.today().replace(day=1)
             }
         )
-    print(f"✅ Создано {All_payment_of_education.objects.count()} настроек оплаты")
+    print(f"Создано {All_payment_of_education.objects.count()} настроек оплаты")
 
 def create_announcements():
     announcements = [
         {'title': 'День открытых дверей', 'description': 'Приглашаем всех желающих на день открытых дверей 25 апреля в 11:00', 'is_for_all': True},
         {'title': 'Расписание экзаменов', 'description': 'Расписание экзаменов опубликовано в разделе "Экзамены"', 'is_for_all': True},
         {'title': 'Стипендия за март', 'description': 'Стипендия за март будет выплачена 10 апреля', 'is_for_all': True},
+        {'title': 'Олимпиада по программированию', 'description': 'Регистрация на олимпиаду открыта до 1 мая', 'is_for_all': True},
+        {'title': 'График каникул', 'description': 'Летние каникулы с 1 июля по 31 августа', 'is_for_all': True},
+        {'title': 'Встреча выпускников', 'description': 'Встреча выпускников состоится 15 мая в 18:00', 'is_for_all': True},
     ]
     for ann in announcements:
         Announcement.objects.get_or_create(title=ann['title'], defaults=ann)
-    print(f"✅ Создано {Announcement.objects.count()} объявлений")
+    print(f"Создано {Announcement.objects.count()} объявлений")
 
 def create_events():
     events = [
         {'title': 'Олимпиада по программированию', 'event_type': 'exam', 
-         'start_date': date.today() + timedelta(days=14), 'end_date': date.today() + timedelta(days=14), 
+         'start_date': timezone.now() + timedelta(days=14), 'end_date': timezone.now() + timedelta(days=14), 
          'description': 'Внутриколледжная олимпиада по программированию', 'location': 'Ауд. 201', 'is_for_all': True},
         {'title': 'Субботник', 'event_type': 'other', 
-         'start_date': date.today() + timedelta(days=7), 'end_date': date.today() + timedelta(days=7), 
+         'start_date': timezone.now() + timedelta(days=7), 'end_date': timezone.now() + timedelta(days=7), 
          'description': 'Весенний субботник на территории колледжа', 'location': 'Территория колледжа', 'is_for_all': True},
+        {'title': 'День карьеры', 'event_type': 'meeting', 
+         'start_date': timezone.now() + timedelta(days=21), 'end_date': timezone.now() + timedelta(days=21), 
+         'description': 'Встреча с представителями компаний-работодателей', 'location': 'Актовый зал', 'is_for_all': True},
+        {'title': 'Концерт ко Дню Победы', 'event_type': 'holiday', 
+         'start_date': timezone.now() + timedelta(days=25), 'end_date': timezone.now() + timedelta(days=25), 
+         'description': 'Праздничный концерт', 'location': 'Актовый зал', 'is_for_all': True},
     ]
     for ev in events:
         Event.objects.get_or_create(title=ev['title'], defaults=ev)
-    print(f"✅ Создано {Event.objects.count()} событий")
+    print(f"Создано {Event.objects.count()} событий")
 
+def create_chats():
+    users = Autoriz.objects.all()
+    chat_count = 0
+    for i, user1 in enumerate(users):
+        for user2 in users[i+1:]:
+            if randint(0, 2) < 1:
+                chat, _ = Chat.objects.get_or_create()
+                chat.participants.add(user1, user2)
+                chat_count += 1
+    print(f"Создано {Chat.objects.count()} чатов")
+
+def create_messages():
+    chats = Chat.objects.all()
+    message_count = 0
+    message_templates = [
+        "Привет! Как дела?",
+        "Отлично! А у тебя?",
+        "Что делаешь?",
+        "Готовишься к экзаменам?",
+        "Да, готовлюсь",
+        "Удачи!",
+        "Спасибо!",
+        "Приходи на пару завтра",
+        "Обязательно приду",
+        "Скинь домашнее задание",
+        "Вот файл с заданием",
+        "Спасибо большое!",
+        "Не за что!",
+        "Когда будет консультация?",
+        "В пятницу в 14:00",
+        "Понял, спасибо",
+        "Помоги с лабораторной",
+        "Какую тему?",
+        "Базы данных",
+        "Хорошо, скину пример"
+    ]
+    
+    for chat in chats:
+        participants = list(chat.participants.all())
+        if len(participants) >= 2:
+            for _ in range(randint(3, 20)):
+                sender = choice(participants)
+                message = Message.objects.create(
+                    chat=chat,
+                    sender=sender,
+                    text=choice(message_templates),
+                    created_at=timezone.now() - timedelta(days=randint(0, 30), hours=randint(0, 23)),
+                    is_read=choice([True, False]),
+                    is_delivered=True
+                )
+                message_count += 1
+    print(f"Создано {Message.objects.count()} сообщений")
+
+def create_estimations():
+    students = Student.objects.all()
+    subjects = Subjects.objects.all()
+    for student in students:
+        for subject in subjects[:randint(5, 10)]:
+            for _ in range(randint(1, 5)):
+                Estimation.objects.create(
+                    student=student,
+                    subject=subject,
+                    type_estimation=randint(2, 5),
+                    date=timezone.now() - timedelta(days=randint(0, 365))
+                )
+    print(f"Создано {Estimation.objects.count()} оценок")
+
+def create_attendance():
+    students = Student.objects.all()
+    schedules = Schedule.objects.filter(is_active=True)
+    for student in students[:50]:
+        for schedule in schedules[:10]:
+            for _ in range(randint(1, 5)):
+                Attendance.objects.create(
+                    student=student,
+                    schedule=schedule,
+                    type=choice(['presence', 'late', 'absence']),
+                    data_created=timezone.now() - timedelta(days=randint(0, 30))
+                )
+    print(f"Создано {Attendance.objects.count()} записей посещаемости")
+
+def create_rewards():
+    rewards = [
+        {'name': 'За отличную учебу', 'description': 'Награждаются студенты с высоким средним баллом', 
+         'reward_type': 'one_time', 'topcoins_award': 200, 'topgems_award': 20, 'is_active': True},
+        {'name': 'За идеальную посещаемость', 'description': 'Награждаются студенты без пропусков', 
+         'reward_type': 'one_time', 'topcoins_award': 150, 'topgems_award': 15, 'is_active': True},
+        {'name': 'За активность', 'description': 'За активное участие в жизни колледжа', 
+         'reward_type': 'multiple', 'topcoins_award': 100, 'topgems_award': 10, 'is_active': True},
+        {'name': 'Победитель олимпиады', 'description': 'Приз за победу в олимпиаде', 
+         'reward_type': 'one_time', 'topcoins_award': 500, 'topgems_award': 50, 'is_active': True},
+        {'name': 'Волонтер года', 'description': 'За вклад в волонтерскую деятельность', 
+         'reward_type': 'one_time', 'topcoins_award': 300, 'topgems_award': 30, 'is_active': True},
+    ]
+    for r in rewards:
+        Reward.objects.get_or_create(name=r['name'], defaults=r)
+    print(f"Создано {Reward.objects.count()} наград")
+
+def create_user_rewards():
+    students = Student.objects.all()
+    rewards = Reward.objects.all()
+    for student in students[:30]:
+        for reward in rewards[:randint(1, 3)]:
+            UserReward.objects.get_or_create(
+                student=student,
+                reward=reward,
+                defaults={
+                    'topcoins_given': reward.topcoins_award,
+                    'topgems_given': reward.topgems_award
+                }
+            )
+    print(f"Создано {UserReward.objects.count()} наград студентов")
+
+def create_leaderboard():
+    students = Student.objects.all()
+    semester = Semester.objects.filter(is_active=True).first()
+    groups = Group.objects.all()
+    for group in groups:
+        group_students = Student.objects.filter(group=group)
+        student_topmoney = []
+        for student in group_students:
+            try:
+                topmoney_obj = Topmoney_student.objects.get(student=student)
+                student_topmoney.append((student, topmoney_obj.topmoney))
+            except Topmoney_student.DoesNotExist:
+                student_topmoney.append((student, 0))
+        student_topmoney.sort(key=lambda x: x[1], reverse=True)
+        for rank, (student, topmoney) in enumerate(student_topmoney[:10], 1):
+            LeaderboardEntry.objects.get_or_create(
+                student=student,
+                semester=semester,
+                defaults={
+                    'topmoney': topmoney,
+                    'group': group,
+                    'rank_in_group': rank,
+                    'rank_in_course': rank
+                }
+            )
+    print(f"Создано {LeaderboardEntry.objects.count()} записей рейтинга")
+    
 def run_seed():
-    print("\n" + "="*50)
+    print("\n" + "="*60)
     print("🚀 НАЧАЛО ЗАПОЛНЕНИЯ БАЗЫ ДАННЫХ")
-    print("="*50 + "\n")
+    print("="*60 + "\n")
     
     create_directions()
     create_courses()
     create_academic_years()
     create_groups()
     create_subjects()
-    create_users_and_professors()
-    create_students()
+    create_users()
+    create_balances()
     create_classrooms()
     create_lesson_types()
     create_semesters()
-    create_schedule()
+    create_pairs()
+    create_schedules()
     create_shop_products()
     create_payment_settings()
     create_announcements()
     create_events()
+    create_chats()
+    create_messages()
+    create_estimations()
+    create_attendance()
+    create_rewards()
+    create_user_rewards()
+    create_leaderboard()
     
-    print("\n" + "="*50)
+    print("\n" + "="*60)
     print("✅ БАЗА ДАННЫХ УСПЕШНО ЗАПОЛНЕНА!")
-    print("="*50)
+    print("="*60)
     
     print("\n📊 ИТОГОВАЯ СТАТИСТИКА:")
     print(f"   - Направлений: {Direction.objects.count()}")
@@ -343,13 +624,24 @@ def run_seed():
     print(f"   - Групп: {Group.objects.count()}")
     print(f"   - Предметов: {Subjects.objects.count()}")
     print(f"   - Преподавателей: {Professor.objects.count()}")
+    print(f"   - Сотрудников: {AcademicStaff.objects.count()}")
     print(f"   - Студентов: {Student.objects.count()}")
+    print(f"   - Пользователей: {Autoriz.objects.count()}")
     print(f"   - Аудиторий: {Add_Сlassroom.objects.count()}")
     print(f"   - Типов занятий: {LessonType.objects.count()}")
     print(f"   - Семестров: {Semester.objects.count()}")
+    print(f"   - Пар: {Pair.objects.count()}")
+    print(f"   - Расписаний: {Schedule.objects.count()}")
     print(f"   - Товаров в магазине: {Shop_add_products.objects.count()}")
     print(f"   - Объявлений: {Announcement.objects.count()}")
     print(f"   - Событий: {Event.objects.count()}")
+    print(f"   - Чатов: {Chat.objects.count()}")
+    print(f"   - Сообщений: {Message.objects.count()}")
+    print(f"   - Оценок: {Estimation.objects.count()}")
+    print(f"   - Посещаемости: {Attendance.objects.count()}")
+    print(f"   - Наград: {Reward.objects.count()}")
+    print(f"   - Наград студентов: {UserReward.objects.count()}")
+    print(f"   - Рейтингов: {LeaderboardEntry.objects.count()}")
 
 if __name__ == "__main__":
     run_seed()
