@@ -1,82 +1,42 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/direction_list.css' %}">
-    <title>Направления - Journal</title>
-</head>
-<body>
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">Journal</div>
-            <nav class="nav-menu">
-                <a href="{% url 'main_view' %}">Главная</a>
-                <a href="{% url 'schedule_create_view' %}">Расписание</a>
-                <a href="{% url 'group_list_view' %}">Группы</a>
-                <a href="{% url 'subject_list_view' %}">Предметы</a>
-                <a href="{% url 'direction_list_view' %}">Направления</a>
-                <a href="{% url 'course_list_view' %}">Курсы</a>
-                <a href="{% url 'academic_year_list_view' %}">Учебные годы</a>
-                <a href="{% url 'payment_info_view' %}">Оплаты</a>
-                <a href="{% url 'debtor_list_view' %}">Должники</a>
-                <a href="{% url 'chat_list_view' %}">Чаты</a>
-            </nav>
-            <div class="user-info">
-                <span class="user-name">{{ user.user }}</span>
-                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
-                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
-            </div>
-        </div>
-    </header>
 
-    <div class="container">
-        <div class="direction-container">
-            <div class="page-header">
-                <h1 class="page-title">📚 Направления подготовки</h1>
-                <a href="{% url 'direction_create_view' %}" class="btn-create">➕ Добавить направление</a>
-            </div>
+{% block title %}Направления{% endblock %}
 
-            <div class="stats-row">
-                <div class="stat-card">
-                    <div class="stat-number">{{ directions|length }}</div>
-                    <div class="stat-label">Всего направлений</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">{{ active_directions }}</div>
-                    <div class="stat-label">С активными группами</div>
-                </div>
-            </div>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/direction_list.css' %}">
+{% endblock %}
 
-            <div class="search-bar">
-                <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск по названию или коду...">
-            </div>
-
-            <div class="directions-grid" id="directionsGrid">
-                {% for direction in directions %}
-                <div class="direction-card" data-name="{{ direction.name }}" data-code="{{ direction.code }}">
-                    <div class="direction-code">{{ direction.code }}</div>
-                    <div class="direction-name">{{ direction.name }}</div>
-                    <div class="direction-stats">
-                        <span class="stat">🎓 Групп: {{ direction.group_set.count }}</span>
-                        <span class="stat">👥 Студентов: {{ direction.student_count|default:0 }}</span>
-                    </div>
-                    <div class="direction-actions">
-                        <button class="btn-edit" data-id="{{ direction.id }}">✏️ Редактировать</button>
-                        <button class="btn-delete" data-id="{{ direction.id }}">🗑️ Удалить</button>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="empty-directions">
-                    <p>📭 Нет направлений подготовки</p>
-                    <a href="{% url 'direction_create_view' %}" class="btn-create-first">Создать первое направление</a>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
+{% block content %}
+<div class="direction-container">
+    <div class="page-header">
+        <h1 class="page-title">📚 Направления подготовки</h1>
+        <a href="{% url 'direction_create_view' %}" class="btn-create">➕ Добавить направление</a>
     </div>
-
-    <script src="{% static 'js/direction_list.js' %}"></script>
-</body>
-</html>
+    <div class="stats-row">
+        <div class="stat-card"><div class="stat-number">{{ directions|length }}</div><div class="stat-label">Всего направлений</div></div>
+        <div class="stat-card"><div class="stat-number">{{ active_directions }}</div><div class="stat-label">С активными группами</div></div>
+    </div>
+    <div class="search-bar">
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск по названию или коду...">
+    </div>
+    <div class="directions-grid">
+        {% for direction in directions %}
+        <div class="direction-card">
+            <div class="direction-code">{{ direction.code }}</div>
+            <div class="direction-name">{{ direction.name }}</div>
+            <div class="direction-stats">
+                <span class="stat">🎓 Групп: {{ direction.group_set.count }}</span>
+                <span class="stat">👥 Студентов: {{ direction.student_count|default:0 }}</span>
+            </div>
+            <div class="direction-actions">
+                <button class="btn-edit" data-id="{{ direction.id }}">✏️ Редактировать</button>
+                <button class="btn-delete" data-id="{{ direction.id }}">🗑️ Удалить</button>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-directions">📭 Нет направлений подготовки</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

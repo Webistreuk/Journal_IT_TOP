@@ -1,101 +1,69 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/attendance_mark.css' %}">
-    <title>Отметка посещаемости - Journal</title>
-</head>
-<body>
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">Journal</div>
-            <nav class="nav-menu">
-                <a href="{% url 'main_view' %}">Главная</a>
-                <a href="{% url 'schedule_view' %}">Расписание</a>
-                <a href="{% url 'homework_list_view' %}">ДЗ студентов</a>
-                <a href="{% url 'homework_add_view' %}">Создать ДЗ</a>
-                <a href="{% url 'attendance_mark_view' %}">Посещаемость</a>
-                <a href="{% url 'estimation_view' %}">Оценки</a>
-                <a href="{% url 'chat_list_view' %}">Чаты</a>
-            </nav>
-            <div class="user-info">
-                <span class="user-name">{{ user.user }}</span>
-                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
-                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
-            </div>
-        </div>
-    </header>
 
-    <div class="container">
-        <div class="attendance-container">
-            <div class="page-header">
-                <h1 class="page-title">📋 Отметка посещаемости</h1>
-                <div class="schedule-selector">
-                    <select id="scheduleSelect" class="schedule-select">
-                        <option value="">Выберите расписание</option>
-                        {% for schedule in schedules %}
-                        <option value="{{ schedule.id }}">{{ schedule.group.name }} - {{ schedule.week_start_date|date:"d.m.Y" }}</option>
-                        {% endfor %}
-                    </select>
-                    <select id="pairSelect" class="pair-select" style="display: none;">
-                        <option value="">Выберите пару</option>
-                    </select>
-                </div>
-            </div>
+{% block title %}Посещаемость преподавателя{% endblock %}
 
-            <div id="attendanceFormContainer" style="display: none;">
-                <div class="attendance-card">
-                    <div class="attendance-info">
-                        <div class="info-row">
-                            <span class="info-label">Группа:</span>
-                            <span class="info-value" id="groupName"></span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Дата:</span>
-                            <span class="info-value" id="scheduleDate"></span>
-                        </div>
-                        <div class="info-row">
-                            <span class="info-label">Пара:</span>
-                            <span class="info-value" id="pairInfo"></span>
-                        </div>
-                    </div>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/attendance_mark.css' %}">
+{% endblock %}
 
-                    <form method="post" id="attendanceForm">
-                        {% csrf_token %}
-                        <input type="hidden" name="schedule_id" id="scheduleId">
-                        <input type="hidden" name="pair_id" id="pairId">
-                        
-                        <div class="students-table-wrapper">
-                            <table class="students-table">
-                                <thead>
-                                    <tr>
-                                        <th>Студент</th>
-                                        <th>Статус посещаемости</th>
-                                        <th>Комментарий</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="studentsList">
-                                </tbody>
-                            </table>
-                        </div>
-                        
-                        <div class="quick-actions">
-                            <button type="button" class="btn-quick" data-status="presence">✅ Все присутствуют</button>
-                            <button type="button" class="btn-quick" data-status="late">⚠️ Все опоздали</button>
-                            <button type="button" class="btn-quick" data-status="absence">❌ Все отсутствуют</button>
-                        </div>
-                        
-                        <div class="form-actions">
-                            <button type="submit" class="btn-save">💾 Сохранить посещаемость</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+{% block content %}
+<div class="attendance-container">
+    <div class="page-header">
+        <h1 class="page-title">📋 Посещаемость</h1>
+        <div class="date-info">{{ current_date|date:"d.m.Y" }}, {{ weekday_name }}</div>
     </div>
 
-    <script src="{% static 'js/attendance_mark.js' %}"></script>
-</body>
-</html>
+    <div class="today-schedule">
+        <h2 class="section-title">📅 Сегодняшние пары</h2>
+        <div class="pairs-list" id="pairsList">
+            {% for pair in today_pairs %}
+            <div class="pair-item" data-pair-id="{{ pair.id }}" data-pair-number="{{ pair.pair_number }}" data-pair-status="{{ pair.status }}" data-pair-end-time="{{ pair.time_end }}">
+                <div class="pair-number-cell">
+                    <div class="pair-num">{{ pair.pair_number }} пара</div>
+                    <div class="pair-time">{{ pair.time_start }}–{{ pair.time_end }}</div>
+                </div>
+                <div class="pair-info">
+                    <div class="pair-subject">{{ pair.subject }}</div>
+                    <div class="pair-group">👥 {{ pair.group }}</div>
+                    <div class="pair-classroom">📍 {{ pair.classroom|default:"—" }}</div>
+                </div>
+                <div class="pair-status">
+                    <span class="status-badge {% if pair.status == 'completed' %}completed{% elif pair.status == 'missed' %}missed{% else %}pending{% endif %}">
+                        {% if pair.status == 'completed' %}✅ Проведена{% elif pair.status == 'missed' %}❌ Не проведена{% else %}⏳ Ожидает{% endif %}
+                    </span>
+                </div>
+                <div class="pair-actions">
+                    <button class="btn-mark" 
+                        data-pair-id="{{ pair.id }}" 
+                        data-pair-number="{{ pair.pair_number }}" 
+                        data-group="{{ pair.group }}" 
+                        data-subject="{{ pair.subject }}" 
+                        data-time="{{ pair.time_start }}-{{ pair.time_end }}" 
+                        data-status="{{ pair.status }}"
+                        data-action="{% if pair.status == 'completed' or pair.status == 'missed' %}view{% else %}mark{% endif %}">
+                        {% if pair.status == 'completed' or pair.status == 'missed' %}Просмотр{% else %}Отметить{% endif %}
+                    </button>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">📭 Сегодня нет пар</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div id="attendanceModal" class="modal" style="display: none;">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <h3 id="modalTitle">Отметка посещаемости</h3>
+            <button class="modal-close" id="closeModalBtn">&times;</button>
+        </div>
+        <div id="modalBody"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/attendance_mark.js' %}"></script>
+{% endblock %}

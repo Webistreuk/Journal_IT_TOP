@@ -2,9 +2,9 @@ from django.db import models
 from datetime import timedelta
 
 class Autoriz(models.Model):
-    user = models.CharField(unique = True, max_length = 30, blank = False, null = True, error_messages = {'max_length': 'Длина имени не может содержать более 30 символов', 'blank': 'Напишите имя.', 'null': 'Напишите имя.'}, verbose_name = 'Имя аккаунта')
-    password = models.CharField(max_length = 120, blank = False, null = False, error_messages = {'max_length': 'Длина пароля не может содержать более 40 символов', 'blank': 'Напишите пароль.', 'null': 'Напишите пароль.'}, verbose_name = 'Пароль от аккаунта')
-    email = models.EmailField(unique = True, max_length = 100, blank = False, null = False, error_messages = {'max_length': 'Длина почты не может содержать более 100 символов', 'blank': 'Напишите почту.', 'null': 'Напишите почту.'}, verbose_name = 'Почта от аккаунта')
+    user = models.CharField(unique=True, max_length=30, blank=False, null=True, error_messages={'max_length': 'Длина имени не может содержать более 30 символов', 'blank': 'Напишите имя.', 'null': 'Напишите имя.'}, verbose_name='Имя аккаунта')
+    password = models.CharField(max_length=120, blank=False, null=False, error_messages={'max_length': 'Длина пароля не может содержать более 40 символов', 'blank': 'Напишите пароль.', 'null': 'Напишите пароль.'}, verbose_name='Пароль от аккаунта')
+    email = models.EmailField(unique=True, max_length=100, blank=False, null=False, error_messages={'max_length': 'Длина почты не может содержать более 100 символов', 'blank': 'Напишите почту.', 'null': 'Напишите почту.'}, verbose_name='Почта от аккаунта')
     birth_date = models.DateField(null=True, blank=True, verbose_name='Дата рождения')
     gender = models.CharField(max_length=1, choices=[('M', 'Мужской'), ('F', 'Женский')], blank=True, verbose_name='Пол')
     phone = models.CharField(max_length=20, blank=True, verbose_name='Номер телефона')
@@ -14,6 +14,24 @@ class Autoriz(models.Model):
         db_table = 'List_of_users'
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+
+    def get_role(self):
+        try:
+            Student.objects.get(autoriz=self)
+            return 'Студент'
+        except Student.DoesNotExist:
+            pass
+        try:
+            Professor.objects.get(autoriz=self)
+            return 'Преподаватель'
+        except Professor.DoesNotExist:
+            pass
+        try:
+            AcademicStaff.objects.get(autoriz=self)
+            return 'Учебная часть'
+        except AcademicStaff.DoesNotExist:
+            pass
+        return 'Пользователь'
 
     def get_full_name(self):
         try:
@@ -34,7 +52,7 @@ class Autoriz(models.Model):
         return self.user
 
 class Subjects(models.Model):
-    name_subject = models.CharField(unique = True, max_length = 100, blank = False, null = False, verbose_name = 'Имя предмета')
+    name_subject = models.CharField(unique=True, max_length=100, blank=False, null=False, verbose_name='Имя предмета')
 
     class Meta:
         db_table = 'List_of_subjects'
@@ -45,11 +63,11 @@ class Subjects(models.Model):
         return self.name_subject
 
 class Professor(models.Model):
-    name = models.CharField(max_length = 30, blank = False, null = False, verbose_name = 'Имя профессора')
-    surname = models.CharField(max_length = 30, blank = False, null = False, verbose_name = 'Фамилия профессора')
-    patronymic = models.CharField(max_length = 40, blank = False, null = False, verbose_name = 'Отчество профессора')
-    leads_the_subject = models.ForeignKey(Subjects, on_delete = models.CASCADE, verbose_name = 'Ведет предмет')
-    autoriz = models.ForeignKey(Autoriz, on_delete = models.CASCADE, verbose_name = 'Пользователь')
+    name = models.CharField(max_length=30, blank=False, null=False, verbose_name='Имя профессора')
+    surname = models.CharField(max_length=30, blank=False, null=False, verbose_name='Фамилия профессора')
+    patronymic = models.CharField(max_length=40, blank=False, null=False, verbose_name='Отчество профессора')
+    leads_the_subject = models.ForeignKey(Subjects, on_delete=models.CASCADE, verbose_name='Ведет предмет')
+    autoriz = models.ForeignKey(Autoriz, on_delete=models.CASCADE, verbose_name='Пользователь')
 
     class Meta:
         db_table = 'List_of_professors'
@@ -60,11 +78,11 @@ class Professor(models.Model):
         return f"{self.surname} {self.name[0]}. {self.patronymic[0]}."
 
 class AcademicStaff(models.Model):
-    name = models.CharField(max_length = 30, verbose_name = 'Имя')
-    surname = models.CharField(max_length = 30, verbose_name = 'Фамилия')
-    patronymic = models.CharField(max_length = 40, verbose_name = 'Отчество')
-    position = models.CharField(max_length = 100, verbose_name = 'Должность')
-    autoriz = models.OneToOneField(Autoriz, on_delete = models.CASCADE, verbose_name = 'Пользователь')
+    name = models.CharField(max_length=30, verbose_name='Имя')
+    surname = models.CharField(max_length=30, verbose_name='Фамилия')
+    patronymic = models.CharField(max_length=40, verbose_name='Отчество')
+    position = models.CharField(max_length=100, verbose_name='Должность')
+    autoriz = models.OneToOneField(Autoriz, on_delete=models.CASCADE, verbose_name='Пользователь')
 
     class Meta:
         db_table = 'List_of_academic_staff'
@@ -75,63 +93,63 @@ class AcademicStaff(models.Model):
         return f"{self.surname} {self.name[0]}. {self.patronymic[0]}. - {self.position}"
 
 class Direction(models.Model):
-    name = models.CharField(max_length = 100, verbose_name = 'Название направления')
-    code = models.CharField(max_length = 20, unique = True, verbose_name = 'Код направления')
-    
+    name = models.CharField(max_length=100, verbose_name='Название направления')
+    code = models.CharField(max_length=20, unique=True, verbose_name='Код направления')
+
     class Meta:
         db_table = 'List_of_directions'
         verbose_name = 'Направление'
         verbose_name_plural = 'Направления'
-    
+
     def __str__(self):
         return f'{self.code} - {self.name}'
 
 class Course(models.Model):
-    number = models.IntegerField(verbose_name = 'Номер курса')
-    
+    number = models.IntegerField(verbose_name='Номер курса')
+
     class Meta:
         db_table = 'List_of_courses'
         verbose_name = 'Курс'
         verbose_name_plural = 'Курсы'
-    
+
     def __str__(self):
         return f'{self.number} курс'
 
 class Group(models.Model):
-    name = models.CharField(max_length = 20, verbose_name = 'Название группы')
-    course = models.ForeignKey(Course, on_delete = models.CASCADE, verbose_name = 'Курс')
-    direction = models.ForeignKey(Direction, on_delete = models.CASCADE, verbose_name = 'Направление')
-    academic_year = models.CharField(max_length = 9, verbose_name = 'Учебный год')
-    
+    name = models.CharField(max_length=20, verbose_name='Название группы')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='Курс')
+    direction = models.ForeignKey(Direction, on_delete=models.CASCADE, verbose_name='Направление')
+    academic_year = models.CharField(max_length=9, verbose_name='Учебный год')
+
     class Meta:
         db_table = 'List_of_groups'
         verbose_name = 'Группа'
         verbose_name_plural = 'Группы'
         unique_together = ['course', 'direction', 'name']
-    
+
     def __str__(self):
         return f'{self.course.number}{self.direction.code}-{self.name}'
 
 class AcademicYear(models.Model):
-    name = models.CharField(max_length = 9, unique = True, verbose_name = 'Название', help_text = 'Например: 2024-2025')
-    start_date = models.DateField(verbose_name = 'Дата начала')
-    end_date = models.DateField(verbose_name = 'Дата окончания')
-    is_current = models.BooleanField(default = False, verbose_name = 'Текущий учебный год')
-    
+    name = models.CharField(max_length=9, unique=True, verbose_name='Название', help_text='Например: 2024-2025')
+    start_date = models.DateField(verbose_name='Дата начала')
+    end_date = models.DateField(verbose_name='Дата окончания')
+    is_current = models.BooleanField(default=False, verbose_name='Текущий учебный год')
+
     class Meta:
         db_table = 'List_of_academic_years'
         verbose_name = 'Учебный год'
         verbose_name_plural = 'Учебные годы'
-    
+
     def __str__(self):
         return self.name
 
 class Student(models.Model):
-    name = models.CharField(max_length = 30, blank = False, null = False, verbose_name = 'Имя студента')
-    surname = models.CharField(max_length = 30, blank = False, null = False, verbose_name = 'Фамилия студента')
-    patronymic = models.CharField(max_length = 40, blank = False, null = False, verbose_name = 'Отчество студента')
-    autoriz = models.ForeignKey(Autoriz, on_delete = models.CASCADE, verbose_name = 'Пользователь')
-    group = models.ForeignKey(Group, on_delete = models.CASCADE, null = True, blank = True, verbose_name = 'Группа')
+    name = models.CharField(max_length=30, blank=False, null=False, verbose_name='Имя студента')
+    surname = models.CharField(max_length=30, blank=False, null=False, verbose_name='Фамилия студента')
+    patronymic = models.CharField(max_length=40, blank=False, null=False, verbose_name='Отчество студента')
+    autoriz = models.ForeignKey(Autoriz, on_delete=models.CASCADE, verbose_name='Пользователь')
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Группа')
 
     class Meta:
         db_table = 'List_of_students'
@@ -139,7 +157,7 @@ class Student(models.Model):
         verbose_name_plural = 'Студенты'
 
     def __str__(self):
-         return f"{self.surname} {self.name[0]}. {self.patronymic[0]}."
+        return f"{self.surname} {self.name[0]}. {self.patronymic[0]}."
 
 class Type_work(models.Model):
     HW = 'HW'
@@ -148,7 +166,7 @@ class Type_work(models.Model):
     KW = 'KW'
     PW = 'PW'
     SK = 'SK'
-    
+
     CHOICE_TYPE_WORK = [
         (HW, 'Домашние задания'),
         (LABS, 'Лабораторные работы'),
@@ -157,8 +175,8 @@ class Type_work(models.Model):
         (PW, 'Практические работы'),
         (SK, 'Итоговая контрольная'),
     ]
-    
-    type = models.CharField(max_length = 4, choices = CHOICE_TYPE_WORK, default = HW, verbose_name = 'Тип работы')
+
+    type = models.CharField(max_length=4, choices=CHOICE_TYPE_WORK, default=HW, verbose_name='Тип работы')
 
 class Estimation(models.Model):
     five = 'five'
@@ -175,13 +193,13 @@ class Estimation(models.Model):
         (one, 1)
     ]
 
-    student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'ФИО студента')
-    subject = models.ForeignKey(Subjects, on_delete = models.CASCADE, null = True, blank = True, verbose_name = 'Предмет')
-    type_estimation = models.IntegerField(choices = CHOICE_OF_ESTIMATION, blank = False, null = False, verbose_name = 'Оценка студенту')
-    date = models.DateField(auto_now_add = True, verbose_name = 'Дата получения оценки')
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='ФИО студента')
+    subject = models.ForeignKey(Subjects, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Предмет')
+    type_estimation = models.IntegerField(choices=CHOICE_OF_ESTIMATION, blank=False, null=False, verbose_name='Оценка студенту')
+    date = models.DateField(auto_now_add=True, verbose_name='Дата получения оценки')
 
 class Add_Сlassroom(models.Model):
-    name_classroom = models.CharField(unique = True, blank = False, null = False, verbose_name = 'Название аудитории')
+    name_classroom = models.CharField(unique=True, blank=False, null=False, verbose_name='Название аудитории')
 
     class Meta:
         db_table = 'List_of_Add_classroom'
@@ -197,7 +215,7 @@ class LessonType(models.Model):
     LAB = 'lab'
     SEMINAR = 'seminar'
     EXAM = 'exam'
-    
+
     TYPE_CHOICES = [
         (LECTURE, 'Лекция'),
         (PRACTICE, 'Практика'),
@@ -205,15 +223,15 @@ class LessonType(models.Model):
         (SEMINAR, 'Семинар'),
         (EXAM, 'Экзамен'),
     ]
-    
-    type = models.CharField(max_length = 20, choices = TYPE_CHOICES, verbose_name = 'Тип занятия')
-    name = models.CharField(max_length = 100, verbose_name = 'Название')
-    
+
+    type = models.CharField(max_length=20, choices=TYPE_CHOICES, verbose_name='Тип занятия')
+    name = models.CharField(max_length=100, verbose_name='Название')
+
     class Meta:
         db_table = 'List_of_lesson_types'
         verbose_name = 'Тип занятия'
         verbose_name_plural = 'Типы занятий'
-    
+
     def __str__(self):
         return self.name
 
@@ -227,18 +245,18 @@ class Pair(models.Model):
         (6, '16:20-17:40'),
         (7, '17:50-19:10'),
     ]
-    
-    pair_number = models.IntegerField(choices = PAIR_TIMES, verbose_name = 'Номер пары')
-    professor = models.ForeignKey(Professor, on_delete = models.CASCADE, verbose_name = 'Преподаватель')
-    subject = models.ForeignKey(Subjects, on_delete = models.CASCADE, verbose_name = 'Предмет')
-    classroom = models.ForeignKey(Add_Сlassroom, on_delete = models.SET_NULL, null = True, blank = True, verbose_name = 'Аудитория')
-    lesson_type = models.ForeignKey(LessonType, on_delete = models.SET_NULL, null = True, blank = True, verbose_name = 'Тип занятия')
-    
+
+    pair_number = models.IntegerField(choices=PAIR_TIMES, verbose_name='Номер пары')
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, verbose_name='Преподаватель')
+    subject = models.ForeignKey(Subjects, on_delete=models.CASCADE, verbose_name='Предмет')
+    classroom = models.ForeignKey(Add_Сlassroom, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Аудитория')
+    lesson_type = models.ForeignKey(LessonType, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Тип занятия')
+
     class Meta:
         db_table = 'List_of_pairs'
         verbose_name = 'Пара'
         verbose_name_plural = 'Пары'
-    
+
     def __str__(self):
         return f'{self.get_pair_number_display()} - {self.subject} - {self.professor}'
 
@@ -253,16 +271,20 @@ class DailySchedule(models.Model):
         (7, 'Воскресенье'),
     ]
     
-    weekday = models.IntegerField(choices = WEEKDAYS, verbose_name = 'День недели')
-    pair = models.ForeignKey(Pair, on_delete = models.CASCADE, verbose_name = 'Пара')
-    pair_order = models.IntegerField(verbose_name = 'Порядковый номер пары')
-    group = models.ForeignKey(Group, on_delete = models.CASCADE, verbose_name = 'Группа')
+    weekday = models.IntegerField(choices=WEEKDAYS, verbose_name='День недели')
+    pair = models.ForeignKey(Pair, on_delete=models.CASCADE, verbose_name='Пара')
+    pair_order = models.IntegerField(verbose_name='Порядковый номер пары')
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name='Группа')
+    schedule = models.ForeignKey('Schedule', on_delete=models.CASCADE, null=True, blank=True, related_name='daily_schedules', verbose_name='Расписание')
+    is_completed = models.BooleanField(default=False, verbose_name='Пара проведена')
+    is_missed = models.BooleanField(default=False, verbose_name='Пара пропущена')
+    topic = models.CharField(max_length=500, blank=True, null=True, verbose_name='Тема занятия')
     
     class Meta:
         db_table = 'List_of_daily_schedules'
         verbose_name = 'Дневное расписание'
         verbose_name_plural = 'Дневные расписания'
-        unique_together = ['weekday', 'pair_order', 'group']
+        unique_together = ['schedule', 'weekday', 'pair_order', 'group']
     
     def __str__(self):
         return f'{self.get_weekday_display()} - {self.pair_order} пара - {self.group}'
@@ -270,96 +292,96 @@ class DailySchedule(models.Model):
 class Semester(models.Model):
     AUTUMN = 'autumn'
     SPRING = 'spring'
-    
+
     CHOICE_SEMESTER_TYPE = [
         (AUTUMN, 'Осенний семестр'),
         (SPRING, 'Весенний семестр'),
     ]
-    
-    name = models.CharField(max_length = 50, verbose_name = 'Название семестра')
-    semester_type = models.CharField(max_length = 10, choices = CHOICE_SEMESTER_TYPE, verbose_name = 'Тип семестра')
-    academic_year = models.ForeignKey(AcademicYear, on_delete = models.CASCADE, verbose_name = 'Учебный год')
-    start_date = models.DateField(verbose_name = 'Дата начала семестра')
-    end_date = models.DateField(verbose_name = 'Дата окончания семестра')
-    is_active = models.BooleanField(default = False, verbose_name = 'Текущий семестр')
-    
+
+    name = models.CharField(max_length=50, verbose_name='Название семестра')
+    semester_type = models.CharField(max_length=10, choices=CHOICE_SEMESTER_TYPE, verbose_name='Тип семестра')
+    academic_year = models.ForeignKey(AcademicYear, on_delete=models.CASCADE, verbose_name='Учебный год')
+    start_date = models.DateField(verbose_name='Дата начала семестра')
+    end_date = models.DateField(verbose_name='Дата окончания семестра')
+    is_active = models.BooleanField(default=False, verbose_name='Текущий семестр')
+
     class Meta:
         db_table = 'List_of_semesters'
         verbose_name = 'Семестр'
         verbose_name_plural = 'Семестры'
         ordering = ['-start_date']
-    
+
     def __str__(self):
         return f'{self.get_semester_type_display()} {self.academic_year}'
 
 class Vacation(models.Model):
     WINTER = 'winter'
     SUMMER = 'summer'
-    
+
     CHOICE_VACATION_TYPE = [
         (WINTER, 'Зимние каникулы'),
         (SUMMER, 'Летние каникулы'),
     ]
-    
-    vacation_type = models.CharField(max_length = 10, choices = CHOICE_VACATION_TYPE, verbose_name = 'Тип каникул')
-    start_date = models.DateField(verbose_name = 'Дата начала каникул')
-    end_date = models.DateField(verbose_name = 'Дата окончания каникул')
-    academic_year = models.ForeignKey(AcademicYear, on_delete = models.CASCADE, verbose_name = 'Учебный год')
-    semester = models.ForeignKey(Semester, on_delete = models.CASCADE, null = True, blank = True, related_name = 'vacations', verbose_name = 'Связанный семестр')
-    description = models.TextField(max_length = 500, blank = True, null = True, verbose_name = 'Описание')
-    is_active = models.BooleanField(default = True, verbose_name = 'Актуально')
-    
+
+    vacation_type = models.CharField(max_length=10, choices=CHOICE_VACATION_TYPE, verbose_name='Тип каникул')
+    start_date = models.DateField(verbose_name='Дата начала каникул')
+    end_date = models.DateField(verbose_name='Дата окончания каникул')
+    academic_year = models.ForeignKey(AcademicYear, on_delete=models.CASCADE, verbose_name='Учебный год')
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, null=True, blank=True, related_name='vacations', verbose_name='Связанный семестр')
+    description = models.TextField(max_length=500, blank=True, null=True, verbose_name='Описание')
+    is_active = models.BooleanField(default=True, verbose_name='Актуально')
+
     class Meta:
         db_table = 'List_of_vacations'
         verbose_name = 'Каникулы'
         verbose_name_plural = 'Каникулы'
         ordering = ['start_date']
-    
+
     def __str__(self):
         return f'{self.get_vacation_type_display()} {self.academic_year}'
 
 class Schedule(models.Model):
-    group = models.ForeignKey(Group, on_delete = models.CASCADE, verbose_name = 'Группа')
-    semester = models.ForeignKey(Semester, on_delete = models.CASCADE, verbose_name = 'Семестр')
-    week_start_date = models.DateField(verbose_name = 'Дата начала недели')
-    week_end_date = models.DateField(verbose_name = 'Дата окончания недели')
-    is_active = models.BooleanField(default = True, verbose_name = 'Актуально')
-    is_current_week = models.BooleanField(default = False, verbose_name = 'Текущая неделя')
-    note = models.TextField(max_length = 500, blank = True, null = True, verbose_name = 'Примечание к расписанию')
-    created_at = models.DateTimeField(auto_now_add = True, verbose_name = 'Дата создания')
-    updated_at = models.DateTimeField(auto_now = True, verbose_name = 'Дата обновления')
-    created_by = models.ForeignKey(Professor, on_delete = models.SET_NULL, null = True, blank = True, related_name = 'created_schedules', verbose_name = 'Кто создал')
-    
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name='Группа')
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, verbose_name='Семестр')
+    week_start_date = models.DateField(verbose_name='Дата начала недели')
+    week_end_date = models.DateField(verbose_name='Дата окончания недели')
+    is_active = models.BooleanField(default=True, verbose_name='Актуально')
+    is_current_week = models.BooleanField(default=False, verbose_name='Текущая неделя')
+    note = models.TextField(max_length=500, blank=True, null=True, verbose_name='Примечание к расписанию')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
+    created_by = models.ForeignKey(Professor, on_delete=models.SET_NULL, null=True, blank=True, related_name='created_schedules', verbose_name='Кто создал')
+
     class Meta:
         db_table = 'List_of_schedule'
         verbose_name = 'Расписание на неделю'
         verbose_name_plural = 'Расписания на неделю'
         ordering = ['-week_start_date', 'group']
         unique_together = ['group', 'week_start_date']
-    
+
     def __str__(self):
         return f'Расписание для {self.group} на неделю {self.week_start_date} - {self.week_end_date}'
-    
+
     def save(self, *args, **kwargs):
         if not self.week_end_date and self.week_start_date:
-            self.week_end_date = self.week_start_date + timedelta(days = 6)
+            self.week_end_date = self.week_start_date + timedelta(days=6)
         super().save(*args, **kwargs)
 
 class ScheduleReplacement(models.Model):
-    schedule = models.ForeignKey(Schedule, on_delete = models.CASCADE, verbose_name = 'Расписание')
-    original_date = models.DateField(verbose_name = 'Исходная дата')
-    new_date = models.DateField(verbose_name = 'Новая дата')
-    original_pair = models.ForeignKey(Pair, on_delete = models.CASCADE, related_name = 'original_replacements', verbose_name = 'Исходная пара')
-    new_pair = models.ForeignKey(Pair, on_delete = models.CASCADE, related_name = 'new_replacements', verbose_name = 'Новая пара')
-    reason = models.TextField(verbose_name = 'Причина замены')
-    created_by = models.ForeignKey(Professor, on_delete = models.SET_NULL, null = True, verbose_name = 'Кто создал')
-    created_at = models.DateTimeField(auto_now_add = True)
-    
+    schedule = models.ForeignKey(Schedule, on_delete=models.CASCADE, verbose_name='Расписание')
+    original_date = models.DateField(verbose_name='Исходная дата')
+    new_date = models.DateField(verbose_name='Новая дата')
+    original_pair = models.ForeignKey(Pair, on_delete=models.CASCADE, related_name='original_replacements', verbose_name='Исходная пара')
+    new_pair = models.ForeignKey(Pair, on_delete=models.CASCADE, related_name='new_replacements', verbose_name='Новая пара')
+    reason = models.TextField(verbose_name='Причина замены')
+    created_by = models.ForeignKey(Professor, on_delete=models.SET_NULL, null=True, verbose_name='Кто создал')
+    created_at = models.DateTimeField(auto_now_add=True)
+
     class Meta:
         db_table = 'List_of_schedule_replacements'
         verbose_name = 'Замена занятия'
         verbose_name_plural = 'Замены занятий'
-    
+
     def __str__(self):
         return f'Замена {self.original_date} -> {self.new_date}'
 
@@ -374,12 +396,14 @@ class Attendance(models.Model):
         (absense, 'Отсутствует')
     ]
 
-    type = models.CharField(max_length = 8, choices = CHOICE_TYPE_PRESENCE, default = presence, verbose_name = 'Состояние студента на паре')
-    data_created = models.DateField(auto_now_add = True, verbose_name = 'Дата')
-    data_updated = models.DateField(auto_now = True, verbose_name = 'Дата изменяемая')
-    student = models.ForeignKey(Student, on_delete = models.CASCADE)
-    schedule = models.ForeignKey(Schedule, on_delete = models.CASCADE, null = True, blank = True, verbose_name = 'Расписание')
-    pair = models.ForeignKey(Pair, on_delete = models.CASCADE, null = True, blank = True, verbose_name = 'Пара')
+    type = models.CharField(max_length=8, choices=CHOICE_TYPE_PRESENCE, default=presence, verbose_name='Состояние студента на паре')
+    data_created = models.DateField(auto_now_add=True, verbose_name='Дата')
+    data_updated = models.DateField(auto_now=True, verbose_name='Дата изменяемая')
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    schedule = models.ForeignKey('Schedule', on_delete=models.CASCADE, null=True, blank=True, verbose_name='Расписание')
+    pair = models.ForeignKey('Pair', on_delete=models.CASCADE, null=True, blank=True, verbose_name='Пара')
+    comment = models.TextField(blank=True, null=True, verbose_name='Комментарий преподавателя')
+    bonus_given = models.IntegerField(default=0, verbose_name='Выдано бонусов')
 
     class Meta:
         db_table = 'List_of_stative_student'
@@ -390,13 +414,13 @@ class Attendance(models.Model):
         return self.type
 
 class Add_HW_Professor_to_course(models.Model):
-    group = models.ForeignKey(Group, on_delete = models.CASCADE, verbose_name = 'Домашнее задание для группы')
-    file = models.FileField(unique = True, upload_to = 'static/image/homeworks_for_students/', null = False, blank = False, verbose_name = 'Файл домашнего задания студентам')
-    comment = models.TextField(max_length = 500, verbose_name = 'Комментарий студентам к домашнему заданию')
-    date_start = models.DateField(auto_now_add = True, help_text = 'Дата создания домашнего задания.', verbose_name = 'Дата создания д/з')
-    date_final = models.DateField(help_text = 'Выберите дату конечной сдачи домашнего задания студентам.', verbose_name = 'Конечная дата выполнения')
-    professor = models.ForeignKey(Professor, on_delete = models.CASCADE, verbose_name = 'Задал-(а) домашнее задание')
-    subject = models.ForeignKey(Subjects, on_delete = models.CASCADE, verbose_name = 'Предмет')
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name='Домашнее задание для группы')
+    file = models.FileField(unique=True, upload_to='static/image/homeworks_for_students/', null=False, blank=False, verbose_name='Файл домашнего задания студентам')
+    comment = models.TextField(max_length=500, verbose_name='Комментарий студентам к домашнему заданию')
+    date_start = models.DateField(auto_now_add=True, help_text='Дата создания домашнего задания.', verbose_name='Дата создания д/з')
+    date_final = models.DateField(help_text='Выберите дату конечной сдачи домашнего задания студентам.', verbose_name='Конечная дата выполнения')
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, verbose_name='Задал-(а) домашнее задание')
+    subject = models.ForeignKey(Subjects, on_delete=models.CASCADE, verbose_name='Предмет')
 
     class Meta:
         db_table = 'List_of_add_hw_professor_to_course'
@@ -407,17 +431,18 @@ class Add_HW_Professor_to_course(models.Model):
         return f'Домашнее задание от {self.professor} студентам группы {self.group}'
 
 class HomeworkSubmission(models.Model):
-    homework = models.ForeignKey(Add_HW_Professor_to_course, on_delete = models.CASCADE, verbose_name = 'Задание')
-    student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
-    file = models.FileField(upload_to = 'static/image/homework_submissions/', verbose_name = 'Файл с выполненным заданием')
-    comment = models.TextField(blank = True, null = True, verbose_name = 'Комментарий студента')
-    time_work = models.PositiveIntegerField(blank = True, null = True, verbose_name = 'Время выполения домашнего задания')
-    the_usefulness_of_knowledge = models.IntegerField(blank = True, null = True, verbose_name = 'Польза от полученных знаний')
-    submitted_at = models.DateTimeField(auto_now_add = True, verbose_name = 'Дата сдачи')
-    grade = models.IntegerField(null = True, blank = True, verbose_name = 'Оценка')
-    professor_comment = models.TextField(blank = True, null = True, verbose_name = 'Комментарий преподавателя')
-    is_checked = models.BooleanField(default = False, verbose_name = 'Проверено')
-    
+    homework = models.ForeignKey(Add_HW_Professor_to_course, on_delete=models.CASCADE, verbose_name='Задание')
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='Студент')
+    file = models.FileField(upload_to='static/image/homework_submissions/', verbose_name='Файл с выполненным заданием')
+    comment = models.TextField(blank=True, null=True, verbose_name='Комментарий студента')
+    time_work = models.PositiveIntegerField(blank=True, null=True, verbose_name='Время выполения домашнего задания')
+    the_usefulness_of_knowledge = models.IntegerField(blank=True, null=True, verbose_name='Польза от полученных знаний')
+    submitted_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата сдачи')
+    grade = models.IntegerField(null=True, blank=True, verbose_name='Оценка')
+    professor_comment = models.TextField(blank=True, null=True, verbose_name='Комментарий преподавателя')
+    is_checked = models.BooleanField(default=False, verbose_name='Проверено')
+    bonus_received = models.BooleanField(default=False, verbose_name='Бонус за своевременную сдачу получен')
+
     class Meta:
         db_table = 'List_of_homework_submissions'
         verbose_name = 'Выполненное ДЗ'
@@ -428,9 +453,9 @@ class HomeworkSubmission(models.Model):
         return f'Работа студента {self.student} по заданию {self.homework}'
 
 class balance_topcoins_and_topgems(models.Model):
-    topcoins = models.PositiveIntegerField(blank = False, null = False, default = 0, verbose_name = 'Топкоины')
-    topgems = models.PositiveIntegerField(blank = False, null = False, default = 0, verbose_name = 'Топгемы')
-    student = models.OneToOneField(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
+    topcoins = models.PositiveIntegerField(blank=False, null=False, default=0, verbose_name='Топкоины')
+    topgems = models.PositiveIntegerField(blank=False, null=False, default=0, verbose_name='Топгемы')
+    student = models.OneToOneField(Student, on_delete=models.CASCADE, verbose_name='Студент')
 
     class Meta:
         db_table = 'List_of_balance_students'
@@ -441,9 +466,9 @@ class balance_topcoins_and_topgems(models.Model):
         return f'Баланс {self.student}: {self.topcoins} топкоинов, {self.topgems} топгемов'
 
 class Topmoney_student(models.Model):
-    topmoney = models.PositiveIntegerField(blank = False, null = False, default = 0, verbose_name = 'Топмани')
-    student = models.OneToOneField(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
-    balance_student = models.OneToOneField(balance_topcoins_and_topgems, on_delete = models.CASCADE, verbose_name = 'Баланс')
+    topmoney = models.PositiveIntegerField(blank=False, null=False, default=0, verbose_name='Топмани')
+    student = models.OneToOneField(Student, on_delete=models.CASCADE, verbose_name='Студент')
+    balance_student = models.OneToOneField(balance_topcoins_and_topgems, on_delete=models.CASCADE, verbose_name='Баланс')
 
     class Meta:
         db_table = 'List_of_topmoney_student'
@@ -459,13 +484,13 @@ class Topmoney_student(models.Model):
         return f'Топмани студента {self.student}: {self.topmoney}'
 
 class StudentStats(models.Model):
-    student = models.OneToOneField(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
-    total_attendance_days = models.PositiveIntegerField(default = 0, verbose_name = 'Всего дней посещения')
-    consecutive_days_attended = models.PositiveIntegerField(default = 0, verbose_name = 'Дней подряд посещения')
-    consecutive_days_on_time = models.PositiveIntegerField(default = 0, verbose_name = 'Дней подряд без опозданий')
-    last_attendance_date = models.DateField(null = True, blank = True, verbose_name = 'Дата последнего посещения')
-    topcoins_awarded_total = models.PositiveIntegerField(default = 0, verbose_name = 'Всего начислено топкоинов')
-    topgems_awarded_total = models.PositiveIntegerField(default = 0, verbose_name = 'Всего начислено топгемов')
+    student = models.OneToOneField(Student, on_delete=models.CASCADE, verbose_name='Студент')
+    total_attendance_days = models.PositiveIntegerField(default=0, verbose_name='Всего дней посещения')
+    consecutive_days_attended = models.PositiveIntegerField(default=0, verbose_name='Дней подряд посещения')
+    consecutive_days_on_time = models.PositiveIntegerField(default=0, verbose_name='Дней подряд без опозданий')
+    last_attendance_date = models.DateField(null=True, blank=True, verbose_name='Дата последнего посещения')
+    topcoins_awarded_total = models.PositiveIntegerField(default=0, verbose_name='Всего начислено топкоинов')
+    topgems_awarded_total = models.PositiveIntegerField(default=0, verbose_name='Всего начислено топгемов')
 
     class Meta:
         db_table = 'List_of_student_stats'
@@ -482,14 +507,14 @@ class Reward(models.Model):
         (ONE_TIME, 'Единоразовая'),
         (MULTIPLE, 'Многоразовая'),
     ]
-    name = models.CharField(max_length = 100, verbose_name = 'Название награды')
-    description = models.TextField(verbose_name = 'Описание')
-    reward_type = models.CharField(max_length = 10, choices = REWARD_TYPES, default = ONE_TIME, verbose_name = 'Тип награды')
-    topcoins_award = models.PositiveIntegerField(default = 0, verbose_name = 'Топкоины за награду')
-    topgems_award = models.PositiveIntegerField(default = 0, verbose_name = 'Топгемы за награду')
-    condition_attendance_streak = models.PositiveIntegerField(null = True, blank = True, verbose_name = 'Необходимый непрерывный срок посещения (дней)')
-    condition_on_time_streak = models.PositiveIntegerField(null = True, blank = True, verbose_name = 'Необходимый непрерывный срок без опозданий (дней)')
-    is_active = models.BooleanField(default = True, verbose_name = 'Активна')
+    name = models.CharField(max_length=100, verbose_name='Название награды')
+    description = models.TextField(verbose_name='Описание')
+    reward_type = models.CharField(max_length=10, choices=REWARD_TYPES, default=ONE_TIME, verbose_name='Тип награды')
+    topcoins_award = models.PositiveIntegerField(default=0, verbose_name='Топкоины за награду')
+    topgems_award = models.PositiveIntegerField(default=0, verbose_name='Топгемы за награду')
+    condition_attendance_streak = models.PositiveIntegerField(null=True, blank=True, verbose_name='Необходимый непрерывный срок посещения (дней)')
+    condition_on_time_streak = models.PositiveIntegerField(null=True, blank=True, verbose_name='Необходимый непрерывный срок без опозданий (дней)')
+    is_active = models.BooleanField(default=True, verbose_name='Активна')
 
     class Meta:
         db_table = 'List_of_rewards'
@@ -500,11 +525,11 @@ class Reward(models.Model):
         return self.name
 
 class UserReward(models.Model):
-    student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
-    reward = models.ForeignKey(Reward, on_delete = models.CASCADE, verbose_name = 'Награда')
-    awarded_at = models.DateTimeField(auto_now_add = True, verbose_name = 'Дата получения')
-    topcoins_given = models.PositiveIntegerField(verbose_name = 'Выдано топкоинов')
-    topgems_given = models.PositiveIntegerField(verbose_name = 'Выдано топгемов')
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='Студент')
+    reward = models.ForeignKey(Reward, on_delete=models.CASCADE, verbose_name='Награда')
+    awarded_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата получения')
+    topcoins_given = models.PositiveIntegerField(verbose_name='Выдано топкоинов')
+    topgems_given = models.PositiveIntegerField(verbose_name='Выдано топгемов')
 
     class Meta:
         db_table = 'List_of_user_rewards'
@@ -515,14 +540,14 @@ class UserReward(models.Model):
         return f'{self.student} получил {self.reward}'
 
 class Exam(models.Model):
-    student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
-    subject = models.ForeignKey(Subjects, on_delete = models.CASCADE, verbose_name = 'Предмет')
-    schedule = models.ForeignKey(Schedule, on_delete = models.SET_NULL, null = True, blank = True, verbose_name = 'Связанное расписание')
-    exam_file = models.FileField(upload_to = 'static/image/exams/', blank = True, null = True, verbose_name = 'Файл работы экзамена')
-    grade = models.IntegerField(choices = [(2, '2'), (3, '3'), (4, '4'), (5, '5')], verbose_name = 'Оценка за экзамен')
-    professor = models.ForeignKey(Professor, on_delete = models.CASCADE, verbose_name = 'Преподаватель')
-    exam_date = models.DateField(verbose_name = 'Дата проведения экзамена')
-    semester = models.ForeignKey(Semester, on_delete = models.SET_NULL, null = True, blank = True, verbose_name = 'Семестр')
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='Студент')
+    subject = models.ForeignKey(Subjects, on_delete=models.CASCADE, verbose_name='Предмет')
+    schedule = models.ForeignKey(Schedule, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Связанное расписание')
+    exam_file = models.FileField(upload_to='static/image/exams/', blank=True, null=True, verbose_name='Файл работы экзамена')
+    grade = models.IntegerField(choices=[(2, '2'), (3, '3'), (4, '4'), (5, '5')], verbose_name='Оценка за экзамен')
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, verbose_name='Преподаватель')
+    exam_date = models.DateField(verbose_name='Дата проведения экзамена')
+    semester = models.ForeignKey(Semester, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Семестр')
 
     class Meta:
         db_table = 'List_of_exams'
@@ -533,28 +558,28 @@ class Exam(models.Model):
         return f'Экзамен по {self.subject} у {self.student}'
 
 class ExamSession(models.Model):
-    semester = models.ForeignKey(Semester, on_delete = models.CASCADE, verbose_name = 'Семестр')
-    name = models.CharField(max_length = 100, verbose_name = 'Название сессии')
-    start_date = models.DateField(verbose_name = 'Начало сессии')
-    end_date = models.DateField(verbose_name = 'Конец сессии')
-    is_active = models.BooleanField(default = False, verbose_name = 'Активна')
-    
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, verbose_name='Семестр')
+    name = models.CharField(max_length=100, verbose_name='Название сессии')
+    start_date = models.DateField(verbose_name='Начало сессии')
+    end_date = models.DateField(verbose_name='Конец сессии')
+    is_active = models.BooleanField(default=False, verbose_name='Активна')
+
     class Meta:
         db_table = 'List_of_exam_sessions'
         verbose_name = 'Экзаменационная сессия'
         verbose_name_plural = 'Экзаменационные сессии'
-    
+
     def __str__(self):
         return f'{self.name} - {self.semester}'
 
 class ScheduledExam(models.Model):
-    exam_name = models.CharField(max_length = 200, verbose_name = 'Название экзамена')
-    subject = models.ForeignKey(Subjects, on_delete = models.CASCADE, verbose_name = 'Предмет')
-    preliminary_date = models.DateField(verbose_name = 'Предварительная дата проведения')
-    group = models.ForeignKey(Group, on_delete = models.CASCADE, verbose_name = 'Группа')
-    exam_session = models.ForeignKey(ExamSession, on_delete = models.CASCADE, verbose_name = 'Экзаменационная сессия')
-    created_by = models.ForeignKey(Professor, on_delete = models.SET_NULL, null = True, blank = True, verbose_name = 'Куратор')
-    created_at = models.DateTimeField(auto_now_add = True, verbose_name = 'Дата создания')
+    exam_name = models.CharField(max_length=200, verbose_name='Название экзамена')
+    subject = models.ForeignKey(Subjects, on_delete=models.CASCADE, verbose_name='Предмет')
+    preliminary_date = models.DateField(verbose_name='Предварительная дата проведения')
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name='Группа')
+    exam_session = models.ForeignKey(ExamSession, on_delete=models.CASCADE, verbose_name='Экзаменационная сессия')
+    created_by = models.ForeignKey(Professor, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Куратор')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
 
     class Meta:
         db_table = 'List_of_scheduled_exams'
@@ -565,13 +590,13 @@ class ScheduledExam(models.Model):
         return f'{self.exam_name} - {self.preliminary_date}'
 
 class Announcement(models.Model):
-    title = models.CharField(max_length = 200, verbose_name = 'Название объявления')
-    date_added = models.DateTimeField(auto_now_add = True, verbose_name = 'Дата добавления')
-    photo = models.ImageField(upload_to = 'static/image/announcements/', blank = True, null = True, verbose_name = 'Фото для объявления')
-    description = models.TextField(verbose_name = 'Подробное описание объявления')
-    is_active = models.BooleanField(default = True, verbose_name = 'Активно')
-    groups = models.ManyToManyField(Group, blank = True, verbose_name = 'Для групп')
-    is_for_all = models.BooleanField(default = False, verbose_name = 'Для всех')
+    title = models.CharField(max_length=200, verbose_name='Название объявления')
+    date_added = models.DateTimeField(auto_now_add=True, verbose_name='Дата добавления')
+    photo = models.ImageField(upload_to='static/image/announcements/', blank=True, null=True, verbose_name='Фото для объявления')
+    description = models.TextField(verbose_name='Подробное описание объявления')
+    is_active = models.BooleanField(default=True, verbose_name='Активно')
+    groups = models.ManyToManyField(Group, blank=True, verbose_name='Для групп')
+    is_for_all = models.BooleanField(default=False, verbose_name='Для всех')
 
     class Meta:
         db_table = 'List_of_announcements'
@@ -582,13 +607,13 @@ class Announcement(models.Model):
         return self.title
 
 class LeaderboardEntry(models.Model):
-    student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
-    topmoney = models.PositiveIntegerField(verbose_name = 'Топмани студента')
-    group = models.ForeignKey(Group, on_delete = models.CASCADE, verbose_name = 'Группа')
-    semester = models.ForeignKey(Semester, on_delete = models.CASCADE, verbose_name = 'Семестр')
-    rank_in_group = models.PositiveIntegerField(verbose_name = 'Место в группе')
-    rank_in_course = models.PositiveIntegerField(verbose_name = 'Место на курсе')
-    date = models.DateField(auto_now_add = True, verbose_name = 'Дата обновления')
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='Студент')
+    topmoney = models.PositiveIntegerField(verbose_name='Топмани студента')
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name='Группа')
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, verbose_name='Семестр')
+    rank_in_group = models.PositiveIntegerField(verbose_name='Место в группе')
+    rank_in_course = models.PositiveIntegerField(verbose_name='Место на курсе')
+    date = models.DateField(auto_now_add=True, verbose_name='Дата обновления')
 
     class Meta:
         db_table = 'List_of_leaderboard'
@@ -600,12 +625,12 @@ class LeaderboardEntry(models.Model):
         return f'{self.student} - {self.topmoney} топмани'
 
 class Ranking(models.Model):
-    student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
-    semester = models.ForeignKey(Semester, on_delete = models.CASCADE, verbose_name = 'Семестр')
-    group_rank = models.PositiveIntegerField(verbose_name = 'Место в группе')
-    course_rank = models.PositiveIntegerField(verbose_name = 'Место на курсе')
-    average_grade = models.DecimalField(max_digits = 3, decimal_places = 2, null = True, blank = True, verbose_name = 'Средний балл')
-    date = models.DateField(auto_now_add = True, verbose_name = 'Дата расчёта')
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='Студент')
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, verbose_name='Семестр')
+    group_rank = models.PositiveIntegerField(verbose_name='Место в группе')
+    course_rank = models.PositiveIntegerField(verbose_name='Место на курсе')
+    average_grade = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True, verbose_name='Средний балл')
+    date = models.DateField(auto_now_add=True, verbose_name='Дата расчёта')
 
     class Meta:
         db_table = 'List_of_rankings'
@@ -625,11 +650,11 @@ class All_payment_of_education(models.Model):
         (month, 'Месяц')
     ]
 
-    type_payment = models.CharField(choices = CHOICE_YEAR_OR_MONTH, max_length = 5, default = month, verbose_name = 'Выберите тип оплаты обучения')
-    amount = models.PositiveIntegerField(blank = False, null = False, default = None, verbose_name = 'Стоимость')
-    group = models.ForeignKey(Group, on_delete = models.CASCADE, verbose_name = 'Группа')
-    period_of_study = models.IntegerField(blank = False, null = False, default = 40, verbose_name = 'Период обучения(напишите в месяцах)')
-    date = models.DateField(blank = False, null = False, verbose_name = 'Начало обучения')
+    type_payment = models.CharField(choices=CHOICE_YEAR_OR_MONTH, max_length=5, default=month, verbose_name='Выберите тип оплаты обучения')
+    amount = models.PositiveIntegerField(blank=False, null=False, default=None, verbose_name='Стоимость')
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, verbose_name='Группа')
+    period_of_study = models.IntegerField(blank=False, null=False, default=40, verbose_name='Период обучения(напишите в месяцах)')
+    date = models.DateField(blank=False, null=False, verbose_name='Начало обучения')
 
     class Meta:
         db_table = 'List_of_payment_of_education'
@@ -640,10 +665,10 @@ class All_payment_of_education(models.Model):
         return f'Группа: {self.group}, Тип обучения: {self.type_payment}'
 
 class Students_payment_account(models.Model):
-    student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
-    all_payment_of_education = models.ForeignKey(All_payment_of_education, on_delete = models.CASCADE, verbose_name = 'Обучается на')
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='Студент')
+    all_payment_of_education = models.ForeignKey(All_payment_of_education, on_delete=models.CASCADE, verbose_name='Обучается на')
 
-    date = models.DateField(blank = False, null = False, verbose_name = 'Начало обучения')
+    date = models.DateField(blank=False, null=False, verbose_name='Начало обучения')
 
     class Meta:
         db_table = 'List_of_students_payment_account'
@@ -659,17 +684,17 @@ class Students_payment_account(models.Model):
         return f'Настройка оплаты обучения у {self.student}'
 
 class PaymentInfo(models.Model):
-    payment_account = models.ForeignKey(Students_payment_account, on_delete = models.CASCADE, verbose_name = 'Платежный аккаунт')
-    student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
-    paid_by = models.CharField(max_length = 150, verbose_name = 'Кто оплатил (ФИО)')
-    amount_paid = models.DecimalField(max_digits = 10, decimal_places = 2, verbose_name = 'Сумма оплаты')
-    payment_date = models.DateField(verbose_name = 'Дата оплаты')
-    period_start = models.DateField(verbose_name = 'Начало оплачиваемого периода')
-    period_end = models.DateField(verbose_name = 'Конец оплачиваемого периода')
-    part_number = models.PositiveIntegerField(verbose_name = 'Номер оплаченной части (из общего числа)')
-    total_parts = models.PositiveIntegerField(verbose_name = 'Общее количество частей обучения (в месяцах)')
-    due_date = models.DateField(verbose_name = 'Крайний срок оплаты')
-    comment = models.TextField(blank = True, null = True, verbose_name = 'Комментарий')
+    payment_account = models.ForeignKey(Students_payment_account, on_delete=models.CASCADE, verbose_name='Платежный аккаунт')
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='Студент')
+    paid_by = models.CharField(max_length=150, verbose_name='Кто оплатил (ФИО)')
+    amount_paid = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Сумма оплаты')
+    payment_date = models.DateField(verbose_name='Дата оплаты')
+    period_start = models.DateField(verbose_name='Начало оплачиваемого периода')
+    period_end = models.DateField(verbose_name='Конец оплачиваемого периода')
+    part_number = models.PositiveIntegerField(verbose_name='Номер оплаченной части (из общего числа)')
+    total_parts = models.PositiveIntegerField(verbose_name='Общее количество частей обучения (в месяцах)')
+    due_date = models.DateField(verbose_name='Крайний срок оплаты')
+    comment = models.TextField(blank=True, null=True, verbose_name='Комментарий')
 
     class Meta:
         db_table = 'List_of_payment_info'
@@ -680,67 +705,67 @@ class PaymentInfo(models.Model):
         return f'Оплата {self.student} - {self.payment_date}'
 
 class Debtor(models.Model):
-    student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
-    payment_info = models.ForeignKey(PaymentInfo, on_delete = models.CASCADE, verbose_name = 'Платеж')
-    debt_amount = models.DecimalField(max_digits = 10, decimal_places = 2, verbose_name = 'Сумма долга')
-    due_date = models.DateField(verbose_name = 'Срок оплаты')
-    is_paid = models.BooleanField(default = False, verbose_name = 'Оплачено')
-    notification_sent = models.BooleanField(default = False, verbose_name = 'Уведомление отправлено')
-    
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='Студент')
+    payment_info = models.ForeignKey(PaymentInfo, on_delete=models.CASCADE, verbose_name='Платеж')
+    debt_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Сумма долга')
+    due_date = models.DateField(verbose_name='Срок оплаты')
+    is_paid = models.BooleanField(default=False, verbose_name='Оплачено')
+    notification_sent = models.BooleanField(default=False, verbose_name='Уведомление отправлено')
+
     class Meta:
         db_table = 'List_of_debtors'
         verbose_name = 'Должник'
         verbose_name_plural = 'Должники'
-    
+
     def __str__(self):
         return f'{self.student} - долг {self.debt_amount}'
 
 class Scholarship(models.Model):
-    student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
-    amount = models.DecimalField(max_digits = 10, decimal_places = 2, verbose_name = 'Сумма')
-    month = models.DateField(verbose_name = 'Месяц выплаты')
-    is_paid = models.BooleanField(default = False, verbose_name = 'Выплачено')
-    paid_date = models.DateField(null = True, blank = True, verbose_name = 'Дата выплаты')
-    
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='Студент')
+    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Сумма')
+    month = models.DateField(verbose_name='Месяц выплаты')
+    is_paid = models.BooleanField(default=False, verbose_name='Выплачено')
+    paid_date = models.DateField(null=True, blank=True, verbose_name='Дата выплаты')
+
     class Meta:
         db_table = 'List_of_scholarships'
         verbose_name = 'Стипендия'
         verbose_name_plural = 'Стипендии'
-    
+
     def __str__(self):
         return f'Стипендия {self.student} за {self.month}'
 
 class AcademicDebt(models.Model):
-    student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
-    subject = models.ForeignKey(Subjects, on_delete = models.CASCADE, verbose_name = 'Предмет')
-    semester = models.ForeignKey(Semester, on_delete = models.CASCADE, verbose_name = 'Семестр')
-    exam_date = models.DateField(verbose_name = 'Дата пересдачи')
-    is_passed = models.BooleanField(default = False, verbose_name = 'Сдано')
-    retake_count = models.PositiveIntegerField(default = 1, verbose_name = 'Количество пересдач')
-    commission_date = models.DateField(null = True, blank = True, verbose_name = 'Дата комиссии')
-    
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='Студент')
+    subject = models.ForeignKey(Subjects, on_delete=models.CASCADE, verbose_name='Предмет')
+    semester = models.ForeignKey(Semester, on_delete=models.CASCADE, verbose_name='Семестр')
+    exam_date = models.DateField(verbose_name='Дата пересдачи')
+    is_passed = models.BooleanField(default=False, verbose_name='Сдано')
+    retake_count = models.PositiveIntegerField(default=1, verbose_name='Количество пересдач')
+    commission_date = models.DateField(null=True, blank=True, verbose_name='Дата комиссии')
+
     class Meta:
         db_table = 'List_of_academic_debts'
         verbose_name = 'Академическая задолженность'
         verbose_name_plural = 'Академические задолженности'
-    
+
     def __str__(self):
         return f'Долг {self.student} по {self.subject}'
 
 class GraduationWork(models.Model):
-    student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
-    title = models.CharField(max_length = 300, verbose_name = 'Тема работы')
-    supervisor = models.ForeignKey(Professor, on_delete = models.CASCADE, related_name = 'supervised_works', verbose_name = 'Руководитель')
-    reviewer = models.ForeignKey(Professor, on_delete = models.SET_NULL, null = True, related_name = 'reviewed_works', verbose_name = 'Рецензент')
-    defense_date = models.DateField(verbose_name = 'Дата защиты')
-    grade = models.IntegerField(null = True, blank = True, verbose_name = 'Оценка')
-    file = models.FileField(upload_to = 'static/image/graduation_works/', blank = True, null = True, verbose_name = 'Файл работы')
-    
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='Студент')
+    title = models.CharField(max_length=300, verbose_name='Тема работы')
+    supervisor = models.ForeignKey(Professor, on_delete=models.CASCADE, related_name='supervised_works', verbose_name='Руководитель')
+    reviewer = models.ForeignKey(Professor, on_delete=models.SET_NULL, null=True, related_name='reviewed_works', verbose_name='Рецензент')
+    defense_date = models.DateField(verbose_name='Дата защиты')
+    grade = models.IntegerField(null=True, blank=True, verbose_name='Оценка')
+    file = models.FileField(upload_to='static/image/graduation_works/', blank=True, null=True, verbose_name='Файл работы')
+
     class Meta:
         db_table = 'List_of_graduation_works'
         verbose_name = 'Дипломная работа'
         verbose_name_plural = 'Дипломные работы'
-    
+
     def __str__(self):
         return f'Диплом {self.student}: {self.title[:50]}'
 
@@ -750,33 +775,33 @@ class Internship(models.Model):
         ('industrial', 'Производственная практика'),
         ('pre_diploma', 'Преддипломная практика'),
     ]
-    
-    student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
-    internship_type = models.CharField(max_length = 20, choices = INTERNSHIP_TYPES, verbose_name = 'Тип практики')
-    organization = models.CharField(max_length = 200, verbose_name = 'Организация')
-    start_date = models.DateField(verbose_name = 'Дата начала')
-    end_date = models.DateField(verbose_name = 'Дата окончания')
-    supervisor = models.ForeignKey(Professor, on_delete = models.SET_NULL, null = True, verbose_name = 'Руководитель от колледжа')
-    report_file = models.FileField(upload_to = 'static/image/internships/', blank = True, null = True, verbose_name = 'Отчет')
-    grade = models.IntegerField(null = True, blank = True, verbose_name = 'Оценка')
-    
+
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='Студент')
+    internship_type = models.CharField(max_length=20, choices=INTERNSHIP_TYPES, verbose_name='Тип практики')
+    organization = models.CharField(max_length=200, verbose_name='Организация')
+    start_date = models.DateField(verbose_name='Дата начала')
+    end_date = models.DateField(verbose_name='Дата окончания')
+    supervisor = models.ForeignKey(Professor, on_delete=models.SET_NULL, null=True, verbose_name='Руководитель от колледжа')
+    report_file = models.FileField(upload_to='static/image/internships/', blank=True, null=True, verbose_name='Отчет')
+    grade = models.IntegerField(null=True, blank=True, verbose_name='Оценка')
+
     class Meta:
         db_table = 'List_of_internships'
         verbose_name = 'Практика'
         verbose_name_plural = 'Практики'
-    
+
     def __str__(self):
         return f'{self.get_internship_type_display()} {self.student}'
 
 class EducationalMaterial(models.Model):
-    title = models.CharField(max_length = 200, verbose_name = 'Название материала')
-    file = models.FileField(upload_to = 'static/image/educational_materials/', verbose_name = 'Файл материала')
-    description = models.TextField(blank = True, null = True, verbose_name = 'Описание')
-    professor = models.ForeignKey(Professor, on_delete = models.CASCADE, verbose_name = 'Преподаватель')
-    groups = models.ManyToManyField(Group, blank = True, verbose_name = 'Для конкретных групп')
-    is_public = models.BooleanField(default = False, verbose_name = 'Для всех групп')
-    subject = models.ForeignKey(Subjects, on_delete = models.CASCADE, null = True, blank = True, verbose_name = 'Предмет')
-    upload_date = models.DateTimeField(auto_now_add = True, verbose_name = 'Дата загрузки')
+    title = models.CharField(max_length=200, verbose_name='Название материала')
+    file = models.FileField(upload_to='static/image/educational_materials/', verbose_name='Файл материала')
+    description = models.TextField(blank=True, null=True, verbose_name='Описание')
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, verbose_name='Преподаватель')
+    groups = models.ManyToManyField(Group, blank=True, verbose_name='Для конкретных групп')
+    is_public = models.BooleanField(default=False, verbose_name='Для всех групп')
+    subject = models.ForeignKey(Subjects, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Предмет')
+    upload_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата загрузки')
 
     class Meta:
         db_table = 'List_of_educational_materials'
@@ -792,17 +817,17 @@ class PersonalAccount(models.Model):
         ('professor', 'Преподаватель'),
         ('academic_staff', 'Учебная часть'),
     ]
-    user = models.OneToOneField(Autoriz, on_delete = models.CASCADE, verbose_name = 'Пользователь')
-    role = models.CharField(max_length = 20, choices = ROLE_CHOICES, verbose_name = 'Роль')
-    student_profile = models.OneToOneField(Student, on_delete = models.CASCADE, null = True, blank = True, verbose_name = 'Профиль студента')
-    professor_profile = models.OneToOneField(Professor, on_delete = models.CASCADE, null = True, blank = True, verbose_name = 'Профиль преподавателя')
-    academic_staff_profile = models.OneToOneField(AcademicStaff, on_delete = models.CASCADE, null = True, blank = True, verbose_name = 'Профиль сотрудника')
-    school_certificate = models.FileField(upload_to = 'static/image/personal/student/', blank = True, null = True, verbose_name = 'Аттестат школы (для студента)')
-    health_certificate = models.FileField(upload_to = 'static/image/personal/student/', blank = True, null = True, verbose_name = 'Справка 086У (для студента)')
-    diploma = models.FileField(upload_to = 'static/image/personal/professor/', blank = True, null = True, verbose_name = 'Диплом (для преподавателя)')
-    employment_contract = models.FileField(upload_to = 'static/image/personal/professor/', blank = True, null = True, verbose_name = 'Трудовой договор (для преподавателя)')
-    internal_documents = models.FileField(upload_to = 'static/image/personal/staff/', blank = True, null = True, verbose_name = 'Внутренние документы (для учебной части)')
-    additional_docs = models.FileField(upload_to = 'static/image/personal/other/', blank = True, null = True, verbose_name = 'Дополнительные документы')
+    user = models.OneToOneField(Autoriz, on_delete=models.CASCADE, verbose_name='Пользователь')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, verbose_name='Роль')
+    student_profile = models.OneToOneField(Student, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Профиль студента')
+    professor_profile = models.OneToOneField(Professor, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Профиль преподавателя')
+    academic_staff_profile = models.OneToOneField(AcademicStaff, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Профиль сотрудника')
+    school_certificate = models.FileField(upload_to='static/image/personal/student/', blank=True, null=True, verbose_name='Аттестат школы (для студента)')
+    health_certificate = models.FileField(upload_to='static/image/personal/student/', blank=True, null=True, verbose_name='Справка 086У (для студента)')
+    diploma = models.FileField(upload_to='static/image/personal/professor/', blank=True, null=True, verbose_name='Диплом (для преподавателя)')
+    employment_contract = models.FileField(upload_to='static/image/personal/professor/', blank=True, null=True, verbose_name='Трудовой договор (для преподавателя)')
+    internal_documents = models.FileField(upload_to='static/image/personal/staff/', blank=True, null=True, verbose_name='Внутренние документы (для учебной части)')
+    additional_docs = models.FileField(upload_to='static/image/personal/other/', blank=True, null=True, verbose_name='Дополнительные документы')
 
     class Meta:
         db_table = 'List_of_personal_accounts'
@@ -813,8 +838,8 @@ class PersonalAccount(models.Model):
         return f'Личный кабинет {self.user} ({self.get_role_display()})'
 
 class image_student(models.Model):
-    photo = models.FileField(blank = False, null = False, verbose_name = 'Загрузить фотографию студента')
-    student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
+    photo = models.FileField(blank=False, null=False, verbose_name='Загрузить фотографию студента')
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='Студент')
 
     class Meta:
         db_table = 'List_of_image_students'
@@ -825,8 +850,8 @@ class image_student(models.Model):
         return f'Фотография студента {self.student}'
 
 class image_professor(models.Model):
-    photo = models.FileField(blank = False, null = False, verbose_name = 'Загрузить фотографию преподавателя')
-    professor = models.ForeignKey(Professor, on_delete = models.CASCADE, verbose_name = 'Преподаватель')
+    photo = models.FileField(blank=False, null=False, verbose_name='Загрузить фотографию преподавателя')
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, verbose_name='Преподаватель')
 
     class Meta:
         db_table = 'List_of_image_professor'
@@ -837,8 +862,8 @@ class image_professor(models.Model):
         return f'Фотография преподавателя {self.professor}'
 
 class Review_of_the_Academy(models.Model):
-    student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
-    confirmation_review = models.FileField(blank = False, null = False, verbose_name = 'Загрузить картинку')
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='Студент')
+    confirmation_review = models.FileField(blank=False, null=False, verbose_name='Загрузить картинку')
     google = 'google'
     yandex = 'yandex'
     zoon = 'zoon'
@@ -849,7 +874,7 @@ class Review_of_the_Academy(models.Model):
         (zoon, 'Зун'),
     ]
 
-    type_a_social_network = models.CharField(choices = CHOICE_A_SOCIAL_NETWORK, max_length = 6, verbose_name = 'Выберите тип социальной сети')
+    type_a_social_network = models.CharField(choices=CHOICE_A_SOCIAL_NETWORK, max_length=6, verbose_name='Выберите тип социальной сети')
 
     class Meta:
         db_table = 'List_of_review_of_the_academy'
@@ -860,21 +885,21 @@ class Review_of_the_Academy(models.Model):
         return f'Отзыв об Академии студентом {self.student}'
 
 class Appeals_to_the_educational_unit(models.Model):
-    student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'Студент')
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='Студент')
     proposal = 'proposal'
     question_in_the_study_section = 'question_in_the_study_section'
     question_about_payment = 'question_about_payment'
     question_about_homework = 'question_about_homework'
-    
+
     CHOICE_THE_SIGNAL_TYPE = [
         (proposal, 'Предложение'),
         (question_in_the_study_section, 'Вопрос к учебной части'),
         (question_about_payment, 'Вопрос по оплате'),
         (question_about_homework, 'Вопрос по домашнему заданию')
     ]
-    
-    Select_the_signal_type = models.CharField(choices = CHOICE_THE_SIGNAL_TYPE, max_length = 30, verbose_name = 'Выберите тип сигнала')
-    question = models.TextField(max_length = 500, blank = False, null = False, verbose_name = 'Вопрос студента')
+
+    Select_the_signal_type = models.CharField(choices=CHOICE_THE_SIGNAL_TYPE, max_length=30, verbose_name='Выберите тип сигнала')
+    question = models.TextField(max_length=500, blank=False, null=False, verbose_name='Вопрос студента')
 
     class Meta:
         db_table = 'List_of_appeals_to_the_educatinal_unit'
@@ -885,11 +910,11 @@ class Appeals_to_the_educational_unit(models.Model):
         return f'Вопрос от студента {self.student}'
 
 class Shop_add_products(models.Model):
-    name_product = models.CharField(max_length = 50, blank = False, null = False, verbose_name = 'Название продукта')
-    photo_product = models.FileField(blank = False, null = False, verbose_name = 'Фотография продукта')
-    product_quantity = models.PositiveIntegerField(blank = False, null = False, verbose_name = 'Количество')
-    price_product_topcoins = models.PositiveIntegerField(blank = False, null = False, verbose_name = 'Цена в топкоинах')
-    price_product_topgems = models.PositiveIntegerField(blank = False, null = False, verbose_name = 'Цена в топгемах')
+    name_product = models.CharField(max_length=50, blank=False, null=False, verbose_name='Название продукта')
+    photo_product = models.FileField(blank=False, null=False, verbose_name='Фотография продукта')
+    product_quantity = models.PositiveIntegerField(blank=False, null=False, verbose_name='Количество')
+    price_product_topcoins = models.PositiveIntegerField(blank=False, null=False, verbose_name='Цена в топкоинах')
+    price_product_topgems = models.PositiveIntegerField(blank=False, null=False, verbose_name='Цена в топгемах')
 
     class Meta:
         db_table = 'List_of_shop'
@@ -900,9 +925,9 @@ class Shop_add_products(models.Model):
         return f'Товар {self.name_product}'
 
 class Complaint_to_the_CEO(models.Model):
-    student = models.ForeignKey(Student, on_delete = models.CASCADE)
-    claim = models.CharField(max_length = 500, blank = False, null = False)
-    date = models.DateField(auto_now_add = True)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    claim = models.CharField(max_length=500, blank=False, null=False)
+    date = models.DateField(auto_now_add=True)
 
     class Meta:
         db_table = 'List_of_complaint_to_the_CEO'
@@ -913,11 +938,11 @@ class Complaint_to_the_CEO(models.Model):
         return f'Жалоба студента {self.student} генеральному директору.'
 
 class Student_Reviews(models.Model):
-    student = models.ForeignKey(Student, on_delete = models.CASCADE, verbose_name = 'ФИО студента')
-    professor = models.ForeignKey(Professor, on_delete = models.CASCADE, verbose_name = 'ФИО преподавателя')
-    subject = models.ForeignKey(Subjects, on_delete = models.CASCADE, verbose_name = 'Предмет который ведет преподаватель')
-    comment = models.CharField(max_length = 800, blank = False, null = False, verbose_name = 'Текст о студенте')
-    date = models.DateField(auto_now_add = True)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='ФИО студента')
+    professor = models.ForeignKey(Professor, on_delete=models.CASCADE, verbose_name='ФИО преподавателя')
+    subject = models.ForeignKey(Subjects, on_delete=models.CASCADE, verbose_name='Предмет который ведет преподаватель')
+    comment = models.CharField(max_length=800, blank=False, null=False, verbose_name='Текст о студенте')
+    date = models.DateField(auto_now_add=True)
 
     class Meta:
         db_table = 'List_of_student_review'
@@ -935,23 +960,23 @@ class Event(models.Model):
         ('deadline', 'Дедлайн'),
         ('other', 'Другое'),
     ]
-    
-    title = models.CharField(max_length = 200, verbose_name = 'Название')
-    event_type = models.CharField(max_length = 20, choices = EVENT_TYPES, verbose_name = 'Тип события')
-    start_date = models.DateTimeField(verbose_name = 'Дата начала')
-    end_date = models.DateTimeField(verbose_name = 'Дата окончания')
-    description = models.TextField(blank = True, null = True, verbose_name = 'Описание')
-    location = models.CharField(max_length = 200, blank = True, null = True, verbose_name = 'Место')
-    groups = models.ManyToManyField(Group, blank = True, verbose_name = 'Для групп')
-    is_for_all = models.BooleanField(default = False, verbose_name = 'Для всех')
-    created_by = models.ForeignKey(Professor, on_delete = models.SET_NULL, null = True, verbose_name = 'Кто создал')
-    
+
+    title = models.CharField(max_length=200, verbose_name='Название')
+    event_type = models.CharField(max_length=20, choices=EVENT_TYPES, verbose_name='Тип события')
+    start_date = models.DateTimeField(verbose_name='Дата начала')
+    end_date = models.DateTimeField(verbose_name='Дата окончания')
+    description = models.TextField(blank=True, null=True, verbose_name='Описание')
+    location = models.CharField(max_length=200, blank=True, null=True, verbose_name='Место')
+    groups = models.ManyToManyField(Group, blank=True, verbose_name='Для групп')
+    is_for_all = models.BooleanField(default=False, verbose_name='Для всех')
+    created_by = models.ForeignKey(Professor, on_delete=models.SET_NULL, null=True, verbose_name='Кто создал')
+
     class Meta:
         db_table = 'List_of_events'
         verbose_name = 'Событие'
         verbose_name_plural = 'События'
         ordering = ['start_date']
-    
+
     def __str__(self):
         return self.title
 
@@ -962,59 +987,59 @@ class Notification(models.Model):
         ('success', 'Успех'),
         ('error', 'Ошибка'),
     ]
-    
-    title = models.CharField(max_length = 200, verbose_name = 'Заголовок')
-    message = models.TextField(verbose_name = 'Сообщение')
-    notification_type = models.CharField(max_length = 20, choices = NOTIFICATION_TYPES, default = 'info', verbose_name = 'Тип')
-    created_at = models.DateTimeField(auto_now_add = True)
-    is_read = models.BooleanField(default = False, verbose_name = 'Прочитано')
-    user = models.ForeignKey(Autoriz, on_delete = models.CASCADE, verbose_name = 'Пользователь')
-    
+
+    title = models.CharField(max_length=200, verbose_name='Заголовок')
+    message = models.TextField(verbose_name='Сообщение')
+    notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES, default='info', verbose_name='Тип')
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False, verbose_name='Прочитано')
+    user = models.ForeignKey(Autoriz, on_delete=models.CASCADE, verbose_name='Пользователь')
+
     class Meta:
         db_table = 'List_of_notifications'
         verbose_name = 'Уведомление'
         verbose_name_plural = 'Уведомления'
         ordering = ['-created_at']
-    
+
     def __str__(self):
         return self.title
 
 class Poll(models.Model):
-    title = models.CharField(max_length = 200, verbose_name = 'Название')
-    description = models.TextField(blank = True, null = True, verbose_name = 'Описание')
-    start_date = models.DateTimeField(verbose_name = 'Дата начала')
-    end_date = models.DateTimeField(verbose_name = 'Дата окончания')
-    is_active = models.BooleanField(default = True, verbose_name = 'Активно')
-    groups = models.ManyToManyField(Group, blank = True, verbose_name = 'Для групп')
-    created_by = models.ForeignKey(Professor, on_delete = models.SET_NULL, null = True, verbose_name = 'Кто создал')
-    
+    title = models.CharField(max_length=200, verbose_name='Название')
+    description = models.TextField(blank=True, null=True, verbose_name='Описание')
+    start_date = models.DateTimeField(verbose_name='Дата начала')
+    end_date = models.DateTimeField(verbose_name='Дата окончания')
+    is_active = models.BooleanField(default=True, verbose_name='Активно')
+    groups = models.ManyToManyField(Group, blank=True, verbose_name='Для групп')
+    created_by = models.ForeignKey(Professor, on_delete=models.SET_NULL, null=True, verbose_name='Кто создал')
+
     class Meta:
         db_table = 'List_of_polls'
         verbose_name = 'Опрос'
         verbose_name_plural = 'Опросы'
-    
+
     def __str__(self):
         return self.title
 
 class PollOption(models.Model):
-    poll = models.ForeignKey(Poll, on_delete = models.CASCADE, related_name = 'options', verbose_name = 'Опрос')
-    text = models.CharField(max_length = 200, verbose_name = 'Вариант ответа')
-    votes = models.PositiveIntegerField(default = 0, verbose_name = 'Голосов')
-    
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE, related_name='options', verbose_name='Опрос')
+    text = models.CharField(max_length=200, verbose_name='Вариант ответа')
+    votes = models.PositiveIntegerField(default=0, verbose_name='Голосов')
+
     class Meta:
         db_table = 'List_of_poll_options'
         verbose_name = 'Вариант опроса'
         verbose_name_plural = 'Варианты опросов'
-    
+
     def __str__(self):
         return self.text
 
 class PollVote(models.Model):
-    poll = models.ForeignKey(Poll, on_delete = models.CASCADE, verbose_name = 'Опрос')
-    option = models.ForeignKey(PollOption, on_delete = models.CASCADE, verbose_name = 'Вариант')
-    user = models.ForeignKey(Autoriz, on_delete = models.CASCADE, verbose_name = 'Пользователь')
-    voted_at = models.DateTimeField(auto_now_add = True)
-    
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE, verbose_name='Опрос')
+    option = models.ForeignKey(PollOption, on_delete=models.CASCADE, verbose_name='Вариант')
+    user = models.ForeignKey(Autoriz, on_delete=models.CASCADE, verbose_name='Пользователь')
+    voted_at = models.DateTimeField(auto_now_add=True)
+
     class Meta:
         db_table = 'List_of_poll_votes'
         verbose_name = 'Голос'
@@ -1022,15 +1047,15 @@ class PollVote(models.Model):
         unique_together = ['poll', 'user']
 
 class Chat(models.Model):
-    participants = models.ManyToManyField(Autoriz, verbose_name = 'Участники')
-    created_at = models.DateTimeField(auto_now_add = True)
-    updated_at = models.DateTimeField(auto_now = True)
-    
+    participants = models.ManyToManyField(Autoriz, verbose_name='Участники')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     class Meta:
         db_table = 'List_of_chats'
         verbose_name = 'Чат'
         verbose_name_plural = 'Чаты'
-    
+
     def __str__(self):
         return f'Чат {self.id}'
 
@@ -1044,13 +1069,16 @@ class Message(models.Model):
     is_read = models.BooleanField(default=False)
     is_delivered = models.BooleanField(default=False)
     is_saved = models.BooleanField(default=False)
-    
+    reply_to = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='replies')
+    forwarded_from = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='forwards')
+    reactions = models.JSONField(default=dict, blank=True)
+
     class Meta:
         db_table = 'List_of_messages'
         verbose_name = 'Сообщение'
         verbose_name_plural = 'Сообщения'
         ordering = ['created_at']
-    
+
     @property
     def display_filename(self):
         if self.original_filename:
@@ -1064,6 +1092,10 @@ class Message(models.Model):
             return name
         return 'Файл'
 
+    @property
+    def sender_name(self):
+        return self.sender.get_full_name()
+
     def __str__(self):
         return f'Сообщение от {self.sender} в {self.created_at}'
 
@@ -1073,15 +1105,15 @@ class ChatProfile(models.Model):
     avatar = models.ImageField(upload_to='chat_avatars/', blank=True, null=True, verbose_name='Аватар')
     about = models.TextField(blank=True, verbose_name='О себе')
     city = models.CharField(max_length=100, blank=True, verbose_name='Город')
-    
+
     class Meta:
         db_table = 'List_of_chat_profiles'
         verbose_name = 'Профиль для чата'
         verbose_name_plural = 'Профили для чата'
-    
+
     def __str__(self):
         return f'Chat профиль {self.user.user}'
-    
+
 class Story(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='stories')
     file = models.FileField(upload_to='stories/')
@@ -1089,19 +1121,19 @@ class Story(models.Model):
     is_video = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField()
-    
+
     class Meta:
         db_table = 'List_of_stories'
         verbose_name = 'История'
         verbose_name_plural = 'Истории'
         ordering = ['-created_at']
-    
+
     def save(self, *args, **kwargs):
         if not self.expires_at:
             from datetime import timedelta
             from django.utils import timezone
             self.expires_at = timezone.now() + timedelta(days=1)
         super().save(*args, **kwargs)
-    
+
     def __str__(self):
         return f'Story from {self.student} at {self.created_at}'

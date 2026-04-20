@@ -1,139 +1,46 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f5f7fa;
-}
-
-.header {
-    background: white;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-}
-
-.header-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-}
-
-.logo {
-    font-size: 24px;
-    font-weight: bold;
-    color: #667eea;
-}
-
-.nav-menu {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.nav-menu a {
-    text-decoration: none;
-    color: #333;
-    font-size: 14px;
-    transition: color 0.3s;
-}
-
-.nav-menu a:hover {
-    color: #667eea;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.user-name {
-    font-size: 14px;
-    color: #333;
-}
-
-.btn-profile, .btn-logout {
-    padding: 6px 12px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 14px;
-    transition: 0.3s;
-}
-
-.btn-profile {
-    background: #667eea;
-    color: white;
-}
-
-.btn-profile:hover {
-    background: #5a67d8;
-}
-
-.btn-logout {
-    background: #dc3545;
-    color: white;
-}
-
-.btn-logout:hover {
-    background: #c82333;
-}
-
-.container {
+.announcements-container {
     max-width: 900px;
-    margin: 80px auto 20px;
-    padding: 0 20px;
+    margin: 0 auto;
 }
 
 .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
-    flex-wrap: wrap;
-    gap: 15px;
+    margin-bottom: 30px;
 }
 
 .page-title {
-    font-size: 28px;
-    color: #333;
+    font-size: 32px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #EA422A 0%, #F69020 48.58%, #FFC619 101.38%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .btn-create {
     padding: 10px 20px;
-    background: #28a745;
-    color: white;
+    background: linear-gradient(93.25deg, #EA422A 0%, #F69020 48.58%, #FFC619 101.38%);
+    border: none;
+    border-radius: 40px;
+    color: #252121;
+    font-size: 13px;
+    font-weight: 700;
     text-decoration: none;
-    border-radius: 8px;
-    font-size: 14px;
-    transition: 0.3s;
+    transition: all 0.3s;
 }
 
 .btn-create:hover {
-    background: #218838;
     transform: translateY(-2px);
-}
-
-.announcements-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    box-shadow: 0 5px 15px rgba(246,144,32,0.4);
 }
 
 .announcement-card {
-    background: white;
-    border-radius: 15px;
+    background: #282B32;
+    border-radius: 20px;
+    margin-bottom: 25px;
     overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     transition: transform 0.3s;
 }
 
@@ -146,20 +53,18 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 10px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
 .announcement-title {
     font-size: 20px;
-    font-weight: bold;
-    color: #333;
+    font-weight: 700;
+    color: #FFFFFF;
 }
 
 .announcement-date {
     font-size: 12px;
-    color: #999;
+    color: rgba(255,255,255,0.5);
 }
 
 .announcement-image {
@@ -176,13 +81,13 @@ body {
 
 .announcement-content {
     padding: 20px 25px;
-    color: #555;
+    color: rgba(255,255,255,0.8);
     line-height: 1.6;
 }
 
 .announcement-footer {
     padding: 15px 25px;
-    background: #f8f9fa;
+    background: #202124;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -190,47 +95,36 @@ body {
     gap: 15px;
 }
 
-.announcement-groups {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
 .group-tag {
     display: inline-block;
     padding: 4px 12px;
-    background: #e8f0fe;
-    color: #667eea;
+    background: #202124;
+    color: #F69020;
     border-radius: 20px;
     font-size: 11px;
 }
 
 .group-tag.all {
-    background: #d4edda;
-    color: #155724;
-}
-
-.announcement-actions {
-    display: flex;
-    gap: 10px;
+    background: #28a745;
+    color: white;
 }
 
 .btn-edit, .btn-delete {
     padding: 6px 12px;
     border: none;
-    border-radius: 5px;
+    border-radius: 40px;
     cursor: pointer;
-    font-size: 14px;
-    transition: 0.3s;
+    font-size: 13px;
+    transition: all 0.3s;
 }
 
 .btn-edit {
-    background: #ffc107;
-    color: #333;
+    background: #FFC619;
+    color: #252121;
 }
 
 .btn-edit:hover {
-    background: #e0a800;
+    transform: scale(1.05);
 }
 
 .btn-delete {
@@ -239,25 +133,27 @@ body {
 }
 
 .btn-delete:hover {
-    background: #c82333;
+    transform: scale(1.05);
 }
 
 .empty-announcements {
     text-align: center;
     padding: 60px;
-    background: white;
-    border-radius: 15px;
-    color: #999;
+    background: #282B32;
+    border-radius: 20px;
+    color: rgba(255,255,255,0.5);
 }
 
 @media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
     .announcement-header {
         flex-direction: column;
         align-items: flex-start;
-    }
-    
-    .announcement-title {
-        font-size: 18px;
+        gap: 10px;
     }
     
     .announcement-footer {

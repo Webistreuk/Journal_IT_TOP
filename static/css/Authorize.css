@@ -10,7 +10,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #f2f2f2;
+    background: linear-gradient(135deg, #191B20 0%, #282B32 100%);
 }
 
 .page {
@@ -37,10 +37,10 @@ body {
 }
 
 .Journal p {
-    color: #2c3e50;
+    color: #F69020;
     font-weight: bold;
     font-size: 55px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    text-shadow: 0 0 10px rgba(246,144,32,0.3);
     line-height: 100%;
     letter-spacing: 0.3px;
     margin-left: 117px;
@@ -51,7 +51,7 @@ body {
     position: absolute;
     width: 440px;
     height: 16px;
-    background-color: #d60039;
+    background: linear-gradient(90deg, #EA422A, #F69020, #FFC619);
     top: 100px;
     left: -2px;
 }
@@ -60,7 +60,7 @@ body {
     position: absolute;
     width: 16.5px;
     height: 170px;
-    background-color: #d60039;
+    background: linear-gradient(180deg, #EA422A, #F69020, #FFC619);
     top: 100px;
     left: -2px;
 }
@@ -78,29 +78,37 @@ body {
     width: 380px;
     height: 20px;
     margin-bottom: 9px;
-    border: 0.9px solid rgba(0,0,0,0.2);
+    border: 0.9px solid rgba(255,255,255,0.2);
     border-radius: 2px;
     outline: none;
     transition: 0.5s;
+    background: #202124;
+    color: #FFFFFF;
+    padding: 2px 4px;
+    font-size: 10px;
 }
 
 .username_field:focus {
-    border: 0.9px solid rgba(0, 127, 231, 0.742);
-    box-shadow: 0px 0px 10px rgba(0, 119, 217, 0.631);
+    border: 0.9px solid #F69020;
+    box-shadow: 0px 0px 10px rgba(246,144,32,0.3);
     transition: 0.5s;
 }
 
 .userpassword_field {
     width: 380px;
     height: 20px;
-    border: 0.9px solid rgba(0,0,0,0.2);
+    border: 0.9px solid rgba(255,255,255,0.2);
     border-radius: 2px;
     outline: none;
+    background: #202124;
+    color: #FFFFFF;
+    padding: 2px 4px;
+    font-size: 10px;
 }
 
 .userpassword_field:focus {
-    border: 0.9px solid rgba(0, 127, 231, 0.742);
-    box-shadow: 0px 0px 10px rgba(0, 119, 217, 0.631);
+    border: 0.9px solid #F69020;
+    box-shadow: 0px 0px 10px rgba(246,144,32,0.3);
     transition: 0.5s;
 }
 
@@ -109,23 +117,20 @@ body {
     height: 22px;
     width: 40px;
     padding: 4px 8px;
-    color: rgb(235, 235, 235);
-    background-color: #d60039;
-    border: 1px solid #ff1e00;
-    border-width: 1.4px;
+    color: #252121;
+    background: linear-gradient(93.25deg, #EA422A 0%, #F69020 48.58%, #FFC619 101.38%);
+    border: none;
     border-radius: 3px;
     margin-left: 185px;
     margin-top: 15px;
     cursor: pointer;
-    transition: 0.1s;
+    transition: 0.3s;
 }
 
 .Login:hover {
-    color: rgb(255, 255, 255);
-    background-color: #005fdb;
-    border: 1px solid #046e83;
     transform: translateY(-0.75px);
-    transition: 0.1s;
+    box-shadow: 0 2px 8px rgba(246,144,32,0.4);
+    transition: 0.3s;
 }
 
 .Forgot_your_password {
@@ -133,7 +138,7 @@ body {
     font-size: 9px;
     background: none;
     border: none;
-    color: rgb(40, 40, 40);
+    color: #F69020;
     cursor: pointer;
     margin-top: 28px;
     margin-left: 132px;
@@ -142,7 +147,7 @@ body {
 }
 
 .Forgot_your_password:hover {
-    color: #2c3e50;
+    color: #FFC619;
     font-weight: bold;
     font-size: 11px;
     text-decoration: underline;
@@ -165,10 +170,10 @@ body {
 }
 
 .Journal_remove_password p {
-    color: #2c3e50;
+    color: #F69020;
     font-weight: bold;
     font-size: 55px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    text-shadow: 0 0 10px rgba(246,144,32,0.3);
     line-height: 100%;
     letter-spacing: 0.3px;
     margin-left: 117px;
@@ -179,7 +184,7 @@ body {
     position: absolute;
     width: 440px;
     height: 16px;
-    background-color: #d60039;
+    background: linear-gradient(90deg, #EA422A, #F69020, #FFC619);
     top: 116px;
     left: -2px;
 }
@@ -188,7 +193,7 @@ body {
     position: absolute;
     width: 16.5px;
     height: 150px;
-    background-color: #d60039;
+    background: linear-gradient(180deg, #EA422A, #F69020, #FFC619);
     top: 116px;
     left: -2px;
 }
@@ -204,14 +209,18 @@ body {
 .useremail_field {
     width: 380px;
     height: 20px;
-    border: 0.9px solid rgba(0,0,0,0.2);
+    border: 0.9px solid rgba(255,255,255,0.2);
     border-radius: 2px;
     outline: none;
+    background: #202124;
+    color: #FFFFFF;
+    padding: 2px 4px;
+    font-size: 10px;
 }
 
 .useremail_field:focus {
-    border: 0.9px solid rgba(0, 127, 231, 0.742);
-    box-shadow: 0px 0px 10px rgba(0, 119, 217, 0.631);
+    border: 0.9px solid #F69020;
+    box-shadow: 0px 0px 10px rgba(246,144,32,0.3);
     transition: 0.5s;
 }
 
@@ -225,23 +234,20 @@ body {
     height: 22px;
     width: 60px;
     padding: 4px 4px;
-    color: rgb(235, 235, 235);
-    background-color: #d60039;
-    border: 1px solid #ff1e00;
-    border-width: 1.4px;
+    color: #252121;
+    background: linear-gradient(93.25deg, #EA422A 0%, #F69020 48.58%, #FFC619 101.38%);
+    border: none;
     border-radius: 3px;
     margin-left: 174px;
     margin-top: 15px;
     cursor: pointer;
-    transition: 0.1s;
+    transition: 0.3s;
 }
 
 .form_Send:hover {
-    color: rgb(255, 255, 255);
-    background-color: #005fdb;
-    border: 1px solid #046e83;
     transform: translateY(-0.75px);
-    transition: 0.1s;
+    box-shadow: 0 2px 8px rgba(246,144,32,0.4);
+    transition: 0.3s;
 }
 
 .Return_to_the_login_page {
@@ -249,7 +255,7 @@ body {
     font-size: 9px;
     background: none;
     border: none;
-    color: rgb(40, 40, 40);
+    color: #F69020;
     cursor: pointer;
     text-decoration: none;
     margin-top: 28px;
@@ -257,7 +263,7 @@ body {
 }
 
 .Return_to_the_login_page:hover {
-    color: #2c3e50;
+    color: #FFC619;
     font-weight: bold;
     font-size: 11px;
     text-decoration: underline;
@@ -273,11 +279,11 @@ body {
     position: absolute;
     top: 157px;
     right: 290px;
-    color: red;
+    color: #dc3545;
     font-size: 9px;
     text-align: center;
     padding: 2px;
-    background-color: rgba(255, 0, 0, 0.178);
+    background-color: rgba(220,53,69,0.2);
     border-radius: 5px;
     transition: 1s;
 }
@@ -290,7 +296,7 @@ body {
     display: flex;
     gap: 15px;
     font-size: 11px;
-    color: #888;
+    color: rgba(255,255,255,0.5);
 }
 
 .language-switcher span {
@@ -299,6 +305,6 @@ body {
 }
 
 .language-switcher span:hover {
-    color: #2c3e50;
+    color: #F69020;
     font-weight: bold;
 }

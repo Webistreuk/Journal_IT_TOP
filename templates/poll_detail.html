@@ -1,115 +1,65 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/poll_detail.css' %}">
-    <title>{{ poll.title }} - Journal</title>
-</head>
-<body>
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">Journal</div>
-            <nav class="nav-menu">
-                <a href="{% url 'main_view' %}">Главная</a>
-                <a href="{% url 'schedule_view' %}">Расписание</a>
-                <a href="{% url 'homework_list_view' %}">ДЗ</a>
-                <a href="{% url 'estimation_view' %}">Оценки</a>
-                <a href="{% url 'attendance_list_view' %}">Посещаемость</a>
-                <a href="{% url 'shop_view' %}">Магазин</a>
-                <a href="{% url 'leaderboard_view' %}">Рейтинг</a>
-                <a href="{% url 'polls_view' %}">Опросы</a>
-                <a href="{% url 'chat_list_view' %}">Чаты</a>
-            </nav>
-            <div class="user-info">
-                <span class="user-name">{{ user.user }}</span>
-                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
-                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
-            </div>
-        </div>
-    </header>
 
-    <div class="container">
-        <div class="poll-detail-container">
-            <div class="poll-header">
-                <a href="{% url 'polls_view' %}" class="back-link">← Назад к опросам</a>
-                <div class="poll-status-badge">
-                    {% if poll.end_date < now %}
-                        <span class="badge-closed">🔒 Опрос завершен</span>
-                    {% else %}
-                        <span class="badge-active">🟢 Идет голосование</span>
-                    {% endif %}
-                </div>
-            </div>
+{% block title %}{{ poll.title }}{% endblock %}
 
-            <div class="poll-card">
-                <h1 class="poll-title">{{ poll.title }}</h1>
-                <p class="poll-description">{{ poll.description }}</p>
-                
-                <div class="poll-info">
-                    <div class="info-item">
-                        <span class="info-icon">📅</span>
-                        <span class="info-text">Начало: {{ poll.start_date|date:"d.m.Y H:i" }}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-icon">⏰</span>
-                        <span class="info-text">Окончание: {{ poll.end_date|date:"d.m.Y H:i" }}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-icon">👥</span>
-                        <span class="info-text">Всего голосов: {{ total_votes }}</span>
-                    </div>
-                </div>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/poll_detail.css' %}">
+{% endblock %}
 
-                <div class="options-section">
-                    <h3 class="section-title">Варианты ответов</h3>
-                    
-                    {% if user_vote %}
-                        <div class="voted-notice">
-                            ✅ Вы уже проголосовали: <strong>"{{ user_vote.option.text }}"</strong>
-                        </div>
-                    {% endif %}
-
-                    <form method="post" id="pollForm">
-                        {% csrf_token %}
-                        <div class="options-list">
-                            {% for option in options %}
-                            <div class="option-item {% if user_vote and user_vote.option.id == option.id %}selected{% endif %}">
-                                <label class="option-label">
-                                    <input type="radio" name="option" value="{{ option.id }}" 
-                                           {% if user_vote %}disabled{% endif %}
-                                           {% if user_vote and user_vote.option.id == option.id %}checked{% endif %}>
-                                    <span class="option-text">{{ option.text }}</span>
-                                    {% if user_vote %}
-                                    <span class="option-stats">
-                                        <span class="vote-count">{{ option.votes }} голосов</span>
-                                        <span class="vote-percent">({{ option.votes|floatformat:0 }}%)</span>
-                                    </span>
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: {{ option.votes|floatformat:0 }}%"></div>
-                                    </div>
-                                    {% endif %}
-                                </label>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        
-                        {% if not user_vote and poll.end_date >= now %}
-                        <div class="form-actions">
-                            <button type="submit" class="btn-vote">🗳️ Проголосовать</button>
-                        </div>
-                        {% elif user_vote %}
-                        <div class="form-actions">
-                            <button type="button" class="btn-results" disabled>Результаты</button>
-                        </div>
-                        {% endif %}
-                    </form>
-                </div>
-            </div>
+{% block content %}
+<div class="poll-detail-container">
+    <div class="poll-header">
+        <a href="{% url 'polls_view' %}" class="back-link">← Назад к опросам</a>
+        <div class="poll-status-badge">
+            {% if poll.end_date < now %}
+            <span class="badge-closed">🔒 Опрос завершен</span>
+            {% else %}
+            <span class="badge-active">🟢 Идет голосование</span>
+            {% endif %}
         </div>
     </div>
-
-    <script src="{% static 'js/poll_detail.js' %}"></script>
-</body>
-</html>
+    <div class="poll-card">
+        <h1 class="poll-title">{{ poll.title }}</h1>
+        <p class="poll-description">{{ poll.description }}</p>
+        <div class="poll-info">
+            <div class="info-item">📅 Начало: {{ poll.start_date|date:"d.m.Y H:i" }}</div>
+            <div class="info-item">⏰ Окончание: {{ poll.end_date|date:"d.m.Y H:i" }}</div>
+            <div class="info-item">👥 Всего голосов: {{ total_votes }}</div>
+        </div>
+        <div class="options-section">
+            <h3 class="section-title">Варианты ответов</h3>
+            {% if user_vote %}
+            <div class="voted-notice">✅ Вы уже проголосовали: <strong>"{{ user_vote.option.text }}"</strong></div>
+            {% endif %}
+            <form method="post">
+                {% csrf_token %}
+                <div class="options-list">
+                    {% for option in options %}
+                    <div class="option-item {% if user_vote and user_vote.option.id == option.id %}selected{% endif %}">
+                        <label class="option-label">
+                            <input type="radio" name="option" value="{{ option.id }}" {% if user_vote %}disabled{% endif %} {% if user_vote and user_vote.option.id == option.id %}checked{% endif %}>
+                            <span class="option-text">{{ option.text }}</span>
+                            {% if user_vote %}
+                            <span class="option-stats">
+                                <span class="vote-count">{{ option.votes }} голосов</span>
+                                <span class="vote-percent">({{ option.votes|floatformat:0 }}%)</span>
+                            </span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: {{ option.votes|floatformat:0 }}%"></div>
+                            </div>
+                            {% endif %}
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if not user_vote and poll.end_date >= now %}
+                <div class="form-actions">
+                    <button type="submit" class="btn-vote">🗳️ Проголосовать</button>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

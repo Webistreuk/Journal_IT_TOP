@@ -1,106 +1,55 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/user_reward_list.css' %}">
-    <title>Мои награды - Journal</title>
-</head>
-<body>
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">Journal</div>
-            <nav class="nav-menu">
-                <a href="{% url 'main_view' %}">Главная</a>
-                <a href="{% url 'schedule_view' %}">Расписание</a>
-                <a href="{% url 'homework_list_view' %}">ДЗ</a>
-                <a href="{% url 'estimation_view' %}">Оценки</a>
-                <a href="{% url 'attendance_list_view' %}">Посещаемость</a>
-                <a href="{% url 'shop_view' %}">Магазин</a>
-                <a href="{% url 'leaderboard_view' %}">Рейтинг</a>
-                <a href="{% url 'polls_view' %}">Опросы</a>
-                <a href="{% url 'announcements_view' %}">Объявления</a>
-                <a href="{% url 'events_view' %}">События</a>
-                <a href="{% url 'educational_materials_view' %}">Материалы</a>
-                <a href="{% url 'user_reward_list_view' %}">Награды</a>
-                <a href="{% url 'chat_list_view' %}">Чаты</a>
-            </nav>
-            <div class="user-info">
-                <span class="user-name">{{ user.user }}</span>
-                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
-                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
-            </div>
-        </div>
-    </header>
 
-    <div class="container">
-        <div class="rewards-container">
-            <div class="page-header">
-                <h1 class="page-title">🏆 Мои награды</h1>
-                <div class="total-rewards">
-                    <span class="total-count">{{ user_rewards|length }}</span>
-                    <span class="total-label">получено наград</span>
-                </div>
-            </div>
+{% block title %}Мои награды{% endblock %}
 
-            <div class="stats-summary">
-                <div class="stat-card">
-                    <div class="stat-icon">🪙</div>
-                    <div class="stat-info">
-                        <div class="stat-value">{{ total_topcoins }}</div>
-                        <div class="stat-label">Всего топкоинов получено</div>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">💎</div>
-                    <div class="stat-info">
-                        <div class="stat-value">{{ total_topgems }}</div>
-                        <div class="stat-label">Всего топгемов получено</div>
-                    </div>
-                </div>
-            </div>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/user_reward_list.css' %}">
+{% endblock %}
 
-            <div class="rewards-list">
-                {% for user_reward in user_rewards %}
-                <div class="reward-card">
-                    <div class="reward-icon">{{ user_reward.reward.icon|default:"🏅" }}</div>
-                    <div class="reward-info">
-                        <div class="reward-name">{{ user_reward.reward.name }}</div>
-                        <div class="reward-description">{{ user_reward.reward.description }}</div>
-                        <div class="reward-date">Получено: {{ user_reward.awarded_at|date:"d.m.Y H:i" }}</div>
-                    </div>
-                    <div class="reward-bonus">
-                        {% if user_reward.topcoins_given > 0 %}
-                        <div class="bonus-coins">+{{ user_reward.topcoins_given }} 🪙</div>
-                        {% endif %}
-                        {% if user_reward.topgems_given > 0 %}
-                        <div class="bonus-gems">+{{ user_reward.topgems_given }} 💎</div>
-                        {% endif %}
-                    </div>
-                </div>
-                {% empty %}
-                <div class="empty-rewards">
-                    <div class="empty-icon">🏆</div>
-                    <p>У вас пока нет наград</p>
-                    <p class="empty-hint">Получайте награды за отличную учебу, активность и достижения!</p>
-                </div>
-                {% endfor %}
-            </div>
-
-            <div class="info-box">
-                <h4>ℹ️ Как получить награды?</h4>
-                <ul>
-                    <li>📚 Отличная учеба - высокие оценки и активность на парах</li>
-                    <li>⭐ Идеальная посещаемость - 100% посещение занятий</li>
-                    <li>🏅 Участие в олимпиадах и конкурсах</li>
-                    <li>💬 Активность в жизни академии</li>
-                    <li>🎯 Выполнение особых заданий от преподавателей</li>
-                </ul>
-            </div>
+{% block content %}
+<div class="rewards-container">
+    <div class="page-header">
+        <h1 class="page-title">🏆 Мои награды</h1>
+        <div class="total-rewards">
+            <span class="total-count">{{ user_rewards|length }}</span>
+            <span class="total-label">получено наград</span>
         </div>
     </div>
-
-    <script src="{% static 'js/user_reward_list.js' %}"></script>
-</body>
-</html>
+    <div class="stats-summary">
+        <div class="stat-card"><div class="stat-icon">₿</div><div class="stat-info"><div class="stat-value">{{ total_topcoins }}</div><div class="stat-label">Всего топкоинов</div></div></div>
+        <div class="stat-card"><div class="stat-icon">💎</div><div class="stat-info"><div class="stat-value">{{ total_topgems }}</div><div class="stat-label">Всего топгемов</div></div></div>
+    </div>
+    <div class="rewards-list">
+        {% for user_reward in user_rewards %}
+        <div class="reward-card">
+            <div class="reward-icon">🏅</div>
+            <div class="reward-info">
+                <div class="reward-name">{{ user_reward.reward.name }}</div>
+                <div class="reward-description">{{ user_reward.reward.description }}</div>
+                <div class="reward-date">Получено: {{ user_reward.awarded_at|date:"d.m.Y H:i" }}</div>
+            </div>
+            <div class="reward-bonus">
+                {% if user_reward.topcoins_given > 0 %}<div class="bonus-coins">+{{ user_reward.topcoins_given }} ₿</div>{% endif %}
+                {% if user_reward.topgems_given > 0 %}<div class="bonus-gems">+{{ user_reward.topgems_given }} 💎</div>{% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-rewards">
+            <div class="empty-icon">🏆</div>
+            <p>У вас пока нет наград</p>
+            <p class="empty-hint">Получайте награды за отличную учебу, активность и достижения!</p>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="info-box">
+        <h4>ℹ️ Как получить награды?</h4>
+        <ul>
+            <li>📚 Отличная учеба - высокие оценки и активность на парах</li>
+            <li>⭐ Идеальная посещаемость - 100% посещение занятий</li>
+            <li>🏅 Участие в олимпиадах и конкурсах</li>
+            <li>💬 Активность в жизни академии</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

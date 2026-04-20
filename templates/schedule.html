@@ -1,87 +1,33 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/schedule.css' %}">
-    <title>Расписание - Journal</title>
-</head>
-<body>
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">Journal</div>
-            <nav class="nav-menu">
-                <a href="{% url 'main_view' %}">Главная</a>
-                {% if user_role == 'student' %}
-                    <a href="{% url 'schedule_view' %}">Расписание</a>
-                    <a href="{% url 'homework_list_view' %}">ДЗ</a>
-                    <a href="{% url 'estimation_view' %}">Оценки</a>
-                    <a href="{% url 'attendance_list_view' %}">Посещаемость</a>
-                    <a href="{% url 'shop_view' %}">Магазин</a>
-                    <a href="{% url 'leaderboard_view' %}">Рейтинг</a>
-                {% elif user_role == 'professor' %}
-                    <a href="{% url 'schedule_view' %}">Расписание</a>
-                    <a href="{% url 'homework_list_view' %}">ДЗ студентов</a>
-                    <a href="{% url 'homework_add_view' %}">Создать ДЗ</a>
-                    <a href="{% url 'attendance_mark_view' %}">Посещаемость</a>
-                    <a href="{% url 'estimation_view' %}">Оценки</a>
-                {% endif %}
-            </nav>
-            <div class="user-info">
-                <span class="user-name">{{ user.user }}</span>
-                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
-                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
-            </div>
-        </div>
-    </header>
 
-    <div class="container">
-        <div class="schedule-container">
-            <div class="schedule-header">
-                <h1 class="page-title">📅 Расписание</h1>
-                <div class="group-info">Группа: {{ group.name }}</div>
-            </div>
+{% block title %}Расписание{% endblock %}
 
-            {% for schedule in schedules %}
-            <div class="schedule-week">
-                <div class="week-header">
-                    <h3>Неделя: {{ schedule.week_start_date|date:"d.m.Y" }} - {{ schedule.week_end_date|date:"d.m.Y" }}</h3>
-                    {% if schedule.note %}
-                    <div class="week-note">📌 {{ schedule.note }}</div>
-                    {% endif %}
-                </div>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/schedule.css' %}">
+{% endblock %}
 
-                <div class="schedule-days">
-                    {% for day_num, day_name in weekdays %}
-                    <div class="day-column">
-                        <div class="day-header">{{ day_name }}</div>
-                        <div class="day-pairs">
-                            {% with day_schedules=schedule.dailyschedule_set.all|dictsort:"pair_order" %}
-                                {% for daily in day_schedules %}
-                                    {% if daily.weekday == day_num %}
-                                    <div class="pair-card">
-                                        <div class="pair-time">{{ daily.pair.get_pair_number_display }}</div>
-                                        <div class="pair-subject">{{ daily.pair.subject.name_subject }}</div>
-                                        <div class="pair-professor">{{ daily.pair.professor }}</div>
-                                        <div class="pair-classroom">📍 {{ daily.pair.classroom.name_classroom|default:"-" }}</div>
-                                    </div>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endwith %}
-                        </div>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-            {% empty %}
-            <div class="empty-state">
-                <p>📭 Нет расписания</p>
-            </div>
-            {% endfor %}
-        </div>
+{% block content %}
+<div class="schedule-container">
+    <div class="page-header">
+        <h1 class="page-title">📅 Расписание</h1>
+        <div class="group-info">Группа: {{ group.name }}</div>
     </div>
+    
+    <div id="scheduleContent"></div>
+    
+    <div class="go-to-today-wrapper">
+        <button class="go-to-today-btn" id="goToTodayBtn" style="display: none;">📅 К текущей неделе</button>
+    </div>
+</div>
 
-    <script src="{% static 'js/schedule.js' %}"></script>
-</body>
-</html>
+<button class="nav-button prev" id="prevWeekBtn">←</button>
+<button class="nav-button next" id="nextWeekBtn">→</button>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/schedule.js' %}"></script>
+<script>
+    window.groupId = {{ group.id }};
+</script>
+{% endblock %}

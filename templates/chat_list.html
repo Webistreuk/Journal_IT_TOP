@@ -8,12 +8,6 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/emoji-picker-element@1.21.0/index.css">
 {% endblock %}
 
-{% block user_info %}
-<div class="user-info">
-    <span class="user-name">{{ user.user }}</span>
-</div>
-{% endblock %}
-
 {% block content %}
 <div class="telegram-container">
     <div class="telegram-sidebar">
@@ -101,15 +95,24 @@
                     </div>
                     <div class="chat-last-msg">
                         {% with last=chat.messages.last %}
-                            {{ last.text|truncatechars:30|default:"Нет сообщений" }}
+                            {% if last and last.text %}
+                                {{ last.text|truncatechars:30 }}
+                            {% elif last and last.file %}
+                                📎 Файл
+                            {% else %}
+                                Нет сообщений
+                            {% endif %}
                         {% endwith %}
                     </div>
                 </div>
                 <div class="chat-time">
                     {% with last=chat.messages.last %}
-                        {{ last.created_at|date:"H:i"|default:"" }}
+                        {% if last %}
+                            {{ last.created_at|date:"H:i" }}
+                        {% endif %}
                     {% endwith %}
                 </div>
+                <div class="unread-badge level-1" style="display: none;" data-chat-id="{{ chat.id }}">0</div>
             </div>
             {% empty %}
             <div class="empty-chats">Нет чатов. Создайте новый.</div>
@@ -137,9 +140,7 @@
                     {% for p in selected_chat.participants.all %}
                         {% if p != user %}
                             {{ p.get_full_name }}
-                            <div class="chat-user-role">
-                                {% if p.student %}Студент{% elif p.professor %}Преподаватель{% elif p.academicstaff %}Учебная часть{% else %}Пользователь{% endif %}
-                            </div>
+                            <div class="chat-user-role">{{ p.get_role }}</div>
                         {% endif %}
                     {% endfor %}
                 </div>
@@ -155,6 +156,13 @@
             </div>
         </div>
 
+        <div class="reply-preview-bar" id="replyPreviewBar" style="display: none;">
+            <div class="reply-preview-content">
+                <div class="reply-preview-text"></div>
+                <button id="cancelReplyBtn" class="cancel-reply-btn">✖</button>
+            </div>
+        </div>
+
         <div class="chat-messages" id="chatMessages" data-chat-id="{{ selected_chat.id }}" data-user-id="{{ user.id }}">
             {% regroup messages by created_at|date:"Y-m-d" as messages_by_date %}
             {% for date_group in messages_by_date %}
@@ -166,34 +174,44 @@
                     </span>
                 </div>
                 {% for msg in date_group.list %}
-                <div class="message {% if msg.sender == user %}sent{% else %}received{% endif %}" data-id="{{ msg.id }}">
-                    <div class="message-bubble">
-                        <div class="message-text">{{ msg.text|linebreaksbr }}</div>
-                        {% if msg.file %}
-                        <div class="message-file">
-                            <a href="{{ msg.file.url }}" target="_blank">📎 {{ msg.display_filename }}</a>
-                        </div>
-                        {% endif %}
-                        <div class="message-time">
-                            {{ msg.created_at|date:"H:i" }}
-                            {% if msg.sender == user %}
-                                {% if msg.is_read %}
-                                    <i class="fa-solid fa-check-double message-status read"></i>
-                                {% elif msg.is_delivered %}
-                                    <i class="fa-solid fa-check-double message-status delivered"></i>
-                                {% else %}
-                                    <i class="fa-solid fa-check message-status sent"></i>
-                                {% endif %}
+                    {% if msg.text or msg.file %}
+                    <div class="message {% if msg.sender == user %}sent{% else %}received{% endif %}" data-id="{{ msg.id }}" data-text="{{ msg.text|default:''|escapejs }}" data-sender-id="{{ msg.sender.id }}">
+                        <div class="message-bubble">
+                            {% if msg.forwarded_from %}
+                            <div class="forward-badge">Пересланное сообщение</div>
                             {% endif %}
+                            {% if msg.reply_to %}
+                            <div class="reply-preview-inline">
+                                <div class="reply-sender">{{ msg.reply_to.sender.get_full_name }}</div>
+                                <div class="reply-text">{{ msg.reply_to.text|truncatechars:60|default:"Файл" }}</div>
+                            </div>
+                            {% endif %}
+                            <div class="message-text">{{ msg.text|linebreaksbr|default:'' }}</div>
+                            {% if msg.file %}
+                            <div class="message-file">
+                                <a href="{{ msg.file.url }}" target="_blank">📎 {{ msg.display_filename }}</a>
+                            </div>
+                            {% endif %}
+                            <div class="message-time">
+                                {{ msg.created_at|date:"H:i" }}
+                                {% if msg.sender == user %}
+                                    {% if msg.is_read %}
+                                        <i class="fa-solid fa-check-double message-status read"></i>
+                                    {% elif msg.is_delivered %}
+                                        <i class="fa-solid fa-check-double message-status delivered"></i>
+                                    {% else %}
+                                        <i class="fa-solid fa-check message-status sent"></i>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                            <div class="message-reactions">
+                                {% for emoji, users in msg.reactions.items %}
+                                <span class="reaction-badge" data-emoji="{{ emoji }}" data-message-id="{{ msg.id }}">{{ emoji }} {{ users|length }}</span>
+                                {% endfor %}
+                            </div>
                         </div>
-                        {% if msg.sender == user %}
-                        <div class="message-actions">
-                            <button class="edit-msg" data-id="{{ msg.id }}">✏️</button>
-                            <button class="delete-msg" data-id="{{ msg.id }}">🗑️</button>
-                        </div>
-                        {% endif %}
                     </div>
-                </div>
+                    {% endif %}
                 {% endfor %}
             {% endfor %}
         </div>
@@ -225,6 +243,13 @@
             <button id="closeSidebarBtn" class="close-sidebar">&times;</button>
         </div>
         <div id="profileContent" class="profile-sidebar-content"></div>
+    </div>
+</div>
+
+<div id="forwardChatModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h3>Переслать сообщение</h3>
+        <div id="forwardChatsList" class="forward-chats-list"></div>
     </div>
 </div>
 {% endblock %}

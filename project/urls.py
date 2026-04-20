@@ -111,6 +111,18 @@ urlpatterns = [
     path('settings/', views.settings_view, name='settings_view'),
     path('api/create-story/', views.api_create_story, name='api_create_story'),
     path('api/delete-story/<int:story_id>/', views.api_delete_story, name='api_delete_story'),
+    path('api/schedule/<int:group_id>/', views.api_schedule, name='api_schedule'),
+    path('api/forward-message/', views.forward_message, name='forward_message'),
+    path('api/message/<int:message_id>/', views.api_message_info, name='api_message_info'),
+    path('api/message/<int:message_id>/react/', views.add_reaction, name='add_reaction'),
+    path('api/groups-by-course/<int:course_id>/', views.api_groups_by_course, name='api_groups_by_course'),
+    path('api/schedule/professor/', views.api_schedule_professor, name='api_schedule_professor'),
+    path('api/attendance/students/<int:pair_id>/', views.api_attendance_students, name='api_attendance_students'),
+    path('api/attendance/save/<int:pair_id>/', views.api_attendance_save, name='api_attendance_save'),
+    path('api/attendance/pair/<int:pair_id>/miss/', views.api_attendance_miss_pair, name='api_attendance_miss_pair'),
+    path('api/attendance/pair/<int:pair_id>/get/', views.api_attendance_pair_get, name='api_attendance_pair_get'),
+    path('my-reviews/', views.student_reviews_view, name='student_reviews_view'),
+    path('api/add-bonus/', views.api_add_bonus, name='api_add_bonus'),
 ]
 
 if settings.DEBUG:

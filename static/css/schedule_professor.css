@@ -1,0 +1,258 @@
+/* static/css/schedule_professor.css */
+.schedule-container {
+    max-width: 1260px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #EA422A 0%, #F69020 48.58%, #FFC619 101.38%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.group-info {
+    padding: 6px 14px;
+    background: #282B32;
+    border-radius: 20px;
+    color: #FFFFFF;
+    font-size: 13px;
+}
+
+.nav-button {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 45px;
+    height: 45px;
+    background: #282B32;
+    border: 2px solid #F69020;
+    border-radius: 50%;
+    color: #F69020;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-button:hover {
+    background: #F69020;
+    color: #252121;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.nav-button.prev {
+    left: 20px;
+}
+
+.nav-button.next {
+    right: 20px;
+}
+
+.go-to-today-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    min-height: 40px;
+}
+
+.go-to-today-btn {
+    padding: 6px 16px;
+    background: linear-gradient(135deg, #1a1c21 0%, #202124 100%);
+    border: 1px solid rgba(246,144,32,0.3);
+    border-radius: 30px;
+    color: #F69020;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    display: none;
+}
+
+.go-to-today-btn:hover {
+    background: linear-gradient(135deg, #F69020 0%, #EA422A 100%);
+    color: #252121;
+    border-color: #F69020;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(246,144,32,0.3);
+}
+
+.schedule-week {
+    background: #282B32;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.schedule-days {
+    display: flex;
+    overflow-x: auto;
+}
+
+.day-column {
+    flex: 1;
+    min-width: 130px;
+    border-right: 1px solid rgba(255,255,255,0.1);
+}
+
+.day-column:last-child {
+    border-right: none;
+}
+
+.day-header {
+    padding: 10px 8px;
+    text-align: center;
+    background: #202124;
+    border-bottom: 2px solid #F69020;
+}
+
+.day-name {
+    font-weight: 700;
+    color: #F69020;
+    font-size: 13px;
+    display: block;
+    margin-bottom: 3px;
+}
+
+.day-date {
+    font-size: 10px;
+    color: rgba(255,255,255,0.5);
+    display: block;
+}
+
+.day-pairs {
+    min-height: 350px;
+}
+
+.pair-card {
+    padding: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: all 0.3s;
+}
+
+.pair-card:hover {
+    background: rgba(246,144,32,0.1);
+    transform: translateX(3px);
+}
+
+.empty-pair {
+    opacity: 0.5;
+}
+
+.pair-time {
+    font-size: 9px;
+    color: #F69020;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.pair-subject {
+    font-size: 11px;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin-bottom: 4px;
+    word-break: break-word;
+}
+
+.pair-professor {
+    font-size: 9px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 2px;
+    word-break: break-word;
+}
+
+.pair-classroom {
+    font-size: 9px;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 3px;
+}
+
+.pair-group {
+    font-size: 9px;
+    color: #FFC619;
+    margin-top: 3px;
+}
+
+.loading {
+    text-align: center;
+    padding: 40px;
+    background: #282B32;
+    border-radius: 16px;
+    color: rgba(255,255,255,0.5);
+}
+
+@media (max-width: 768px) {
+    .schedule-days {
+        flex-direction: column;
+    }
+    
+    .day-column {
+        border-right: none;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        min-width: 100%;
+    }
+    
+    .nav-button {
+        width: 35px;
+        height: 35px;
+        font-size: 18px;
+    }
+    
+    .nav-button.prev {
+        left: 10px;
+    }
+    
+    .nav-button.next {
+        right: 10px;
+    }
+    
+    .go-to-today-btn {
+        padding: 5px 12px;
+        font-size: 10px;
+    }
+    
+    .day-header {
+        padding: 8px 6px;
+    }
+    
+    .day-name {
+        font-size: 12px;
+    }
+    
+    .pair-card {
+        padding: 6px;
+    }
+    
+    .pair-subject {
+        font-size: 10px;
+    }
+}

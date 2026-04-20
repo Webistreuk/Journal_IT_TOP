@@ -1,104 +1,291 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/educational_material_create.css' %}">
-    <title>Загрузка материала - Journal</title>
-</head>
-<body>
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">Journal</div>
-            <nav class="nav-menu">
-                <a href="{% url 'main_view' %}">Главная</a>
-                <a href="{% url 'schedule_view' %}">Расписание</a>
-                <a href="{% url 'homework_list_view' %}">ДЗ студентов</a>
-                <a href="{% url 'homework_add_view' %}">Создать ДЗ</a>
-                <a href="{% url 'attendance_mark_view' %}">Посещаемость</a>
-                <a href="{% url 'estimation_view' %}">Оценки</a>
-                <a href="{% url 'educational_materials_view' %}">Материалы</a>
-                <a href="{% url 'chat_list_view' %}">Чаты</a>
-            </nav>
-            <div class="user-info">
-                <span class="user-name">{{ user.user }}</span>
-                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
-                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
-            </div>
-        </div>
-    </header>
 
-    <div class="container">
-        <div class="create-material-container">
-            <div class="page-header">
-                <a href="{% url 'educational_materials_view' %}" class="back-link">← Назад к материалам</a>
-                <h1 class="page-title">📤 Загрузка учебного материала</h1>
-            </div>
+{% block title %}Загрузить материал{% endblock %}
 
-            <div class="create-card">
-                <form method="post" enctype="multipart/form-data" id="materialForm">
-                    {% csrf_token %}
-                    
-                    <div class="form-group">
-                        <label for="id_title">📌 Название материала</label>
-                        <input type="text" name="title" id="id_title" class="form-control" placeholder="Введите название" required>
-                    </div>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/materials.css' %}">
+<style>
+    .groups-selection {
+        background: #202124;
+        border-radius: 16px;
+        padding: 15px;
+        margin-top: 10px;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    
+    .groups-search {
+        margin-bottom: 15px;
+        position: relative;
+    }
+    
+    .groups-search input {
+        width: 100%;
+        padding: 10px 15px 10px 40px;
+        background: #282B32;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 30px;
+        color: #FFFFFF;
+        font-size: 13px;
+        outline: none;
+    }
+    
+    .groups-search input:focus {
+        border-color: #F69020;
+    }
+    
+    .groups-search .search-icon-small {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 14px;
+        color: #F69020;
+    }
+    
+    .group-checkbox-item {
+        display: flex;
+        align-items: center;
+        padding: 10px 12px;
+        margin-bottom: 5px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .group-checkbox-item:hover {
+        background: rgba(246,144,32,0.1);
+    }
+    
+    .group-checkbox-item input {
+        width: 18px;
+        height: 18px;
+        margin-right: 12px;
+        cursor: pointer;
+        accent-color: #F69020;
+    }
+    
+    .group-checkbox-item label {
+        flex: 1;
+        cursor: pointer;
+        margin: 0;
+        font-weight: normal;
+        font-size: 14px;
+    }
+    
+    .group-checkbox-item .group-badge {
+        font-size: 11px;
+        color: #F69020;
+        background: rgba(246,144,32,0.15);
+        padding: 2px 8px;
+        border-radius: 20px;
+    }
+    
+    .select-all-btn {
+        padding: 8px 16px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 30px;
+        color: #FFFFFF;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-bottom: 15px;
+        margin-right: 10px;
+    }
+    
+    .select-all-btn:hover {
+        background: #F69020;
+        color: #252121;
+    }
+    
+    .selected-count {
+        font-size: 12px;
+        color: #F69020;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        text-align: right;
+    }
+    
+    .groups-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+</style>
+{% endblock %}
 
-                    <div class="form-group">
-                        <label for="id_file">📎 Файл материала</label>
-                        <input type="file" name="file" id="id_file" class="form-control-file" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip" required>
-                        <div id="fileInfo" class="file-info" style="display: none;">
-                            <span id="fileName"></span>
-                            <span id="fileSize"></span>
-                            <button type="button" class="btn-remove-file">✖</button>
-                        </div>
-                        <small class="form-text">Поддерживаемые форматы: PDF, DOC, DOCX, PPT, PPTX, ZIP. Максимум 50MB</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="id_description">📝 Описание материала</label>
-                        <textarea name="description" id="id_description" class="form-control" rows="4" placeholder="Опишите содержание материала..."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="id_subject">📚 Предмет</label>
-                        <select name="subject" id="id_subject" class="form-control">
-                            <option value="">Выберите предмет (необязательно)</option>
-                            {% for subject in subjects %}
-                            <option value="{{ subject.id }}">{{ subject.name_subject }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="checkbox-label">
-                            <input type="checkbox" name="is_public" id="id_is_public" class="checkbox-input">
-                            <span>🌍 Для всех групп (публичный доступ)</span>
-                        </label>
-                    </div>
-
-                    <div class="form-group" id="groupsContainer">
-                        <label>🎓 Для конкретных групп</label>
-                        <div class="groups-checkboxes">
-                            {% for group in groups %}
-                            <label class="group-checkbox">
-                                <input type="checkbox" name="groups" value="{{ group.id }}" class="group-input">
-                                <span>{{ group.name }} ({{ group.course.number }} курс)</span>
-                            </label>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn-create">📤 Загрузить материал</button>
-                        <a href="{% url 'educational_materials_view' %}" class="btn-cancel">Отмена</a>
-                    </div>
-                </form>
-            </div>
-        </div>
+{% block content %}
+<div class="materials-container">
+    <div class="page-header">
+        <h1 class="page-title">📤 Загрузить учебный материал</h1>
+        <a href="{% url 'educational_materials_view' %}" class="btn-back">← Назад</a>
     </div>
 
-    <script src="{% static 'js/educational_material_create.js' %}"></script>
-</body>
-</html>
+    <div class="form-card">
+        <form method="post" enctype="multipart/form-data" id="uploadForm">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="id_title">📌 Название материала</label>
+                {{ form.title }}
+            </div>
+            
+            <div class="form-group" style="display: none;">
+                <label for="id_subject">📚 Предмет</label>
+                {{ form.subject }}
+            </div>
+            
+            <div class="form-group">
+                <label for="id_file">📎 Файл</label>
+                {{ form.file }}
+                <small class="form-text">Поддерживаются любые форматы файлов. Максимальный размер: 10 МБ</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_description">📝 Описание</label>
+                {{ form.description }}
+            </div>
+            
+            <div class="form-group">
+                <label>👥 Доступно для групп</label>
+                <div class="checkbox-group" style="margin-bottom: 15px;">
+                    {{ form.is_public }}
+                    <label for="id_is_public">🌍 Доступно для всех групп</label>
+                </div>
+                
+                <div id="groupsContainer" style="display: none;">
+                    <div class="groups-header">
+                        <div>
+                            <button type="button" id="selectAllBtn" class="select-all-btn">✅ Выбрать все</button>
+                            <button type="button" id="clearAllBtn" class="select-all-btn">❌ Очистить все</button>
+                        </div>
+                    </div>
+                    <div class="groups-search">
+                        <span class="search-icon-small">🔍</span>
+                        <input type="text" id="groupsSearch" placeholder="Поиск групп...">
+                    </div>
+                    <div id="groupsList" class="groups-selection">
+                        {% for group in groups %}
+                        <div class="group-checkbox-item" data-group-name="{{ group.name|lower }}">
+                            <input type="checkbox" name="groups" value="{{ group.id }}" id="group_{{ group.id }}">
+                            <label for="group_{{ group.id }}">{{ group.name }}</label>
+                            <span class="group-badge">{{ group.course.number }} курс</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="selected-count" id="selectedCount">Выбрано: 0 групп</div>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">📤 Загрузить материал</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const isPublicCheckbox = document.getElementById('id_is_public');
+        const groupsContainer = document.getElementById('groupsContainer');
+        const selectAllBtn = document.getElementById('selectAllBtn');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const groupsSearch = document.getElementById('groupsSearch');
+        const groupsList = document.getElementById('groupsList');
+        const selectedCountSpan = document.getElementById('selectedCount');
+        
+        function updateSelectedCount() {
+            const checked = document.querySelectorAll('#groupsList input:checked').length;
+            selectedCountSpan.textContent = `Выбрано: ${checked} групп`;
+        }
+        
+        function filterGroups() {
+            const searchTerm = groupsSearch.value.toLowerCase();
+            const items = groupsList.querySelectorAll('.group-checkbox-item');
+            items.forEach(item => {
+                const groupName = item.dataset.groupName;
+                if (groupName.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+        
+        if (isPublicCheckbox) {
+            isPublicCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    groupsContainer.style.display = 'none';
+                    document.querySelectorAll('#groupsList input').forEach(cb => cb.checked = false);
+                } else {
+                    groupsContainer.style.display = 'block';
+                }
+                updateSelectedCount();
+            });
+            
+            if (isPublicCheckbox.checked) {
+                groupsContainer.style.display = 'none';
+            } else {
+                groupsContainer.style.display = 'block';
+            }
+        }
+        
+        if (selectAllBtn) {
+            selectAllBtn.addEventListener('click', function() {
+                document.querySelectorAll('#groupsList input').forEach(cb => cb.checked = true);
+                updateSelectedCount();
+            });
+        }
+        
+        if (clearAllBtn) {
+            clearAllBtn.addEventListener('click', function() {
+                document.querySelectorAll('#groupsList input').forEach(cb => cb.checked = false);
+                updateSelectedCount();
+            });
+        }
+        
+        if (groupsSearch) {
+            groupsSearch.addEventListener('input', filterGroups);
+        }
+        
+        if (groupsList) {
+            groupsList.addEventListener('change', updateSelectedCount);
+        }
+        
+        updateSelectedCount();
+        
+        const fileInput = document.getElementById('id_file');
+        if (fileInput) {
+            fileInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    const fileName = this.files[0].name;
+                    const fileSize = (this.files[0].size / 1024 / 1024).toFixed(2);
+                    if (fileSize > 10) {
+                        alert('Файл слишком большой! Максимальный размер 10 МБ.');
+                        this.value = '';
+                    } else {
+                        const toast = document.createElement('div');
+                        toast.className = 'toast-notification success';
+                        toast.textContent = `Выбран файл: ${fileName} (${fileSize} МБ)`;
+                        toast.style.position = 'fixed';
+                        toast.style.bottom = '20px';
+                        toast.style.right = '20px';
+                        toast.style.padding = '12px 20px';
+                        toast.style.borderRadius = '12px';
+                        toast.style.zIndex = '1000';
+                        toast.style.animation = 'slideIn 0.3s ease';
+                        document.body.appendChild(toast);
+                        setTimeout(() => toast.remove(), 3000);
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

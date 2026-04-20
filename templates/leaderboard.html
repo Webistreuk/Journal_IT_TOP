@@ -1,141 +1,108 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/leaderboard.css' %}">
-    <title>Рейтинг - Journal</title>
-</head>
-<body>
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">Journal</div>
-            <nav class="nav-menu">
-                <a href="{% url 'main_view' %}">Главная</a>
-                <a href="{% url 'schedule_view' %}">Расписание</a>
-                <a href="{% url 'homework_list_view' %}">ДЗ</a>
-                <a href="{% url 'estimation_view' %}">Оценки</a>
-                <a href="{% url 'attendance_list_view' %}">Посещаемость</a>
-                <a href="{% url 'shop_view' %}">Магазин</a>
-                <a href="{% url 'leaderboard_view' %}">Рейтинг</a>
-                <a href="{% url 'chat_list_view' %}">Чаты</a>
-            </nav>
-            <div class="user-info">
-                <span class="user-name">{{ user.user }}</span>
-                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
-                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
-            </div>
+
+{% block title %}Рейтинг{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/leaderboard.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="leaderboard-container">
+    <div class="leaderboard-header">
+        <div class="header-title">
+            <h1 id="leaderboardTitle">🏆 Рейтинг курса</h1>
         </div>
-    </header>
-
-    <div class="container">
-        <div class="leaderboard-container">
-            <div class="leaderboard-header">
-                <h1 class="page-title">🏆 Рейтинг студентов</h1>
-                <p class="page-subtitle">Топ студентов по количеству топмани</p>
-            </div>
-
-            <div class="leaderboard-card">
-                <div class="podium">
-                    <div class="podium-item second">
-                        <div class="podium-avatar">🥈</div>
-                        <div class="podium-name">
-                            {% if entries|length >= 2 %}
-                                {{ entries.1.student }}
-                            {% else %}
-                                -
-                            {% endif %}
-                        </div>
-                        <div class="podium-points">
-                            {% if entries|length >= 2 %}
-                                {{ entries.1.topmoney }}
-                            {% else %}
-                                0
-                            {% endif %}
-                        </div>
-                        <div class="podium-medal">2 место</div>
-                    </div>
-                    <div class="podium-item first">
-                        <div class="podium-avatar">👑</div>
-                        <div class="podium-name">
-                            {% if entries|length >= 1 %}
-                                {{ entries.0.student }}
-                            {% else %}
-                                -
-                            {% endif %}
-                        </div>
-                        <div class="podium-points">
-                            {% if entries|length >= 1 %}
-                                {{ entries.0.topmoney }}
-                            {% else %}
-                                0
-                            {% endif %}
-                        </div>
-                        <div class="podium-medal">1 место</div>
-                    </div>
-                    <div class="podium-item third">
-                        <div class="podium-avatar">🥉</div>
-                        <div class="podium-name">
-                            {% if entries|length >= 3 %}
-                                {{ entries.2.student }}
-                            {% else %}
-                                -
-                            {% endif %}
-                        </div>
-                        <div class="podium-points">
-                            {% if entries|length >= 3 %}
-                                {{ entries.2.topmoney }}
-                            {% else %}
-                                0
-                            {% endif %}
-                        </div>
-                        <div class="podium-medal">3 место</div>
-                    </div>
-                </div>
-
-                <div class="leaderboard-table-wrapper">
-                    <table class="leaderboard-table">
-                        <thead>
-                            <tr>
-                                <th>Место</th>
-                                <th>Студент</th>
-                                <th>Группа</th>
-                                <th>Топмани</th>
-                                <th>Действие</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for entry in entries %}
-                            <tr class="{% if forloop.counter <= 3 %}top-three{% endif %}">
-                                <td class="rank-cell">
-                                    {% if forloop.counter == 1 %}
-                                        <span class="rank-medal gold">🥇</span>
-                                    {% elif forloop.counter == 2 %}
-                                        <span class="rank-medal silver">🥈</span>
-                                    {% elif forloop.counter == 3 %}
-                                        <span class="rank-medal bronze">🥉</span>
-                                    {% else %}
-                                        {{ forloop.counter }}
-                                    {% endif %}
-                                </td>
-                                <td class="student-name">{{ entry.student }}</td>
-                                <td>{{ entry.group.name }}</td>
-                                <td class="points-cell">{{ entry.topmoney }}</td>
-                                <td><button class="btn-view" data-student="{{ entry.student.id }}">👁️</button></td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="5" class="empty-row">Нет данных для отображения</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+        <button id="toggleLeaderboard" class="toggle-btn">📊 Рейтинг группы</button>
     </div>
 
-    <script src="{% static 'js/leaderboard.js' %}"></script>
-</body>
-</html>
+    <div id="courseLeaderboard" class="leaderboard-card active">
+        <div class="leaderboard-stats">
+            <div class="stat">
+                <span class="stat-label">Всего студентов</span>
+                <span class="stat-value" id="courseTotalStudents">{{ course_leaderboard|length }}</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Топ-1</span>
+                <span class="stat-value" id="courseTop1">
+                    {% if course_leaderboard %}
+                        {{ course_leaderboard.0.student.surname }} {{ course_leaderboard.0.student.name }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+        <div class="table-wrapper">
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Место</th>
+                        <th>Студент</th>
+                        <th>Группа</th>
+                        <th>Топмани</th>
+                    </tr>
+                </thead>
+                <tbody id="courseTableBody">
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination" id="coursePagination"></div>
+    </div>
+
+    <div id="groupLeaderboard" class="leaderboard-card">
+        <div class="leaderboard-stats">
+            <div class="stat">
+                <span class="stat-label">Всего студентов</span>
+                <span class="stat-value">{{ group_leaderboard|length }}</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Топ-1</span>
+                <span class="stat-value">
+                    {% if group_leaderboard %}
+                        {{ group_leaderboard.0.student.surname }} {{ group_leaderboard.0.student.name }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+        <div class="table-wrapper">
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Место</th>
+                        <th>Студент</th>
+                        <th>Топмани</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in group_leaderboard %}
+                    <tr {% if item.student.id == student.id %}class="current-user"{% endif %}>
+                        <td class="rank-cell rank-{{ item.rank }}">
+                            {% if item.rank == 1 %}🥇{% elif item.rank == 2 %}🥈{% elif item.rank == 3 %}🥉{% endif %}
+                            {{ item.rank }}
+                        </td>
+                        <td class="student-name">{{ item.student.surname }} {{ item.student.name }} {{ item.student.patronymic }}</td>
+                        <td class="topmoney-value">{{ item.topmoney }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="empty-state">Нет данных для отображения</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.courseData = {{ course_leaderboard|safe }};
+    window.studentId = {{ student.id|default:0 }};
+</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/leaderboard.js' %}"></script>
+{% endblock %}

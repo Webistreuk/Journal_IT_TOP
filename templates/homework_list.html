@@ -2,54 +2,206 @@
 {% load static %}
 
 {% block title %}Домашние задания{% endblock %}
+
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/homework.css' %}">
 {% endblock %}
 
 {% block content %}
 <div class="homework-container">
-    <div class="card">
-        <h2 class="card-title">Домашние задания</h2>
-        <table class="homework-table">
-            <thead>
-                <tr>
-                    <th>Предмет</th>
-                    <th>Дата выдачи</th>
-                    <th>Срок сдачи</th>
-                    <th>Статус</th>
-                    <th>Действие</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in homework_data %}
-                <tr>
-                    <td><strong>{{ item.homework.subject.name_subject }}</strong></td>
-                    <td>{{ item.homework.date_start|date:"d.m.Y" }}</td>
-                    <td>{{ item.homework.date_final|date:"d.m.Y" }}</td>
-                    <td>
-                        {% if item.has_submission %}
-                            {% if item.is_checked %}
-                            <span class="status-badge status-checked">✅ Проверено</span>
-                            {% else %}
-                            <span class="status-badge status-pending">⏳ На проверке</span>
-                            {% endif %}
-                        {% else %}
-                        <span class="status-badge status-missing">❌ Не сдано</span>
-                        {% endif %}
-                    </td>
-                    <td>
-                        <a href="{% url 'homework_submit_view' item.homework.id %}" class="btn-submit">
-                            {% if item.has_submission %}Изменить{% else %}Сдать{% endif %}
-                        </a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" style="text-align: center;">Нет домашних заданий</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    {% if user_role == 'student' %}
+    <div class="homework-section">
+        <div class="section-title">
+            📚 Текущие задания
+            <span class="count">{{ pending_homeworks|length }}</span>
+        </div>
+        <div id="pending-grid" class="homework-grid">
+            {% for item in pending_homeworks %}
+            <div class="homework-card pending" onclick="window.location.href='{% url 'homework_submit_view' item.homework.id %}'">
+                <div class="card-subject">{{ item.homework.subject.name_subject }}</div>
+                <div class="card-info"><i class="fas fa-chalkboard-teacher"></i> {{ item.homework.professor }}</div>
+                <div class="card-info"><i class="far fa-calendar-alt"></i> Выдано: {{ item.homework.date_start|date:"d.m.Y" }}</div>
+                <div class="card-deadline">
+                    <span class="deadline-date"><i class="far fa-clock"></i> до {{ item.homework.date_final|date:"d.m.Y" }}</span>
+                    <span class="deadline-badge pending">⏳ Не сдано</span>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">Нет текущих заданий 🎉</div>
+            {% endfor %}
+        </div>
+        {% if pending_homeworks|length > 6 %}
+        <button class="btn-show-more" data-target="pending-grid">Показать ещё</button>
+        {% endif %}
     </div>
+
+    <div class="homework-section">
+        <div class="section-title">
+            ⚠️ Просроченные задания
+            <span class="count">{{ expired_homeworks|length }}</span>
+        </div>
+        <div id="expired-grid" class="homework-grid">
+            {% for item in expired_homeworks %}
+            <div class="homework-card expired" onclick="window.location.href='{% url 'homework_submit_view' item.homework.id %}'">
+                <div class="card-subject">{{ item.homework.subject.name_subject }}</div>
+                <div class="card-info"><i class="fas fa-chalkboard-teacher"></i> {{ item.homework.professor }}</div>
+                <div class="card-info"><i class="far fa-calendar-alt"></i> Выдано: {{ item.homework.date_start|date:"d.m.Y" }}</div>
+                <div class="card-deadline">
+                    <span class="deadline-date"><i class="far fa-clock"></i> было до {{ item.homework.date_final|date:"d.m.Y" }}</span>
+                    <span class="deadline-badge expired">❗ Просрочено</span>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">Нет просроченных заданий ✅</div>
+            {% endfor %}
+        </div>
+        {% if expired_homeworks|length > 6 %}
+        <button class="btn-show-more" data-target="expired-grid">Показать ещё</button>
+        {% endif %}
+    </div>
+
+    <div class="homework-section">
+        <div class="section-title">
+            🔄 На проверке
+            <span class="count">{{ on_check_homeworks|length }}</span>
+        </div>
+        <div id="oncheck-grid" class="homework-grid">
+            {% for item in on_check_homeworks %}
+            <div class="homework-card on-check" onclick="window.location.href='{% url 'homework_check_view' item.submission.id %}'">
+                <div class="card-subject">{{ item.homework.subject.name_subject }}</div>
+                <div class="card-info"><i class="fas fa-chalkboard-teacher"></i> {{ item.homework.professor }}</div>
+                <div class="card-info"><i class="fas fa-user-graduate"></i> Студент: {{ item.student }}</div>
+                <div class="card-info"><i class="far fa-calendar-alt"></i> Сдано: {{ item.submission.submitted_at|date:"d.m.Y H:i" }}</div>
+                <div class="card-deadline">
+                    <span class="deadline-date"><i class="fas fa-hourglass-half"></i> Ожидает проверки</span>
+                    <span class="deadline-badge on-check">⏳ На проверке</span>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">Нет заданий на проверке</div>
+            {% endfor %}
+        </div>
+        {% if on_check_homeworks|length > 6 %}
+        <button class="btn-show-more" data-target="oncheck-grid">Показать ещё</button>
+        {% endif %}
+    </div>
+
+    <div class="homework-section">
+        <div class="section-title">
+            ✅ Проверенные задания
+            <span class="count">{{ checked_homeworks|length }}</span>
+        </div>
+        <div id="checked-grid" class="homework-grid">
+            {% for item in checked_homeworks %}
+            <div class="homework-card checked">
+                <div class="card-subject">{{ item.homework.subject.name_subject }}</div>
+                <div class="card-info"><i class="fas fa-chalkboard-teacher"></i> {{ item.homework.professor }}</div>
+                <div class="card-info"><i class="fas fa-user-graduate"></i> Студент: {{ item.student }}</div>
+                <div class="card-info"><i class="far fa-calendar-alt"></i> Проверено: {{ item.submission.submitted_at|date:"d.m.Y" }}</div>
+                <div class="card-grade">{{ item.grade }}</div>
+                <div class="card-deadline">
+                    <span class="deadline-date"><i class="fas fa-check-circle"></i> {{ item.submission.professor_comment|default:"Без комментария"|truncatechars:30 }}</span>
+                    <span class="deadline-badge checked">✅ Проверено</span>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">Нет проверенных заданий</div>
+            {% endfor %}
+        </div>
+        {% if checked_homeworks|length > 6 %}
+        <button class="btn-show-more" data-target="checked-grid">Показать ещё</button>
+        {% endif %}
+    </div>
+
+    <div class="homework-section">
+        <div class="section-title">
+            📤 Сданные (непроверенные)
+            <span class="count">{{ submitted_homeworks|length }}</span>
+        </div>
+        <div id="submitted-grid" class="homework-grid">
+            {% for item in submitted_homeworks %}
+            <div class="homework-card submitted" onclick="window.location.href='{% url 'homework_check_view' item.submission.id %}'">
+                <div class="card-subject">{{ item.homework.subject.name_subject }}</div>
+                <div class="card-info"><i class="fas fa-chalkboard-teacher"></i> {{ item.homework.professor }}</div>
+                <div class="card-info"><i class="fas fa-user-graduate"></i> Студент: {{ item.student }}</div>
+                <div class="card-info"><i class="far fa-calendar-alt"></i> Сдано: {{ item.submission.submitted_at|date:"d.m.Y H:i" }}</div>
+                <div class="card-deadline">
+                    <span class="deadline-date"><i class="fas fa-hourglass-half"></i> Ожидает проверки</span>
+                    <span class="deadline-badge submitted">📤 Сдано</span>
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">Нет сданных заданий</div>
+            {% endfor %}
+        </div>
+        {% if submitted_homeworks|length > 6 %}
+        <button class="btn-show-more" data-target="submitted-grid">Показать ещё</button>
+        {% endif %}
+    </div>
+    {% elif user_role == 'professor' %}
+    <div class="homework-section">
+        <div class="section-title">
+            📝 Сданные работы студентов
+            <span class="count">{{ submissions_data|length }}</span>
+        </div>
+        <div id="professor-grid" class="homework-grid">
+            {% for item in submissions_data %}
+            <div class="homework-card {% if item.is_checked %}checked{% else %}on-check{% endif %}" onclick="window.location.href='{% url 'homework_check_view' item.submission.id %}'">
+                <div class="card-subject">{{ item.homework.subject.name_subject }}</div>
+                <div class="card-info"><i class="fas fa-user-graduate"></i> Студент: {{ item.student }}</div>
+                <div class="card-info"><i class="fas fa-chalkboard-teacher"></i> {{ item.homework.professor }}</div>
+                <div class="card-info"><i class="far fa-calendar-alt"></i> Сдано: {{ item.submission.submitted_at|date:"d.m.Y H:i" }}</div>
+                {% if item.is_checked and item.grade %}
+                <div class="card-grade">{{ item.grade }}</div>
+                {% endif %}
+                <div class="card-deadline">
+                    {% if item.is_checked %}
+                    <span class="deadline-date"><i class="fas fa-check-circle"></i> Оценка: {{ item.grade }}</span>
+                    <span class="deadline-badge checked">✅ Проверено</span>
+                    {% else %}
+                    <span class="deadline-date"><i class="fas fa-hourglass-half"></i> Ожидает проверки</span>
+                    <span class="deadline-badge on-check">⏳ На проверке</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div class="empty-state">Нет сданных работ</div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 </div>
+
+<script>
+    document.querySelectorAll('.btn-show-more').forEach(button => {
+        const targetId = button.getAttribute('data-target');
+        const grid = document.getElementById(targetId);
+        const items = grid.querySelectorAll('.homework-card');
+        let visibleCount = 6;
+        
+        if (items.length <= 6) {
+            button.style.display = 'none';
+        }
+        
+        for (let i = 6; i < items.length; i++) {
+            items[i].style.display = 'none';
+        }
+        
+        button.addEventListener('click', function() {
+            let nextCount = visibleCount + 6;
+            for (let i = visibleCount; i < nextCount && i < items.length; i++) {
+                items[i].style.display = 'block';
+            }
+            visibleCount = nextCount;
+            
+            if (visibleCount >= items.length) {
+                button.style.display = 'none';
+            }
+            
+            if (button.parentElement) {
+                button.parentElement.appendChild(button);
+            }
+        });
+    });
+</script>
 {% endblock %}

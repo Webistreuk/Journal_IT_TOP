@@ -29,7 +29,8 @@
                     <a href="{% url 'user_reward_list_view' %}">Награды</a>
                     <a href="{% url 'exam_list_view' %}">Экзамены</a>
                     <a href="{% url 'appeal_view' %}">Обращение</a>
-                    <a href="{% url 'review_view' %}">Отзыв</a>
+                    <a href="{% url 'review_view' %}">Отзыв об академии</a>
+                    <a href="{% url 'student_reviews_view' %}">Отзывы обо мне</a>
                     <a href="{% url 'complaint_view' %}">Жалоба</a>
                     <a href="{% url 'chat_list_view' %}">Чаты</a>
                 {% elif user_role == 'professor' %}
@@ -37,13 +38,12 @@
                     <a href="{% url 'homework_list_view' %}">ДЗ студентов</a>
                     <a href="{% url 'homework_add_view' %}">Создать ДЗ</a>
                     <a href="{% url 'attendance_mark_view' %}">Посещаемость</a>
-                    <a href="{% url 'estimation_view' %}">Оценки</a>
-                    <a href="{% url 'educational_materials_view' %}">Материалы</a>
+                    <a href="{% url 'estimation_view' %}">Оценки моих студентов</a>
+                    <a href="{% url 'educational_materials_view' %}">Мои материалы</a>
                     <a href="{% url 'educational_material_create_view' %}">Загрузить материал</a>
                     <a href="{% url 'student_review_create_view' %}">Отзыв о студенте</a>
                     <a href="{% url 'student_review_list_view' %}">Все отзывы</a>
                     <a href="{% url 'exam_list_view' %}">Экзамены</a>
-                    <a href="{% url 'exam_create_view' %}">Выставить оценку</a>
                     <a href="{% url 'chat_list_view' %}">Чаты</a>
                 {% elif user_role == 'academic_staff' %}
                     <a href="{% url 'schedule_create_view' %}">Расписание</a>
@@ -62,7 +62,36 @@
                 {% endif %}
             </nav>
             <div class="user-info">
-                <span class="user-name">{{ user.user }}</span>
+                {% if user_role == 'student' %}
+                <div class="user-currencies">
+                    <div class="currency-item">
+                        <span class="currency-icon">🪙</span>
+                        <span class="currency-value">{{ topcoins|default:"0" }}</span>
+                    </div>
+                    <div class="currency-item">
+                        <span class="currency-icon">💎</span>
+                        <span class="currency-value">{{ topgems|default:"0" }}</span>
+                    </div>
+                </div>
+                {% endif %}
+                {% if user_avatar %}
+                    <img src="{{ user_avatar }}" alt="avatar" class="user-avatar">
+                {% else %}
+                    <div class="user-avatar-placeholder">Ф</div>
+                {% endif %}
+                <div class="user-details">
+                    <span class="user-name">{{ user.get_full_name|default:user.user }}</span>
+                    {% if user_role == 'student' and student_info %}
+                        <div class="user-meta-group">
+                            <span class="user-meta-direction">{{ student_info.direction }}</span>
+                            <span class="user-meta-course">{{ student_info.course }} курс, {{ student_info.group }}</span>
+                        </div>
+                    {% elif user_role == 'professor' and professor_info %}
+                        <span class="user-meta">{{ professor_info.subject }}</span>
+                    {% elif user_role == 'academic_staff' and staff_info %}
+                        <span class="user-meta">{{ staff_info.position }}</span>
+                    {% endif %}
+                </div>
                 <a href="{% url 'profile_settings_view' %}" class="btn-profile">Профиль</a>
                 <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
             </div>
@@ -72,7 +101,9 @@
     <div class="container">
         {% if messages %}
             {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}" style="display: none;">{{ message }}</div>
+                {% if not message|stringformat:"s"|slice:":9" == "Сообщение" %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                {% endif %}
             {% endfor %}
         {% endif %}
         {% block content %}{% endblock %}

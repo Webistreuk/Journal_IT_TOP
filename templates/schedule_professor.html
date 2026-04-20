@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Расписание преподавателя{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/schedule_professor.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="schedule-container">
+    <div class="page-header">
+        <h1 class="page-title">📅 Расписание</h1>
+        <div class="group-info" id="weekStatus">Ваши пары на эту неделю</div>
+    </div>
+    
+    <div id="scheduleContent">
+        <div class="loading">Загрузка расписания...</div>
+    </div>
+    
+    <div class="go-to-today-wrapper">
+        <button class="go-to-today-btn" id="goToTodayBtn">📅 К текущей неделе</button>
+    </div>
+</div>
+
+<button class="nav-button prev" id="prevWeekBtn">←</button>
+<button class="nav-button next" id="nextWeekBtn">→</button>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let currentWeekOffset = 0;
+    let isLoading = false;
+
+    const pairTimes = [
+        { number: 1, start: "08:30", end: "09:50" },
+        { number: 2, start: "10:00", end: "11:20" },
+        { number: 3, start: "11:50", end: "13:10" },
+        { number: 4, start: "13:20", end: "14:40" },
+        { number: 5, start: "14:50", end: "16:10" },
+        { number: 6, start: "16:20", end: "17:40" },
+        { number: 7, start: "17:50", end: "19:10" }
+    ];
+
+    function loadSchedule(offset) {
+        if (isLoading) return;
+        isLoading = true;
+        
+        fetch(`/api/schedule/professor/?offset=${offset}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    renderSchedule(data);
+                    currentWeekOffset = offset;
+                    const btn = document.getElementById('goToTodayBtn');
+                    if (offset === 0) {
+                        btn.style.display = 'none';
+                    } else {
+                        btn.style.display = 'block';
+                    }
+                }
+                isLoading = false;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('scheduleContent').innerHTML = '<div class="loading">❌ Ошибка загрузки расписания</div>';
+                isLoading = false;
+            });
+    }
+
+    function renderSchedule(data) {
+        const contentDiv = document.getElementById('scheduleContent');
+        const weekdays = [
+            { num: 1, name: 'Понедельник' },
+            { num: 2, name: 'Вторник' },
+            { num: 3, name: 'Среда' },
+            { num: 4, name: 'Четверг' },
+            { num: 5, name: 'Пятница' },
+            { num: 6, name: 'Суббота' },
+            { num: 7, name: 'Воскресенье' }
+        ];
+
+        let pairMap = {};
+        if (data.schedules) {
+            data.schedules.forEach(p => {
+                if (!pairMap[p.weekday]) pairMap[p.weekday] = {};
+                pairMap[p.weekday][p.pair_order] = p;
+            });
+        }
+
+        let html = `<div class="schedule-week"><div class="schedule-days">`;
+
+        for (let day of weekdays) {
+            let dayDate = '';
+            if (data.dates && data.dates[day.num]) {
+                dayDate = data.dates[day.num];
+            }
+            
+            html += `
+                <div class="day-column">
+                    <div class="day-header">
+                        <span class="day-name">${day.name}</span>
+                        <span class="day-date">${dayDate}</span>
+                    </div>
+                    <div class="day-pairs">
+            `;
+            
+            for (let pairNum = 1; pairNum <= 7; pairNum++) {
+                const pairData = pairMap[day.num] ? pairMap[day.num][pairNum] : null;
+                const pairTime = pairTimes.find(p => p.number === pairNum);
+                const timeStr = pairTime ? `${pairTime.start}–${pairTime.end}` : '';
+                
+                if (pairData) {
+                    html += `
+                        <div class="pair-card">
+                            <div class="pair-time">${pairData.pair_time || timeStr}</div>
+                            <div class="pair-subject">${pairData.subject}</div>
+                            <div class="pair-professor">${pairData.professor}</div>
+                            <div class="pair-classroom">${pairData.classroom || '—'}</div>
+                            <div class="pair-group">👥 ${pairData.group}</div>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="pair-card empty-pair">
+                            <div class="pair-time">${timeStr}</div>
+                            <div class="pair-subject">—</div>
+                            <div class="pair-professor">—</div>
+                            <div class="pair-classroom">—</div>
+                        </div>
+                    `;
+                }
+            }
+            
+            html += `</div></div>`;
+        }
+        
+        html += `</div></div>`;
+        contentDiv.innerHTML = html;
+    }
+
+    function goToToday() {
+        loadSchedule(0);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const prevBtn = document.getElementById('prevWeekBtn');
+        const nextBtn = document.getElementById('nextWeekBtn');
+        const goToTodayBtn = document.getElementById('goToTodayBtn');
+        
+        if (prevBtn) prevBtn.addEventListener('click', () => loadSchedule(currentWeekOffset - 1));
+        if (nextBtn) nextBtn.addEventListener('click', () => loadSchedule(currentWeekOffset + 1));
+        if (goToTodayBtn) goToTodayBtn.addEventListener('click', goToToday);
+        
+        loadSchedule(0);
+    });
+</script>
+{% endblock %}

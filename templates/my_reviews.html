@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Отзывы обо мне{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/my_reviews.css' %}?v=3">
+{% endblock %}
+
+{% block content %}
+<div class="my-reviews-container">
+    <h1 class="my-reviews-title">📝 Отзывы обо мне</h1>
+
+    <div class="my-reviews-filter">
+        <select id="mySubjectFilter" class="my-subject-filter">
+            <option value="all">Все предметы</option>
+            {% for subject in subjects %}
+            <option value="{{ subject.name_subject }}">{{ subject.name_subject }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="my-reviews-list" id="myReviewsList">
+        {% for review in reviews %}
+        <div class="my-review-card" data-subject="{{ review.subject.name_subject }}">
+            <div class="my-review-header">
+                <div>
+                    <span class="my-review-professor">{{ review.professor }}</span>
+                    <span class="my-review-subject">{{ review.subject.name_subject }}</span>
+                </div>
+                <span class="my-review-date">{{ review.date|date:"d.m.Y" }}</span>
+            </div>
+            <div class="my-review-comment">{{ review.comment }}</div>
+        </div>
+        {% empty %}
+        <div class="my-reviews-empty">📭 Пока нет отзывов о вас</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/my_reviews.js' %}?v=3"></script>
+{% endblock %}

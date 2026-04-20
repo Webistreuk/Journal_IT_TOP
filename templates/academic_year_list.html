@@ -1,90 +1,42 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/academic_year_list.css' %}">
-    <title>Учебные годы - Journal</title>
-</head>
-<body>
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">Journal</div>
-            <nav class="nav-menu">
-                <a href="{% url 'main_view' %}">Главная</a>
-                <a href="{% url 'schedule_create_view' %}">Расписание</a>
-                <a href="{% url 'group_list_view' %}">Группы</a>
-                <a href="{% url 'subject_list_view' %}">Предметы</a>
-                <a href="{% url 'direction_list_view' %}">Направления</a>
-                <a href="{% url 'course_list_view' %}">Курсы</a>
-                <a href="{% url 'academic_year_list_view' %}">Учебные годы</a>
-                <a href="{% url 'payment_info_view' %}">Оплаты</a>
-                <a href="{% url 'debtor_list_view' %}">Должники</a>
-                <a href="{% url 'chat_list_view' %}">Чаты</a>
-            </nav>
-            <div class="user-info">
-                <span class="user-name">{{ user.user }}</span>
-                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
-                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
-            </div>
-        </div>
-    </header>
 
-    <div class="container">
-        <div class="academic-year-container">
-            <div class="page-header">
-                <h1 class="page-title">📅 Учебные годы</h1>
-                <a href="{% url 'academic_year_create_view' %}" class="btn-create">➕ Добавить учебный год</a>
-            </div>
+{% block title %}Учебные годы{% endblock %}
 
-            <div class="years-list">
-                {% for year in years %}
-                <div class="year-card {% if year.is_current %}current{% endif %}">
-                    <div class="year-header">
-                        <div class="year-name">{{ year.name }}</div>
-                        {% if year.is_current %}
-                        <div class="current-badge">Текущий</div>
-                        {% endif %}
-                    </div>
-                    <div class="year-dates">
-                        <div class="date-item">
-                            <span class="date-label">📅 Начало:</span>
-                            <span class="date-value">{{ year.start_date|date:"d.m.Y" }}</span>
-                        </div>
-                        <div class="date-item">
-                            <span class="date-label">📅 Окончание:</span>
-                            <span class="date-value">{{ year.end_date|date:"d.m.Y" }}</span>
-                        </div>
-                    </div>
-                    <div class="year-stats">
-                        <div class="stat">
-                            <span class="stat-value">{{ year.semester_set.count }}</span>
-                            <span class="stat-label">семестров</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-value">{{ year.group_set.count }}</span>
-                            <span class="stat-label">групп</span>
-                        </div>
-                    </div>
-                    <div class="year-actions">
-                        <button class="btn-set-current" data-id="{{ year.id }}" {% if year.is_current %}disabled{% endif %}>
-                            {% if year.is_current %}✅ Текущий{% else %}⭐ Сделать текущим{% endif %}
-                        </button>
-                        <button class="btn-edit" data-id="{{ year.id }}">✏️</button>
-                        <button class="btn-delete" data-id="{{ year.id }}" {% if year.is_current %}disabled{% endif %}>🗑️</button>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="empty-years">
-                    <p>📭 Нет учебных годов</p>
-                    <a href="{% url 'academic_year_create_view' %}" class="btn-create-first">Создать первый учебный год</a>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/academic_year_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="academic-year-container">
+    <div class="page-header">
+        <h1 class="page-title">📅 Учебные годы</h1>
+        <a href="{% url 'academic_year_create_view' %}" class="btn-create">➕ Добавить учебный год</a>
     </div>
-
-    <script src="{% static 'js/academic_year_list.js' %}"></script>
-</body>
-</html>
+    <div class="years-list">
+        {% for year in years %}
+        <div class="year-card {% if year.is_current %}current{% endif %}">
+            <div class="year-header">
+                <div class="year-name">{{ year.name }}</div>
+                {% if year.is_current %}<div class="current-badge">Текущий</div>{% endif %}
+            </div>
+            <div class="year-dates">
+                <div class="date-item"><span class="date-label">📅 Начало:</span><span class="date-value">{{ year.start_date|date:"d.m.Y" }}</span></div>
+                <div class="date-item"><span class="date-label">📅 Окончание:</span><span class="date-value">{{ year.end_date|date:"d.m.Y" }}</span></div>
+            </div>
+            <div class="year-stats">
+                <div class="stat"><span class="stat-value">{{ year.semester_set.count }}</span><span class="stat-label">семестров</span></div>
+                <div class="stat"><span class="stat-value">{{ year.group_set.count }}</span><span class="stat-label">групп</span></div>
+            </div>
+            <div class="year-actions">
+                <button class="btn-set-current" data-id="{{ year.id }}" {% if year.is_current %}disabled{% endif %}>⭐ Сделать текущим</button>
+                <button class="btn-edit" data-id="{{ year.id }}">✏️</button>
+                <button class="btn-delete" data-id="{{ year.id }}" {% if year.is_current %}disabled{% endif %}>🗑️</button>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-years">📭 Нет учебных годов</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,49 +1,39 @@
+<!-- templates/profile_edit.html -->
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Редактирование профиля чата{% endblock %}
+{% block title %}Редактирование профиля{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/profile_edit.css' %}">
+{% endblock %}
 
 {% block content %}
 <div class="profile-edit-container">
-    <h2>Редактирование профиля чата</h2>
-    <form method="post" enctype="multipart/form-data">
+    <h2>Редактирование профиля</h2>
+    <form method="post">
         {% csrf_token %}
         <div class="form-group">
-            <label>Аватар</label>
-            {% if chat_profile.avatar %}
-                <img src="{{ chat_profile.avatar.url }}" style="width: 100px; height: 100px; border-radius: 50%;">
-            {% endif %}
-            <input type="file" name="avatar" class="form-control">
+            <label for="id_interests">Интересы</label>
+            <textarea name="interests" id="id_interests" class="form-control" rows="4">{{ user.chat_profile.interests }}</textarea>
         </div>
         <div class="form-group">
-            <label>Интересы</label>
-            <textarea name="interests" class="form-control" rows="3">{{ chat_profile.interests }}</textarea>
+            <label for="id_birth_date">Дата рождения</label>
+            <input type="date" name="birth_date" id="id_birth_date" class="form-control" value="{{ user.birth_date|date:'Y-m-d' }}">
         </div>
         <div class="form-group">
-            <label>О себе</label>
-            <textarea name="about" class="form-control" rows="3">{{ chat_profile.about }}</textarea>
-        </div>
-        <div class="form-group">
-            <label>Город</label>
-            <input type="text" name="city" value="{{ chat_profile.city }}" class="form-control">
-        </div>
-        <div class="form-group">
-            <label>Дата рождения</label>
-            <input type="date" name="birth_date" value="{{ user.birth_date|date:'Y-m-d' }}" class="form-control">
-        </div>
-        <div class="form-group">
-            <label>Пол</label>
-            <select name="gender" class="form-control">
+            <label for="id_gender">Пол</label>
+            <select name="gender" id="id_gender" class="form-control">
                 <option value="">Не указано</option>
                 <option value="M" {% if user.gender == 'M' %}selected{% endif %}>Мужской</option>
                 <option value="F" {% if user.gender == 'F' %}selected{% endif %}>Женский</option>
             </select>
         </div>
         <div class="form-group">
-            <label>Номер телефона</label>
-            <input type="text" name="phone" value="{{ user.phone }}" class="form-control">
+            <label for="id_phone">Номер телефона</label>
+            <input type="text" name="phone" id="id_phone" class="form-control" value="{{ user.phone }}">
         </div>
-        <div class="form-group checkbox">
+        <div class="checkbox">
             <label>
                 <input type="checkbox" name="hide_phone" {% if user.hide_phone %}checked{% endif %}>
                 Скрыть номер телефона от других пользователей

@@ -1,87 +1,46 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/homework_add.css' %}">
-    <title>Создание ДЗ - Journal</title>
-</head>
-<body>
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">Journal</div>
-            <nav class="nav-menu">
-                <a href="{% url 'main_view' %}">Главная</a>
-                <a href="{% url 'homework_list_view' %}">ДЗ студентов</a>
-                <a href="{% url 'homework_add_view' %}">Создать ДЗ</a>
-                <a href="{% url 'attendance_mark_view' %}">Посещаемость</a>
-                <a href="{% url 'estimation_view' %}">Оценки</a>
-            </nav>
-            <div class="user-info">
-                <span class="user-name">{{ user.user }}</span>
-                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
-                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
-            </div>
+
+{% block title %}Создание ДЗ{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/homework_add.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="create-container">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">➕ Создать домашнее задание</h2>
         </div>
-    </header>
-
-    <div class="container">
-        <div class="create-container">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">➕ Создать домашнее задание</h2>
-                </div>
-
-                <form method="post" enctype="multipart/form-data" id="createForm">
-                    {% csrf_token %}
-                    
-                    <div class="form-group">
-                        <label for="id_group">🎓 Группа</label>
-                        <select name="group" id="id_group" class="form-control" required>
-                            <option value="">Выберите группу</option>
-                            {% for group in form.fields.group.queryset %}
-                            <option value="{{ group.id }}">{{ group.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="id_subject">📚 Предмет</label>
-                        <select name="subject" id="id_subject" class="form-control" required>
-                            <option value="">Выберите предмет</option>
-                            {% for subject in form.fields.subject.queryset %}
-                            <option value="{{ subject.id }}">{{ subject.name_subject }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="id_file">📎 Файл задания</label>
-                        <input type="file" name="file" id="id_file" class="form-control" required>
-                        <small class="form-text">Поддерживаемые форматы: PDF, DOC, DOCX, ZIP, JPG, PNG</small>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="id_comment">💬 Комментарий к заданию</label>
-                        <textarea name="comment" id="id_comment" class="form-control" rows="5" placeholder="Опишите задание, укажите требования..." required></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="id_date_final">⏰ Срок сдачи</label>
-                        <input type="date" name="date_final" id="id_date_final" class="form-control" required>
-                        <small class="form-text">Укажите дату, до которой студенты должны сдать работу</small>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn-create">📤 Создать задание</button>
-                        <a href="{% url 'homework_list_view' %}" class="btn-cancel">Отмена</a>
-                    </div>
-                </form>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_group">🎓 Группа</label>
+                {{ form.group }}
             </div>
-        </div>
+            <div class="form-group">
+                <label for="id_subject">📚 Предмет</label>
+                {{ form.subject }}
+            </div>
+            <div class="form-group">
+                <label for="id_file">📎 Файл задания</label>
+                {{ form.file }}
+                <small class="form-text">Поддерживаемые форматы: PDF, DOC, DOCX, ZIP, JPG, PNG</small>
+            </div>
+            <div class="form-group">
+                <label for="id_comment">💬 Комментарий к заданию</label>
+                {{ form.comment }}
+            </div>
+            <div class="form-group">
+                <label for="id_date_final">⏰ Срок сдачи</label>
+                {{ form.date_final }}
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-create">📤 Создать задание</button>
+                <a href="{% url 'homework_list_view' %}" class="btn-cancel">Отмена</a>
+            </div>
+        </form>
     </div>
-
-    <script src="{% static 'js/homework_add.js' %}"></script>
-</body>
-</html>
+</div>
+{% endblock %}

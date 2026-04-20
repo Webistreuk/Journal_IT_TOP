@@ -1,263 +1,287 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f5f7fa;
-}
-
-.header {
-    background: white;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-}
-
-.header-content {
-    max-width: 1200px;
+.leaderboard-container {
+    max-width: 1000px;
     margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-}
-
-.logo {
-    font-size: 24px;
-    font-weight: bold;
-    color: #667eea;
-}
-
-.nav-menu {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.nav-menu a {
-    text-decoration: none;
-    color: #333;
-    font-size: 14px;
-    transition: color 0.3s;
-}
-
-.nav-menu a:hover {
-    color: #667eea;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.user-name {
-    font-size: 14px;
-    color: #333;
-}
-
-.btn-profile, .btn-logout {
-    padding: 6px 12px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 14px;
-    transition: 0.3s;
-}
-
-.btn-profile {
-    background: #667eea;
-    color: white;
-}
-
-.btn-profile:hover {
-    background: #5a67d8;
-}
-
-.btn-logout {
-    background: #dc3545;
-    color: white;
-}
-
-.btn-logout:hover {
-    background: #c82333;
-}
-
-.container {
-    max-width: 1200px;
-    margin: 80px auto 20px;
-    padding: 0 20px;
 }
 
 .leaderboard-header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.page-title {
-    font-size: 32px;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.page-subtitle {
-    color: #666;
-    font-size: 14px;
-}
-
-.podium {
+    background: linear-gradient(135deg, #EA422A 0%, #F69020 48.58%, #FFC619 101.38%);
+    padding: 12px 20px;
+    border-radius: 12px 12px 0 0;
     display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    gap: 20px;
-    padding: 30px 20px;
-    background: linear-gradient(135deg, #f8f9fa 0%, white 100%);
-    border-radius: 15px;
-    margin-bottom: 30px;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
-.podium-item {
-    text-align: center;
-    padding: 20px;
-    border-radius: 15px;
-    transition: transform 0.3s;
+.header-title h1 {
+    margin: 0;
+    color: #252121;
+    font-size: 20px;
+    font-weight: 800;
 }
 
-.podium-item:hover {
-    transform: translateY(-5px);
-}
-
-.podium-item.first {
-    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-    min-width: 180px;
-    padding: 30px 20px;
-}
-
-.podium-item.second {
-    background: linear-gradient(135deg, #c0c0c0 0%, #e0e0e0 100%);
-    min-width: 150px;
-}
-
-.podium-item.third {
-    background: linear-gradient(135deg, #cd7f32 0%, #e0a060 100%);
-    min-width: 150px;
-}
-
-.podium-avatar {
-    font-size: 48px;
-    margin-bottom: 10px;
-}
-
-.podium-name {
-    font-weight: bold;
-    margin-bottom: 10px;
-    font-size: 16px;
-}
-
-.podium-points {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.podium-medal {
+.toggle-btn {
+    background: rgba(37, 33, 33, 0.3);
+    border: 2px solid rgba(37, 33, 33, 0.5);
+    padding: 6px 16px;
+    border-radius: 50px;
+    color: #252121;
     font-size: 12px;
-    opacity: 0.8;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
 }
 
-.leaderboard-table-wrapper {
+.toggle-btn:hover {
+    background: rgba(37, 33, 33, 0.5);
+    transform: translateY(-2px);
+}
+
+.leaderboard-card {
+    background: #282B32;
+    border-radius: 0 0 12px 12px;
+    overflow: hidden;
+    display: none;
+    min-height: 550px;
+    flex-direction: column;
+}
+
+.leaderboard-card.active {
+    display: flex;
+}
+
+.leaderboard-stats {
+    display: flex;
+    gap: 25px;
+    padding: 12px 20px;
+    background: #202124;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    flex-shrink: 0;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.stat-label {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+}
+
+.stat-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #F69020;
+}
+
+.table-wrapper {
     overflow-x: auto;
+    flex: 1;
 }
 
 .leaderboard-table {
     width: 100%;
     border-collapse: collapse;
-    background: white;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .leaderboard-table th,
 .leaderboard-table td {
-    padding: 15px;
+    padding: 10px 12px;
     text-align: left;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 
 .leaderboard-table th {
-    background: #667eea;
-    color: white;
-    font-weight: bold;
+    background: #202124;
+    color: #F69020;
+    font-weight: 700;
+    font-size: 12px;
 }
 
-.leaderboard-table tr:hover {
-    background: #f8f9fa;
+.leaderboard-table tbody tr {
+    transition: background 0.3s;
 }
 
-.leaderboard-table tr.top-three {
-    background: #fff8e1;
+.leaderboard-table tbody tr:hover {
+    background: rgba(246,144,32,0.15);
 }
 
 .rank-cell {
-    font-weight: bold;
-    width: 80px;
+    font-weight: 800;
+    font-size: 14px;
+    width: 55px;
 }
 
-.rank-medal {
-    font-size: 20px;
+.rank-1 {
+    color: #FFD700;
+}
+
+.rank-2 {
+    color: #C0C0C0;
+}
+
+.rank-3 {
+    color: #CD7F32;
 }
 
 .student-name {
-    font-weight: bold;
-    color: #333;
+    font-size: 13px;
+    font-weight: 500;
+    color: #FFFFFF;
 }
 
-.points-cell {
-    font-weight: bold;
-    color: #667eea;
-    font-size: 18px;
+.group-name {
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
 }
 
-.btn-view {
+.topmoney-value {
+    font-weight: 800;
+    color: #FFC619;
+    font-size: 16px;
+}
+
+.current-user {
+    background: rgba(246,144,32,0.3);
+    border-left: 3px solid #F69020;
+}
+
+.current-user .student-name {
+    font-weight: 800;
+    color: #F69020;
+}
+
+.current-user .topmoney-value {
+    color: #FFD700;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    padding: 15px 20px;
+    flex-wrap: wrap;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    flex-shrink: 0;
+    min-height: 65px;
+    background: #282B32;
+}
+
+.pagination-btn {
+    background: #202124;
+    border: 1px solid rgba(255,255,255,0.1);
     padding: 6px 12px;
-    background: none;
-    border: none;
+    border-radius: 6px;
+    color: #FFFFFF;
+    font-size: 12px;
     cursor: pointer;
-    font-size: 18px;
-    transition: 0.3s;
+    transition: all 0.3s;
+    min-width: 32px;
+    text-align: center;
 }
 
-.btn-view:hover {
-    transform: scale(1.1);
+.pagination-btn:hover {
+    background: #F69020;
+    border-color: #F69020;
+    color: #252121;
 }
 
-.empty-row {
+.pagination-btn.active {
+    background: #F69020;
+    border-color: #F69020;
+    color: #252121;
+}
+
+.pagination-btn.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.pagination-btn.disabled:hover {
+    background: #202124;
+    border-color: rgba(255,255,255,0.1);
+    color: #FFFFFF;
+}
+
+.pagination-dots {
+    color: rgba(255,255,255,0.5);
+    padding: 0 3px;
+    font-size: 12px;
+}
+
+.empty-state {
     text-align: center;
     padding: 40px;
-    color: #999;
+    color: rgba(255,255,255,0.5);
+    font-size: 14px;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    flex: 1;
+    min-height: 430px;
+}
+
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-height: 400px;
+}
+
+.leaderboard-table tbody {
+    display: table-row-group;
+}
+
+.leaderboard-table tr {
+    height: 53px;
+}
+
+.leaderboard-table tr:last-child td {
+    border-bottom: none;
 }
 
 @media (max-width: 768px) {
-    .podium {
-        flex-direction: column;
-        align-items: center;
+    .leaderboard-container {
+        max-width: 100%;
     }
     
-    .podium-item.first,
-    .podium-item.second,
-    .podium-item.third {
-        min-width: 250px;
+    .leaderboard-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .header-title h1 {
+        font-size: 18px;
     }
     
     .leaderboard-table th,
     .leaderboard-table td {
-        padding: 10px;
+        padding: 8px 10px;
+    }
+    
+    .rank-cell {
         font-size: 12px;
+        width: 45px;
+    }
+    
+    .student-name {
+        font-size: 11px;
+    }
+    
+    .topmoney-value {
+        font-size: 13px;
+    }
+    
+    .pagination-btn {
+        padding: 5px 10px;
+        font-size: 10px;
+    }
+    
+    .leaderboard-card {
+        min-height: 480px;
     }
 }

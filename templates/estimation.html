@@ -1,101 +1,73 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/estimation.css' %}">
-    <title>Оценки - Journal</title>
-</head>
-<body>
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">Journal</div>
-            <nav class="nav-menu">
-                <a href="{% url 'main_view' %}">Главная</a>
-                {% if user_role == 'student' %}
-                    <a href="{% url 'schedule_view' %}">Расписание</a>
-                    <a href="{% url 'homework_list_view' %}">ДЗ</a>
-                    <a href="{% url 'estimation_view' %}">Оценки</a>
-                    <a href="{% url 'attendance_list_view' %}">Посещаемость</a>
-                    <a href="{% url 'shop_view' %}">Магазин</a>
-                    <a href="{% url 'leaderboard_view' %}">Рейтинг</a>
-                {% elif user_role == 'professor' %}
-                    <a href="{% url 'schedule_view' %}">Расписание</a>
-                    <a href="{% url 'homework_list_view' %}">ДЗ студентов</a>
-                    <a href="{% url 'homework_add_view' %}">Создать ДЗ</a>
-                    <a href="{% url 'attendance_mark_view' %}">Посещаемость</a>
-                    <a href="{% url 'estimation_view' %}">Оценки</a>
-                {% endif %}
-            </nav>
-            <div class="user-info">
-                <span class="user-name">{{ user.user }}</span>
-                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
-                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
+
+{% block title %}Оценки{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/estimation.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="estimation-container">
+    <div class="table-card">
+        <h2 class="card-title">{% if user_role == 'student' %}📊 Мои оценки{% else %}📊 Оценки моих студентов - {{ professor_subject }}{% endif %}</h2>
+        
+        <div class="filter-bar">
+            <div class="search-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="dateSearch" class="search-input" placeholder="Поиск по дате">
             </div>
+            <div class="search-wrapper">
+                <span class="search-icon">👨‍🎓</span>
+                <input type="text" id="studentSearch" class="search-input" placeholder="Поиск по студенту">
+            </div>
+            <select id="groupFilter" class="filter-select">
+                <option value="all">📚 Все группы</option>
+                {% for group in groups %}
+                <option value="{{ group.id }}">{{ group.name }}</option>
+                {% endfor %}
+            </select>
+            <select id="gradeFilter" class="filter-select">
+                <option value="all">⭐ Все оценки</option>
+                <option value="5">5 - Отлично</option>
+                <option value="4">4 - Хорошо</option>
+                <option value="3">3 - Удовлетворительно</option>
+                <option value="2">2 - Неудовлетворительно</option>
+                <option value="1">1 - Плохо</option>
+            </select>
+            <button id="resetFilters" class="reset-btn">🔄 Сбросить</button>
         </div>
-    </header>
-
-    <div class="container">
-        <div class="estimation-container">
-            {% if user_role == 'professor' %}
-            <div class="card form-card">
-                <h2 class="card-title">📝 Выставить оценку</h2>
-                <form method="post" id="estimationForm">
-                    {% csrf_token %}
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="id_student">👨‍🎓 Студент</label>
-                            {{ form.student }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_subject">📚 Предмет</label>
-                            {{ form.subject }}
-                        </div>
-                        <div class="form-group">
-                            <label for="id_type_estimation">⭐ Оценка</label>
-                            {{ form.type_estimation }}
-                        </div>
-                    </div>
-                    <button type="submit" class="btn-submit">Выставить оценку</button>
-                </form>
-            </div>
-            {% endif %}
-
-            <div class="card table-card">
-                <h2 class="card-title">
-                    {% if user_role == 'student' %}📊 Мои оценки{% else %}📊 Все оценки{% endif %}
-                </h2>
-                <div class="table-wrapper">
-                    <table class="estimation-table">
-                        <thead>
-                            <tr>
-                                <th>Студент</th>
-                                <th>Предмет</th>
-                                <th>Оценка</th>
-                                <th>Дата</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for est in estimations %}
-                            <tr>
-                                <td>{{ est.student }}</td>
-                                <td>{{ est.subject.name_subject }}</td>
-                                <td class="grade-{{ est.type_estimation }}">{{ est.type_estimation }}</td>
-                                <td>{{ est.date|date:"d.m.Y" }}</td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="4" class="empty-row">Нет оценок</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+        
+        <div class="table-wrapper">
+            <table class="estimation-table" id="estimationTable">
+                <thead>
+                    <tr>
+                        <th>Студент</th>
+                        <th>Группа</th>
+                        <th>Оценка</th>
+                        <th>Дата</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    {% for est in estimations %}
+                    <tr data-date="{{ est.date|date:'Y-m-d' }}" data-grade="{{ est.type_estimation }}" data-student="{{ est.student.surname }} {{ est.student.name }} {{ est.student.patronymic }}" data-group="{{ est.student.group.id }}">
+                        <td class="student-cell">{{ est.student }}</td>
+                        <td class="group-cell">{{ est.student.group.name }}</td>
+                        <td class="grade-cell grade-{{ est.type_estimation }}">{{ est.type_estimation }}</td>
+                        <td class="date-cell">{{ est.date|date:"Y-m-d" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr class="empty-row">
+                        <td colspan="4">Нет оценок</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
+{% endblock %}
 
-    <script src="{% static 'js/estimation.js' %}"></script>
-</body>
-</html>
+{% block extra_js %}
+<script src="{% static 'js/estimation.js' %}"></script>
+{% endblock %}

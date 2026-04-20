@@ -1,87 +1,43 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/group_create.css' %}">
-    <title>Создание группы - Journal</title>
-</head>
-<body>
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">Journal</div>
-            <nav class="nav-menu">
-                <a href="{% url 'main_view' %}">Главная</a>
-                <a href="{% url 'schedule_create_view' %}">Расписание</a>
-                <a href="{% url 'group_list_view' %}">Группы</a>
-                <a href="{% url 'payment_info_view' %}">Оплаты</a>
-                <a href="{% url 'debtor_list_view' %}">Должники</a>
-                <a href="{% url 'chat_list_view' %}">Чаты</a>
-            </nav>
-            <div class="user-info">
-                <span class="user-name">{{ user.user }}</span>
-                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
-                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
-            </div>
-        </div>
-    </header>
 
-    <div class="container">
-        <div class="create-group-container">
-            <div class="card">
-                <div class="card-header">
-                    <a href="{% url 'group_list_view' %}" class="back-link">← Назад к группам</a>
-                    <h1 class="page-title">➕ Создание новой группы</h1>
-                </div>
+{% block title %}Создание группы{% endblock %}
 
-                <form method="post" id="createGroupForm">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <label for="id_name">📛 Название группы</label>
-                        <input type="text" name="name" id="id_name" class="form-control" placeholder="Например: 11-101" required>
-                        <small class="form-text">Уникальное название группы</small>
-                    </div>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/group_create.css' %}">
+{% endblock %}
 
-                    <div class="form-group">
-                        <label for="id_course">🎓 Курс</label>
-                        <select name="course" id="id_course" class="form-control" required>
-                            <option value="">Выберите курс</option>
-                            {% for course in form.fields.course.queryset %}
-                            <option value="{{ course.id }}">{{ course.number }} курс</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="id_direction">📚 Направление</label>
-                        <select name="direction" id="id_direction" class="form-control" required>
-                            <option value="">Выберите направление</option>
-                            {% for direction in form.fields.direction.queryset %}
-                            <option value="{{ direction.id }}">{{ direction.code }} - {{ direction.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="id_academic_year">📅 Учебный год</label>
-                        <select name="academic_year" id="id_academic_year" class="form-control" required>
-                            <option value="">Выберите учебный год</option>
-                            {% for year in form.fields.academic_year.queryset %}
-                            <option value="{{ year.id }}">{{ year.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="submit" class="btn-create">✅ Создать группу</button>
-                        <a href="{% url 'group_list_view' %}" class="btn-cancel">Отмена</a>
-                    </div>
-                </form>
-            </div>
-        </div>
+{% block content %}
+<div class="create-group-container">
+    <div class="page-header">
+        <a href="{% url 'group_list_view' %}" class="back-link">← Назад к группам</a>
+        <h1 class="page-title">➕ Создание новой группы</h1>
     </div>
-
-    <script src="{% static 'js/group_create.js' %}"></script>
-</body>
-</html>
+    <div class="create-card">
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_name">📛 Название группы</label>
+                {{ form.name }}
+                <small class="form-text">Уникальное название группы</small>
+            </div>
+            <div class="form-group">
+                <label for="id_course">🎓 Курс</label>
+                {{ form.course }}
+            </div>
+            <div class="form-group">
+                <label for="id_direction">📚 Направление</label>
+                {{ form.direction }}
+            </div>
+            <div class="form-group">
+                <label for="id_academic_year">📅 Учебный год</label>
+                {{ form.academic_year }}
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-create">✅ Создать группу</button>
+                <a href="{% url 'group_list_view' %}" class="btn-cancel">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

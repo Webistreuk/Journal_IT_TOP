@@ -1,122 +1,35 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/exam_list.css' %}">
-    <title>Экзамены - Journal</title>
-</head>
-<body>
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">Journal</div>
-            <nav class="nav-menu">
-                <a href="{% url 'main_view' %}">Главная</a>
-                {% if user_role == 'student' %}
-                    <a href="{% url 'schedule_view' %}">Расписание</a>
-                    <a href="{% url 'homework_list_view' %}">ДЗ</a>
-                    <a href="{% url 'estimation_view' %}">Оценки</a>
-                    <a href="{% url 'attendance_list_view' %}">Посещаемость</a>
-                    <a href="{% url 'shop_view' %}">Магазин</a>
-                    <a href="{% url 'leaderboard_view' %}">Рейтинг</a>
-                    <a href="{% url 'polls_view' %}">Опросы</a>
-                    <a href="{% url 'announcements_view' %}">Объявления</a>
-                    <a href="{% url 'events_view' %}">События</a>
-                    <a href="{% url 'educational_materials_view' %}">Материалы</a>
-                    <a href="{% url 'exam_list_view' %}">Экзамены</a>
-                    <a href="{% url 'chat_list_view' %}">Чаты</a>
-                {% elif user_role == 'professor' %}
-                    <a href="{% url 'schedule_view' %}">Расписание</a>
-                    <a href="{% url 'homework_list_view' %}">ДЗ студентов</a>
-                    <a href="{% url 'homework_add_view' %}">Создать ДЗ</a>
-                    <a href="{% url 'attendance_mark_view' %}">Посещаемость</a>
-                    <a href="{% url 'estimation_view' %}">Оценки</a>
-                    <a href="{% url 'educational_materials_view' %}">Материалы</a>
-                    <a href="{% url 'exam_list_view' %}">Экзамены</a>
-                    <a href="{% url 'exam_create_view' %}">Выставить оценку</a>
-                    <a href="{% url 'chat_list_view' %}">Чаты</a>
-                {% endif %}
-            </nav>
-            <div class="user-info">
-                <span class="user-name">{{ user.user }}</span>
-                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
-                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
-            </div>
-        </div>
-    </header>
 
-    <div class="container">
-        <div class="exam-container">
-            <div class="page-header">
-                <h1 class="page-title">📝 Экзамены</h1>
-                {% if user_role == 'professor' %}
-                <a href="{% url 'exam_create_view' %}" class="btn-create">➕ Выставить оценку</a>
-                {% endif %}
-            </div>
+{% block title %}Экзамены{% endblock %}
 
-            <div class="stats-row">
-                <div class="stat-card">
-                    <div class="stat-number">{{ exams|length }}</div>
-                    <div class="stat-label">Всего экзаменов</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">{{ passed_count }}</div>
-                    <div class="stat-label">Сдано</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number">{{ avg_grade|default:"-" }}</div>
-                    <div class="stat-label">Средний балл</div>
-                </div>
-            </div>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/exam_list.css' %}">
+{% endblock %}
 
-            <div class="filter-bar">
-                <input type="text" id="searchInput" class="search-input" placeholder="🔍 Поиск по предмету...">
-                <select id="gradeFilter" class="grade-filter">
-                    <option value="">Все оценки</option>
-                    <option value="5">5 - Отлично</option>
-                    <option value="4">4 - Хорошо</option>
-                    <option value="3">3 - Удовлетворительно</option>
-                    <option value="2">2 - Неудовлетворительно</option>
-                </select>
-            </div>
-
-            <div class="exams-list">
-                {% for exam in exams %}
-                <div class="exam-card" data-subject="{{ exam.subject.name_subject }}" data-grade="{{ exam.grade }}">
-                    <div class="exam-header">
-                        <div class="exam-subject">{{ exam.subject.name_subject }}</div>
-                        <div class="exam-grade grade-{{ exam.grade }}">{{ exam.grade }}</div>
-                    </div>
-                    <div class="exam-info">
-                        <div class="info-item">
-                            <span class="info-label">👨‍🏫 Преподаватель:</span>
-                            <span class="info-value">{{ exam.professor }}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">📅 Дата:</span>
-                            <span class="info-value">{{ exam.exam_date|date:"d.m.Y" }}</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">📖 Семестр:</span>
-                            <span class="info-value">{{ exam.semester.name|default:"-" }}</span>
-                        </div>
-                    </div>
-                    {% if exam.exam_file %}
-                    <div class="exam-file">
-                        <a href="{{ exam.exam_file.url }}" class="file-link" download>📎 Скачать экзаменационный материал</a>
-                    </div>
-                    {% endif %}
-                </div>
-                {% empty %}
-                <div class="empty-exams">
-                    <p>📭 Нет данных об экзаменах</p>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
+{% block content %}
+<div class="exams-container">
+    <div class="page-header">
+        <h1 class="page-title">📝 Экзамены</h1>
     </div>
-
-    <script src="{% static 'js/exam_list.js' %}"></script>
-</body>
-</html>
+    
+    <div class="exams-list">
+        {% for exam in exams %}
+        <div class="exam-card">
+            <div class="exam-header">
+                <span class="exam-subject">{{ exam.subject.name_subject }}</span>
+                <span class="exam-grade">{{ exam.grade }}</span>
+            </div>
+            <div class="exam-info">
+                <span class="exam-date">📅 {{ exam.exam_date|date:"d.m.Y" }}</span>
+                <span class="exam-professor">👨‍🏫 {{ exam.professor }}</span>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <p>📭 Нет экзаменов</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

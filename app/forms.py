@@ -87,21 +87,69 @@ class HomeworkSubmitForm(forms.ModelForm):
         model = HomeworkSubmission
         fields = ['file', 'comment', 'time_work', 'the_usefulness_of_knowledge']
         widgets = {
-            'file': forms.FileInput(attrs={'class': 'form-control'}),
+            'file': forms.FileInput(attrs={'class': 'form-control', 'required': 'required'}),
             'comment': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Комментарий'}),
-            'time_work': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Время выполнения (минуты)'}),
-            'the_usefulness_of_knowledge': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Оценка полезности от 1 до 5'}),
+            'time_work': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Время выполнения (минуты)', 'min': 1, 'max': 600, 'required': 'required'}),
+            'the_usefulness_of_knowledge': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Оценка полезности от 1 до 5', 'min': 1, 'max': 5}),
         }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['file'].required = True
+        self.fields['time_work'].required = True
+        self.fields['the_usefulness_of_knowledge'].required = False
+        self.fields['comment'].required = False
+    
+    def clean_file(self):
+        file = self.cleaned_data.get('file')
+        if not file:
+            raise forms.ValidationError('Файл с домашним заданием обязателен для загрузки!')
+        
+        max_size = 10 * 1024 * 1024
+        if file.size > max_size:
+            raise forms.ValidationError('Файл слишком большой. Максимальный размер 10 МБ.')
+        
+        return file
+    
+    def clean_time_work(self):
+        value = self.cleaned_data.get('time_work')
+        if not value:
+            raise forms.ValidationError('Время выполнения обязательно для заполнения!')
+        if value <= 0:
+            raise forms.ValidationError('Время выполнения должно быть положительным числом!')
+        if value > 600:
+            raise forms.ValidationError('Время выполнения не может превышать 600 минут (10 часов)!')
+        return value
+    
+    def clean_the_usefulness_of_knowledge(self):
+        value = self.cleaned_data.get('the_usefulness_of_knowledge')
+        if value is not None and (value < 1 or value > 5):
+            raise forms.ValidationError('Оценка полезности должна быть от 1 до 5!')
+        return value
 
 class HomeworkGradeForm(forms.ModelForm):
     class Meta:
         model = HomeworkSubmission
-        fields = ['grade', 'professor_comment', 'is_checked']
+        fields = ['grade', 'professor_comment']
         widgets = {
-            'grade': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Оценка'}),
             'professor_comment': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder': 'Комментарий преподавателя'}),
-            'is_checked': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['grade'].required = True
+    
+    def clean_grade(self):
+        grade = self.cleaned_data.get('grade')
+        if grade is None:
+            raise forms.ValidationError('Оценка обязательна для заполнения!')
+        
+        if grade < 1:
+            grade = 1
+        if grade > 5:
+            grade = 5
+        
+        return grade
 
 class AttendanceForm(forms.ModelForm):
     class Meta:
@@ -349,7 +397,12 @@ class EducationalMaterialForm(forms.ModelForm):
             'is_public': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'subject': forms.Select(attrs={'class': 'form-control'}),
         }
-
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'initial' in kwargs and 'subject' in kwargs['initial']:
+            self.fields['subject'].queryset = Subjects.objects.filter(id=kwargs['initial']['subject'].id)
+            
 class PersonalAccountForm(forms.ModelForm):
     class Meta:
         model = PersonalAccount

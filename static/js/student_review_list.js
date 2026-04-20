@@ -1,43 +1,40 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('searchInput');
+    const studentNameFilter = document.getElementById('studentNameFilter');
     const groupFilter = document.getElementById('groupFilter');
-    const subjectFilter = document.getElementById('subjectFilter');
+    const resetBtn = document.getElementById('resetFilters');
     const reviewCards = document.querySelectorAll('.review-card');
-    const deleteButtons = document.querySelectorAll('.btn-delete');
-
+    
     function filterReviews() {
-        const searchTerm = searchInput.value.toLowerCase();
-        const selectedGroup = groupFilter.value;
-        const selectedSubject = subjectFilter.value;
-
+        const searchName = studentNameFilter ? studentNameFilter.value.toLowerCase().trim() : '';
+        const selectedGroup = groupFilter ? groupFilter.value : 'all';
+        
         reviewCards.forEach(card => {
             const studentName = card.getAttribute('data-student') || '';
-            const group = card.getAttribute('data-group') || '';
-            const subject = card.getAttribute('data-subject') || '';
+            const studentGroup = card.getAttribute('data-group') || '';
             
-            const matchesSearch = studentName.toLowerCase().includes(searchTerm);
-            const matchesGroup = !selectedGroup || group === selectedGroup;
-            const matchesSubject = !selectedSubject || subject === selectedSubject;
+            let show = true;
             
-            if (matchesSearch && matchesGroup && matchesSubject) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
+            if (searchName && !studentName.toLowerCase().includes(searchName)) {
+                show = false;
             }
+            
+            if (show && selectedGroup !== 'all' && studentGroup !== selectedGroup) {
+                show = false;
+            }
+            
+            card.style.display = show ? 'block' : 'none';
         });
     }
-
-    searchInput.addEventListener('input', filterReviews);
-    groupFilter.addEventListener('change', filterReviews);
-    subjectFilter.addEventListener('change', filterReviews);
-
-    deleteButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const reviewId = this.getAttribute('data-id');
-            if (confirm('Вы уверены, что хотите удалить этот отзыв?')) {
-                alert(`Отзыв ${reviewId} удален`);
-            }
-        });
-    });
+    
+    function resetFilters() {
+        if (studentNameFilter) studentNameFilter.value = '';
+        if (groupFilter) groupFilter.value = 'all';
+        filterReviews();
+    }
+    
+    if (studentNameFilter) studentNameFilter.addEventListener('input', filterReviews);
+    if (groupFilter) groupFilter.addEventListener('change', filterReviews);
+    if (resetBtn) resetBtn.addEventListener('click', resetFilters);
+    
+    filterReviews();
 });

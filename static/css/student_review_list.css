@@ -1,173 +1,181 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f5f7fa;
-}
-
-.header {
-    background: white;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-}
-
-.header-content {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-}
-
-.logo {
-    font-size: 24px;
-    font-weight: bold;
-    color: #667eea;
-}
-
-.nav-menu {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.nav-menu a {
-    text-decoration: none;
-    color: #333;
-    font-size: 14px;
-    transition: color 0.3s;
-}
-
-.nav-menu a:hover {
-    color: #667eea;
-}
-
-.user-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-}
-
-.user-name {
-    font-size: 14px;
-    color: #333;
-}
-
-.btn-profile, .btn-logout {
-    padding: 6px 12px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-size: 14px;
-    transition: 0.3s;
-}
-
-.btn-profile {
-    background: #667eea;
-    color: white;
-}
-
-.btn-profile:hover {
-    background: #5a67d8;
-}
-
-.btn-logout {
-    background: #dc3545;
-    color: white;
-}
-
-.btn-logout:hover {
-    background: #c82333;
-}
-
-.container {
+.reviews-list-container {
     max-width: 1000px;
-    margin: 80px auto 20px;
-    padding: 0 20px;
+    margin: 0 auto;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .page-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
     flex-wrap: wrap;
     gap: 15px;
 }
 
 .page-title {
     font-size: 28px;
-    color: #333;
+    font-weight: 900;
+    background: linear-gradient(135deg, #EA422A 0%, #F69020 48.58%, #FFC619 101.38%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .btn-create {
-    padding: 10px 20px;
-    background: #28a745;
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
+    padding: 10px 24px;
+    background: linear-gradient(93.25deg, #EA422A 0%, #F69020 48.58%, #FFC619 101.38%);
+    border: none;
+    border-radius: 40px;
+    color: #252121;
     font-size: 14px;
-    transition: 0.3s;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s;
 }
 
 .btn-create:hover {
-    background: #218838;
     transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(246,144,32,0.4);
 }
 
-.filter-bar {
+.filter-section {
     display: flex;
-    gap: 15px;
-    margin-bottom: 25px;
+    gap: 20px;
+    margin-bottom: 30px;
     flex-wrap: wrap;
+    background: #282B32;
+    padding: 20px;
+    border-radius: 20px;
 }
 
-.search-input, .group-filter, .subject-filter {
-    padding: 10px 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 14px;
-    outline: none;
-}
-
-.search-input {
+.filter-group {
     flex: 1;
     min-width: 200px;
 }
 
-.group-filter, .subject-filter {
-    min-width: 150px;
-    cursor: pointer;
+.filter-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #FFFFFF;
+    font-size: 13px;
 }
 
-.search-input:focus, .group-filter:focus, .subject-filter:focus {
-    border-color: #667eea;
+.search-wrapper {
+    position: relative;
+}
+
+.search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    color: #F69020;
+    pointer-events: none;
+}
+
+.filter-input {
+    width: 100%;
+    padding: 10px 15px 10px 38px;
+    background: #202124;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 30px;
+    color: #FFFFFF;
+    font-size: 14px;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.filter-input:focus {
+    border-color: #F69020;
+    box-shadow: 0 0 0 3px rgba(246,144,32,0.2);
+}
+
+.select-wrapper {
+    position: relative;
+}
+
+.filter-select {
+    width: 100%;
+    padding: 10px 15px;
+    background: #202124;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 30px;
+    color: #FFFFFF;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23F69020' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+}
+
+.filter-select:focus {
+    border-color: #F69020;
+    box-shadow: 0 0 0 3px rgba(246,144,32,0.2);
+}
+
+.reset-btn {
+    padding: 10px 24px;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 30px;
+    color: #FFFFFF;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    align-self: flex-end;
+}
+
+.reset-btn:hover {
+    background: #F69020;
+    border-color: #F69020;
+    color: #252121;
+    transform: translateY(-2px);
 }
 
 .reviews-list {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 15px;
 }
 
 .review-card {
-    background: white;
-    border-radius: 15px;
+    background: #282B32;
+    border-radius: 16px;
     padding: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    transition: transform 0.3s;
+    transition: all 0.3s;
+    animation: cardFadeIn 0.5s ease-out;
+}
+
+@keyframes cardFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .review-card:hover {
     transform: translateX(5px);
+    background: rgba(246,144,32,0.05);
 }
 
 .review-header {
@@ -179,80 +187,71 @@ body {
     gap: 10px;
 }
 
-.student-name {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
+.review-student {
+    font-weight: 700;
+    color: #F69020;
+    font-size: 15px;
 }
 
-.student-group {
+.review-group {
     font-size: 12px;
-    color: #667eea;
-    margin-top: 3px;
-}
-
-.review-date {
-    font-size: 12px;
-    color: #999;
+    color: rgba(255,255,255,0.5);
+    margin-left: 10px;
+    padding: 2px 8px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
 }
 
 .review-meta {
     display: flex;
-    gap: 20px;
-    margin-bottom: 15px;
-    font-size: 13px;
-    color: #666;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
-.meta-subject, .meta-professor {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.review-content {
-    padding: 15px;
-    background: #f8f9fa;
-    border-radius: 10px;
-    margin-bottom: 10px;
-}
-
-.review-content p {
-    color: #555;
-    line-height: 1.5;
-    font-size: 14px;
-}
-
-.review-actions {
-    text-align: right;
-}
-
-.btn-delete {
-    padding: 6px 12px;
-    background: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+.review-professor {
     font-size: 12px;
-    transition: 0.3s;
+    color: rgba(255,255,255,0.6);
 }
 
-.btn-delete:hover {
-    background: #c82333;
+.review-subject {
+    font-size: 12px;
+    color: #F69020;
 }
 
-.empty-reviews {
+.review-date {
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+}
+
+.review-comment {
+    font-size: 14px;
+    color: #FFFFFF;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.empty-state {
     text-align: center;
     padding: 60px;
-    background: white;
-    border-radius: 15px;
-    color: #999;
+    background: #282B32;
+    border-radius: 20px;
+    color: rgba(255,255,255,0.5);
 }
 
 @media (max-width: 768px) {
-    .filter-bar {
+    .page-header {
         flex-direction: column;
+        text-align: center;
+    }
+    
+    .filter-section {
+        flex-direction: column;
+    }
+    
+    .reset-btn {
+        align-self: stretch;
     }
     
     .review-header {
@@ -261,7 +260,6 @@ body {
     }
     
     .review-meta {
-        flex-direction: column;
-        gap: 5px;
+        flex-wrap: wrap;
     }
 }

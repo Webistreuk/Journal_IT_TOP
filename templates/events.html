@@ -1,117 +1,51 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/events.css' %}">
-    <title>События - Journal</title>
-</head>
-<body>
-    <header class="header">
-        <div class="header-content">
-            <div class="logo">Journal</div>
-            <nav class="nav-menu">
-                <a href="{% url 'main_view' %}">Главная</a>
-                {% if user_role == 'student' %}
-                    <a href="{% url 'schedule_view' %}">Расписание</a>
-                    <a href="{% url 'homework_list_view' %}">ДЗ</a>
-                    <a href="{% url 'estimation_view' %}">Оценки</a>
-                    <a href="{% url 'attendance_list_view' %}">Посещаемость</a>
-                    <a href="{% url 'shop_view' %}">Магазин</a>
-                    <a href="{% url 'leaderboard_view' %}">Рейтинг</a>
-                    <a href="{% url 'polls_view' %}">Опросы</a>
-                    <a href="{% url 'announcements_view' %}">Объявления</a>
-                    <a href="{% url 'events_view' %}">События</a>
-                    <a href="{% url 'chat_list_view' %}">Чаты</a>
-                {% elif user_role == 'professor' %}
-                    <a href="{% url 'schedule_view' %}">Расписание</a>
-                    <a href="{% url 'homework_list_view' %}">ДЗ студентов</a>
-                    <a href="{% url 'homework_add_view' %}">Создать ДЗ</a>
-                    <a href="{% url 'attendance_mark_view' %}">Посещаемость</a>
-                    <a href="{% url 'estimation_view' %}">Оценки</a>
-                    <a href="{% url 'events_view' %}">События</a>
-                    <a href="{% url 'chat_list_view' %}">Чаты</a>
-                {% elif user_role == 'academic_staff' %}
-                    <a href="{% url 'schedule_create_view' %}">Расписание</a>
-                    <a href="{% url 'group_list_view' %}">Группы</a>
-                    <a href="{% url 'subject_list_view' %}">Предметы</a>
-                    <a href="{% url 'payment_info_view' %}">Оплаты</a>
-                    <a href="{% url 'debtor_list_view' %}">Должники</a>
-                    <a href="{% url 'events_view' %}">События</a>
-                    <a href="{% url 'chat_list_view' %}">Чаты</a>
-                {% endif %}
-            </nav>
-            <div class="user-info">
-                <span class="user-name">{{ user.user }}</span>
-                <a href="{% url 'profile_edit_view' %}" class="btn-profile">Профиль</a>
-                <a href="{% url 'logout_view' %}" class="btn-logout">Выйти</a>
-            </div>
-        </div>
-    </header>
 
-    <div class="container">
-        <div class="events-container">
-            <div class="page-header">
-                <h1 class="page-title">🎉 События и мероприятия</h1>
-                {% if user_role == 'academic_staff' %}
-                <a href="{% url 'event_create_view' %}" class="btn-create">➕ Создать событие</a>
-                {% endif %}
-            </div>
+{% block title %}События{% endblock %}
 
-            <div class="events-list">
-                {% for event in events %}
-                <div class="event-card" data-id="{{ event.id }}">
-                    <div class="event-date-box">
-                        <div class="event-day">{{ event.start_date|date:"d" }}</div>
-                        <div class="event-month">{{ event.start_date|date:"M" }}</div>
-                    </div>
-                    <div class="event-content">
-                        <div class="event-header">
-                            <h3 class="event-title">{{ event.title }}</h3>
-                            <span class="event-type {{ event.event_type }}">{{ event.get_event_type_display }}</span>
-                        </div>
-                        <div class="event-datetime">
-                            <span class="datetime-icon">📅</span>
-                            <span>{{ event.start_date|date:"d.m.Y H:i" }} - {{ event.end_date|date:"d.m.Y H:i" }}</span>
-                        </div>
-                        {% if event.location %}
-                        <div class="event-location">
-                            <span class="location-icon">📍</span>
-                            <span>{{ event.location }}</span>
-                        </div>
-                        {% endif %}
-                        <div class="event-description">
-                            <p>{{ event.description|truncatechars:200 }}</p>
-                        </div>
-                        <div class="event-footer">
-                            <div class="event-groups">
-                                {% if event.is_for_all %}
-                                    <span class="group-badge all">Для всех</span>
-                                {% else %}
-                                    {% for group in event.groups.all %}
-                                        <span class="group-badge">{{ group.name }}</span>
-                                    {% endfor %}
-                                {% endif %}
-                            </div>
-                            {% if user_role == 'academic_staff' %}
-                            <div class="event-actions">
-                                <button class="btn-edit" data-id="{{ event.id }}">✏️</button>
-                                <button class="btn-delete" data-id="{{ event.id }}">🗑️</button>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="empty-events">
-                    <p>🎈 Нет запланированных событий</p>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/events.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="events-container">
+    <div class="page-header">
+        <h1 class="page-title">🎉 События и мероприятия</h1>
+        {% if user_role == 'academic_staff' %}
+        <a href="{% url 'event_create_view' %}" class="btn-create">➕ Создать событие</a>
+        {% endif %}
     </div>
-
-    <script src="{% static 'js/events.js' %}"></script>
-</body>
-</html>
+    <div class="events-list">
+        {% for event in events %}
+        <div class="event-card">
+            <div class="event-date-box">
+                <div class="event-day">{{ event.start_date|date:"d" }}</div>
+                <div class="event-month">{{ event.start_date|date:"M" }}</div>
+            </div>
+            <div class="event-content">
+                <div class="event-header">
+                    <h3 class="event-title">{{ event.title }}</h3>
+                    <span class="event-type {{ event.event_type }}">{{ event.get_event_type_display }}</span>
+                </div>
+                <div class="event-datetime">📅 {{ event.start_date|date:"d.m.Y H:i" }} - {{ event.end_date|date:"d.m.Y H:i" }}</div>
+                {% if event.location %}
+                <div class="event-location">📍 {{ event.location }}</div>
+                {% endif %}
+                <div class="event-description">{{ event.description|truncatechars:200 }}</div>
+                <div class="event-groups">
+                    {% if event.is_for_all %}
+                    <span class="group-badge all">Для всех</span>
+                    {% else %}
+                        {% for group in event.groups.all %}
+                        <span class="group-badge">{{ group.name }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-events">🎈 Нет запланированных событий</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
