@@ -4027,3 +4027,10 @@ body.light-theme .selected-count {
 body.light-theme .groups-selection {
     background: #808080 !important;
 }
+
+body.light-theme .leaderboard-stats span,
+body.light-theme .leaderboard-stats div,
+body.light-theme .leaderboard-stats .stat-value,
+body.light-theme .leaderboard-stats .stat-label {
+    color: #ffffff !important;
+}
