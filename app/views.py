@@ -1403,6 +1403,66 @@ def chat_list_view(request, chat_id=None):
         return redirect('autoriz_view')
     
     user = Autoriz.objects.get(id=request.session['user_id'])
+    
+    topcoins = 0
+    topgems = 0
+    user_avatar = None
+    student_info = None
+    professor_info = None
+    user_full_name = user.get_full_name() or user.user
+    
+    try:
+        student = Student.objects.get(autoriz=user)
+        user_full_name = f"{student.surname} {student.name} {student.patronymic}".strip()
+        
+        if student.group:
+            student_info = {
+                'direction': student.group.direction.name if student.group.direction else '-',
+                'course': student.group.course.number if student.group.course else '-',
+                'group': student.group.name
+            }
+        else:
+            student_info = {
+                'direction': '-',
+                'course': '-',
+                'group': '-'
+            }
+        
+        balance = balance_topcoins_and_topgems.objects.filter(student=student).first()
+        if balance:
+            topcoins = balance.topcoins
+            topgems = balance.topgems
+            
+    except Student.DoesNotExist:
+        try:
+            professor = Professor.objects.get(autoriz=user)
+            user_full_name = f"{professor.surname} {professor.name} {professor.patronymic}".strip()
+            if professor.leads_the_subject:
+                professor_info = {
+                    'subject': professor.leads_the_subject.name_subject
+                }
+        except Professor.DoesNotExist:
+            try:
+                staff = AcademicStaff.objects.get(autoriz=user)
+                user_full_name = f"{staff.surname} {staff.name} {staff.patronymic}".strip()
+            except AcademicStaff.DoesNotExist:
+                pass
+    
+    try:
+        chat_profile = ChatProfile.objects.get(user=user)
+        if chat_profile.avatar and chat_profile.avatar.url:
+            user_avatar = chat_profile.avatar.url
+    except ChatProfile.DoesNotExist:
+        pass
+    
+    user_role = None
+    if Student.objects.filter(autoriz=user).exists():
+        user_role = 'student'
+    elif Professor.objects.filter(autoriz=user).exists():
+        user_role = 'professor'
+    elif AcademicStaff.objects.filter(autoriz=user).exists():
+        user_role = 'academic_staff'
+    
     chats = Chat.objects.filter(participants=user)
     
     all_participants = []
@@ -1500,6 +1560,13 @@ def chat_list_view(request, chat_id=None):
         'selected_chat': selected_chat,
         'messages': messages_list,
         'user': user,
+        'user_role': user_role,
+        'user_avatar': user_avatar,
+        'user_full_name': user_full_name,
+        'student_info': student_info,
+        'professor_info': professor_info,
+        'topcoins': topcoins,
+        'topgems': topgems,
         'today': today.strftime('%Y-%m-%d'),
         'yesterday': yesterday.strftime('%Y-%m-%d'),
     })

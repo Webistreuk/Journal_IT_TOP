@@ -257,4 +257,63 @@
 {% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <script src="{% static 'js/chat_list.js' %}"></script>
+
+<!-- ДОПОЛНИТЕЛЬНЫЙ СКРИПТ ДЛЯ НАВИГАЦИОННОЙ ПАНЕЛИ -->
+<script>
+    (function() {
+        var navMenu = document.getElementById('navMenu');
+        var hoverArea = document.querySelector('.nav-hover-area');
+        var isMenuOpen = false;
+        var closeTimeout;
+        var isClosing = false;
+        
+        function openMenu() {
+            clearTimeout(closeTimeout);
+            if (isClosing) {
+                navMenu.classList.remove('closing');
+                isClosing = false;
+            }
+            if (!isMenuOpen) {
+                navMenu.classList.add('show');
+                isMenuOpen = true;
+            }
+        }
+        
+        function closeMenu() {
+            clearTimeout(closeTimeout);
+            closeTimeout = setTimeout(function() {
+                if (isMenuOpen) {
+                    navMenu.classList.add('closing');
+                    isClosing = true;
+                    navMenu.classList.remove('show');
+                    isMenuOpen = false;
+                    
+                    setTimeout(function() {
+                        navMenu.classList.remove('closing');
+                        isClosing = false;
+                    }, 1500);
+                }
+            }, 300);
+        }
+        
+        if (navMenu && hoverArea) {
+            hoverArea.addEventListener('mouseenter', openMenu);
+            navMenu.addEventListener('mouseenter', openMenu);
+            
+            hoverArea.addEventListener('mouseleave', closeMenu);
+            navMenu.addEventListener('mouseleave', closeMenu);
+            
+            var links = navMenu.querySelectorAll('a');
+            for (var i = 0; i < links.length; i++) {
+                links[i].addEventListener('click', function() {
+                    navMenu.classList.remove('show');
+                    navMenu.classList.remove('closing');
+                    isMenuOpen = false;
+                    isClosing = false;
+                    clearTimeout(closeTimeout);
+                });
+            }
+        }
+    })();
+</script>
 {% endblock %}

@@ -8,59 +8,129 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     {% block extra_css %}{% endblock %}
+    <style>
+        .header-content {
+            justify-content: space-between !important;
+        }
+        
+        .header-left {
+            margin-left: -30px !important;
+        }
+        
+        .user-info {
+            margin-right: -30px !important;
+        }
+        
+        body {
+            padding-top: 80px !important;
+        }
+        
+        .container {
+            margin-top: 0 !important;
+        }
+        
+        .nav-menu {
+            position: fixed;
+            top: 80px;
+            left: -320px;
+            width: 300px;
+            height: calc(100vh - 80px);
+            background: #282B32;
+            padding: 20px 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 999;
+            overflow-y: auto;
+            transition: left 0.3s ease;
+            box-shadow: 2px 0 20px rgba(0,0,0,0.3);
+        }
+        
+        .nav-menu.show {
+            left: 0;
+        }
+        
+        .nav-menu a {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .nav-menu a:hover {
+            background: #F69020;
+            color: #252121;
+            padding-left: 30px;
+        }
+        
+        .nav-hover-area {
+            position: fixed;
+            top: 80px;
+            left: 0;
+            width: 25px;
+            height: calc(100vh - 80px);
+            z-index: 998;
+            cursor: pointer;
+        }
+        
+        body.light-theme .nav-menu {
+            background: #ffffff;
+        }
+        
+        body.light-theme .nav-menu a {
+            color: #212529;
+            border-bottom-color: #f0f0f0;
+        }
+        
+        body.light-theme .nav-menu a:hover {
+            background: #F69020;
+            color: #ffffff;
+        }
+        
+        @media (max-width: 768px) {
+            .header-left {
+                margin-left: -15px !important;
+            }
+            
+            .user-info {
+                margin-right: -15px !important;
+            }
+            
+            body {
+                padding-top: 65px !important;
+            }
+            
+            .nav-menu {
+                top: 65px;
+                width: 85%;
+                height: calc(100vh - 65px);
+                left: -85%;
+            }
+            
+            .nav-hover-area {
+                top: 65px;
+                height: calc(100vh - 65px);
+            }
+            
+            .nav-menu a {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+        }
+    </style>
 </head>
 <body>
     <header class="header">
         <div class="header-content">
-            <div class="logo">Journal</div>
-            <nav class="nav-menu">
-                <a href="{% url 'main_view' %}">Главная</a>
-                {% if user_role == 'student' %}
-                    <a href="{% url 'schedule_view' %}">Расписание</a>
-                    <a href="{% url 'homework_list_view' %}">ДЗ</a>
-                    <a href="{% url 'estimation_view' %}">Оценки</a>
-                    <a href="{% url 'attendance_list_view' %}">Посещаемость</a>
-                    <a href="{% url 'shop_view' %}">Магазин</a>
-                    <a href="{% url 'leaderboard_view' %}">Рейтинг</a>
-                    <a href="{% url 'polls_view' %}">Опросы</a>
-                    <a href="{% url 'announcements_view' %}">Объявления</a>
-                    <a href="{% url 'events_view' %}">События</a>
-                    <a href="{% url 'educational_materials_view' %}">Материалы</a>
-                    <a href="{% url 'user_reward_list_view' %}">Награды</a>
-                    <a href="{% url 'exam_list_view' %}">Экзамены</a>
-                    <a href="{% url 'appeal_view' %}">Обращение</a>
-                    <a href="{% url 'review_view' %}">Отзыв об академии</a>
-                    <a href="{% url 'student_reviews_view' %}">Отзывы обо мне</a>
-                    <a href="{% url 'complaint_view' %}">Жалоба</a>
-                    <a href="{% url 'chat_list_view' %}">Чаты</a>
-                {% elif user_role == 'professor' %}
-                    <a href="{% url 'schedule_view' %}">Расписание</a>
-                    <a href="{% url 'homework_list_view' %}">ДЗ студентов</a>
-                    <a href="{% url 'homework_add_view' %}">Создать ДЗ</a>
-                    <a href="{% url 'attendance_mark_view' %}">Посещаемость</a>
-                    <a href="{% url 'estimation_view' %}">Оценки моих студентов</a>
-                    <a href="{% url 'educational_materials_view' %}">Мои материалы</a>
-                    <a href="{% url 'educational_material_create_view' %}">Загрузить материал</a>
-                    <a href="{% url 'student_review_create_view' %}">Отзыв о студенте</a>
-                    <a href="{% url 'student_review_list_view' %}">Все отзывы</a>
-                    <a href="{% url 'exam_list_view' %}">Экзамены</a>
-                    <a href="{% url 'chat_list_view' %}">Чаты</a>
-                {% elif user_role == 'academic_staff' %}
-                    <a href="{% url 'schedule_create_view' %}">Расписание</a>
-                    <a href="{% url 'group_list_view' %}">Группы</a>
-                    <a href="{% url 'subject_list_view' %}">Предметы</a>
-                    <a href="{% url 'direction_list_view' %}">Направления</a>
-                    <a href="{% url 'course_list_view' %}">Курсы</a>
-                    <a href="{% url 'academic_year_list_view' %}">Учебные годы</a>
-                    <a href="{% url 'payment_info_view' %}">Оплаты</a>
-                    <a href="{% url 'debtor_list_view' %}">Должники</a>
-                    <a href="{% url 'announcements_view' %}">Объявления</a>
-                    <a href="{% url 'announcement_create_view' %}">Создать объявление</a>
-                    <a href="{% url 'events_view' %}">События</a>
-                    <a href="{% url 'event_create_view' %}">Создать событие</a>
-                    <a href="{% url 'chat_list_view' %}">Чаты</a>
-                {% endif %}
-            </nav>
+            <div class="header-left">
+                <button id="themeToggle" class="theme-toggle-btn">
+                    <i class="fas fa-sun"></i>
+                    <i class="fas fa-moon" style="display: none;"></i>
+                </button>
+                <div class="logo">Journal</div>
+            </div>
             <div class="user-info">
                 {% if user_role == 'student' %}
                 <div class="user-currencies">
@@ -98,6 +168,57 @@
         </div>
     </header>
 
+    <div class="nav-hover-area"></div>
+    
+    <nav class="nav-menu" id="navMenu">
+        <a href="{% url 'main_view' %}">Главная</a>
+        {% if user_role == 'student' %}
+            <a href="{% url 'schedule_view' %}">Расписание</a>
+            <a href="{% url 'homework_list_view' %}">ДЗ</a>
+            <a href="{% url 'estimation_view' %}">Оценки</a>
+            <a href="{% url 'attendance_list_view' %}">Посещаемость</a>
+            <a href="{% url 'shop_view' %}">Магазин</a>
+            <a href="{% url 'leaderboard_view' %}">Рейтинг</a>
+            <a href="{% url 'polls_view' %}">Опросы</a>
+            <a href="{% url 'announcements_view' %}">Объявления</a>
+            <a href="{% url 'events_view' %}">События</a>
+            <a href="{% url 'educational_materials_view' %}">Материалы</a>
+            <a href="{% url 'user_reward_list_view' %}">Награды</a>
+            <a href="{% url 'exam_list_view' %}">Экзамены</a>
+            <a href="{% url 'appeal_view' %}">Обращение</a>
+            <a href="{% url 'review_view' %}">Отзыв</a>
+            <a href="{% url 'complaint_view' %}">Жалоба</a>
+            <a href="{% url 'student_reviews_view' %}">Отзывы обо мне</a>
+            <a href="{% url 'chat_list_view' %}">Чаты</a>
+        {% elif user_role == 'professor' %}
+            <a href="{% url 'schedule_view' %}">Расписание</a>
+            <a href="{% url 'homework_list_view' %}">ДЗ студентов</a>
+            <a href="{% url 'homework_add_view' %}">Создать ДЗ</a>
+            <a href="{% url 'attendance_mark_view' %}">Посещаемость</a>
+            <a href="{% url 'estimation_view' %}">Оценки моих студентов</a>
+            <a href="{% url 'educational_materials_view' %}">Мои материалы</a>
+            <a href="{% url 'educational_material_create_view' %}">Загрузить материал</a>
+            <a href="{% url 'student_review_create_view' %}">Отзыв о студенте</a>
+            <a href="{% url 'student_review_list_view' %}">Все отзывы</a>
+            <a href="{% url 'exam_list_view' %}">Экзамены</a>
+            <a href="{% url 'chat_list_view' %}">Чаты</a>
+        {% elif user_role == 'academic_staff' %}
+            <a href="{% url 'schedule_create_view' %}">Расписание</a>
+            <a href="{% url 'group_list_view' %}">Группы</a>
+            <a href="{% url 'subject_list_view' %}">Предметы</a>
+            <a href="{% url 'direction_list_view' %}">Направления</a>
+            <a href="{% url 'course_list_view' %}">Курсы</a>
+            <a href="{% url 'academic_year_list_view' %}">Учебные годы</a>
+            <a href="{% url 'payment_info_view' %}">Оплаты</a>
+            <a href="{% url 'debtor_list_view' %}">Должники</a>
+            <a href="{% url 'announcements_view' %}">Объявления</a>
+            <a href="{% url 'announcement_create_view' %}">Создать объявление</a>
+            <a href="{% url 'events_view' %}">События</a>
+            <a href="{% url 'event_create_view' %}">Создать событие</a>
+            <a href="{% url 'chat_list_view' %}">Чаты</a>
+        {% endif %}
+    </nav>
+
     <div class="container">
         {% if messages %}
             {% for message in messages %}
@@ -111,5 +232,91 @@
 
     <script src="{% static 'js/main.js' %}"></script>
     {% block extra_js %}{% endblock %}
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const body = document.body;
+            const sunIcon = document.querySelector('#themeToggle .fa-sun');
+            const moonIcon = document.querySelector('#themeToggle .fa-moon');
+            if (savedTheme === 'light') {
+                body.classList.add('light-theme');
+                if (sunIcon) sunIcon.style.display = 'none';
+                if (moonIcon) moonIcon.style.display = 'inline-block';
+            } else {
+                body.classList.remove('light-theme');
+                if (sunIcon) sunIcon.style.display = 'inline-block';
+                if (moonIcon) moonIcon.style.display = 'none';
+            }
+        })();
+
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const body = document.body;
+            const sunIcon = this.querySelector('.fa-sun');
+            const moonIcon = this.querySelector('.fa-moon');
+            if (body.classList.contains('light-theme')) {
+                body.classList.remove('light-theme');
+                localStorage.setItem('theme', 'dark');
+                sunIcon.style.display = 'inline-block';
+                moonIcon.style.display = 'none';
+            } else {
+                body.classList.add('light-theme');
+                localStorage.setItem('theme', 'light');
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'inline-block';
+            }
+        });
+
+        (function() {
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(function(alert) {
+                setTimeout(function() {
+                    alert.style.opacity = '0';
+                    setTimeout(function() {
+                        if (alert.parentNode) alert.remove();
+                    }, 500);
+                }, 5000);
+            });
+        })();
+
+        (function() {
+            var navMenu = document.getElementById('navMenu');
+            var hoverArea = document.querySelector('.nav-hover-area');
+            var isMenuOpen = false;
+            var closeTimeout;
+            
+            function openMenu() {
+                clearTimeout(closeTimeout);
+                if (!isMenuOpen) {
+                    navMenu.classList.add('show');
+                    isMenuOpen = true;
+                }
+            }
+            
+            function closeMenu() {
+                closeTimeout = setTimeout(function() {
+                    if (isMenuOpen) {
+                        navMenu.classList.remove('show');
+                        isMenuOpen = false;
+                    }
+                }, 100);
+            }
+            
+            if (navMenu && hoverArea) {
+                hoverArea.addEventListener('mouseenter', openMenu);
+                navMenu.addEventListener('mouseenter', openMenu);
+                
+                hoverArea.addEventListener('mouseleave', closeMenu);
+                navMenu.addEventListener('mouseleave', closeMenu);
+                
+                var links = navMenu.querySelectorAll('a');
+                for (var i = 0; i < links.length; i++) {
+                    links[i].addEventListener('click', function() {
+                        navMenu.classList.remove('show');
+                        isMenuOpen = false;
+                    });
+                }
+            }
+        })();
+    </script>
 </body>
 </html>
